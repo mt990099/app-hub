@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>提出チェック｜アプリ集</title>
+<style>
+:root{--blue:#5b91e5;--green:#51b77e;--ink:#344054;--muted:#718096}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--ink);background:#f4f8ff}
+.wrap{max-width:980px;margin:auto;padding:14px}
+.home{display:inline-block;text-decoration:none;color:#526177;background:#fff;border-radius:999px;padding:9px 13px;font-weight:900;box-shadow:0 5px 15px rgba(60,70,90,.1)}
+h1{text-align:center;margin:14px 0 5px}.sub{text-align:center;color:var(--muted);margin-bottom:14px}
+.card{background:#fff;border-radius:22px;padding:16px;margin:12px 0;box-shadow:0 9px 22px rgba(55,70,100,.1)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:end}
+label{font-weight:800;font-size:13px;flex:1;min-width:110px}
+input,select{width:100%;padding:11px;border:2px solid #e2e7ef;border-radius:13px;font-size:16px;margin-top:5px}
+button{border:0;border-radius:13px;padding:11px 14px;font-size:15px;font-weight:900;cursor:pointer}
+.primary{background:var(--blue);color:#fff}.green{background:var(--green);color:#fff}.secondary{background:#edf2f7;color:#4d5a6d}.danger{background:#fff0f0;color:#bd5555}
+.items{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.item-chip{background:#f2f5f9;border:2px solid transparent;border-radius:999px;padding:9px 12px;font-weight:800;cursor:pointer}
+.item-chip.active{background:#eaf3ff;border-color:#74a7ec;color:#376fb9}
+.scanbox{display:grid;grid-template-columns:1fr auto;gap:8px}
+#scanInput{font-size:24px;font-weight:900;text-align:center;border:3px solid #79aaf0}
+.status{text-align:center;border-radius:18px;padding:18px;margin-top:12px;font-size:22px;font-weight:1000;background:#f2f5f8;min-height:72px;display:flex;align-items:center;justify-content:center}
+.status.ok{background:#e9f8ef;color:#2f895b}.status.warn{background:#fff7df;color:#9b6a13}.status.err{background:#fff0f0;color:#b94b4b}
+.summary{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.pill{padding:8px 12px;border-radius:999px;background:#eef3f8;font-weight:800}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:620px}th,td{padding:9px;border-bottom:1px solid #e8ebf0;text-align:center}th{background:#f6f8fb;position:sticky;top:0}.yes{font-weight:1000;color:#29925c}
+.unsubmitted{line-height:1.9;font-weight:800}
+.small{font-size:12px;color:var(--muted);line-height:1.6}
+@media(max-width:600px){.scanbox{grid-template-columns:1fr}.status{font-size:19px}}
+
+.class-config-title{font-weight:900;margin-bottom:8px}
+.choice-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.choice-label{font-size:13px;font-weight:900;color:#5c687a;min-width:44px;display:flex;align-items:center}
+.choice-btn{
+  border:2px solid #dfe6f0;background:#f6f8fb;color:#455468;
+  min-width:58px;padding:10px 14px;border-radius:14px;font-weight:900
+}
+.choice-btn.active{background:#e8f2ff;border-color:#6d9fe8;color:#316dbd}
+.compact-setting{max-width:190px}
+.check-btn{
+  border:0;background:#e8f8ef;color:#25875a;border-radius:10px;
+  padding:6px 10px;font-weight:1000;font-size:18px;cursor:pointer
+}
+.check-btn:hover{background:#dff3e8}
+.undo-wrap{display:flex;justify-content:center;margin-top:10px}
+.undo-btn{background:#fff3df;color:#9a6817}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="home" href="./index.html">🏠 アプリ集に戻る</a>
+<h1>📚 提出チェック <span style="font-size:14px;color:#fff;background:#5b91e5;padding:4px 8px;border-radius:999px;vertical-align:middle">GitHub版</span></h1>
+<div class="sub">Bluetoothバーコードリーダーで「ピッ」と読むだけ</div>
+
+<div class="card">
+  <div class="class-config-title">クラス設定</div>
+
+  <div class="row">
+    <label class="compact-setting">年度
+      <input id="year" type="number" value="2026" onchange="applyClass()">
+    </label>
+    <label class="compact-setting">人数
+      <input id="count" type="number" value="38" min="1" max="40" onchange="applyClass()">
+    </label>
+  </div>
+
+  <div class="choice-row">
+    <div class="choice-label">学年</div>
+    <div id="gradeButtons"></div>
+  </div>
+
+  <div class="choice-row">
+    <div class="choice-label">組</div>
+    <div id="classButtons"></div>
+  </div>
+
+  <div id="currentClass" class="small" style="font-weight:900;color:#376fb9;margin-top:8px"></div>
+</div>
+
+<div class="card">
+  <strong>提出項目</strong>
+  <div class="row" style="margin-top:8px">
+    <label style="flex:3">新しい項目<input id="newItem" type="text" placeholder="例：夏休みドリル"></label>
+    <button class="green" onclick="addItem()">＋ 項目追加</button>
+  </div>
+  <div id="items" class="items"></div>
+  <div class="small">項目名を長押しではなく、下の管理から削除できます。チェック中の項目をタップして選択します。</div>
+</div>
+
+<div class="card">
+  <strong>バーコード読み取り</strong>
+  <div id="selectedItemLabel" class="small" style="font-weight:900;color:#376fb9;margin-top:6px">選択中：なし</div>
+  <div class="scanbox" style="margin-top:10px">
+    <input id="scanInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+      inputmode="none" placeholder="バーコードを読み取る"
+      onkeydown="scanKey(event)" oninput="scanInputChanged()" onchange="processScan()">
+    <button class="primary" onclick="processScan()">登録</button>
+  </div>
+  <div id="status" class="status">項目を選んで読み取りを開始してください</div>
+  <div id="lastScan" class="small" style="text-align:center;margin-top:6px">読み取り値：－</div>
+  <div class="undo-wrap">
+    <button id="undoBtn" class="undo-btn" onclick="undoLast()" disabled>↩ 直前のチェックを取り消す</button>
+  </div><div class="small" style="text-align:center;margin-top:7px">読み取り後にEnterが送られないリーダーでも自動登録します。</div>
+  <div id="summary" class="summary"></div>
+</div>
+
+<div class="card">
+  <div class="row">
+    <strong style="flex:1">一覧</strong>
+    <button class="secondary" onclick="showUnsubmitted()">未提出者を表示</button>
+    <button class="secondary" onclick="toggleDateView()">提出日表示</button>
+    <button class="secondary" onclick="makeAllPdf()">一覧PDF</button>
+    <button class="secondary" onclick="makeAllPdf(true)">提出日入りPDF</button>
+    <button class="secondary" onclick="makeMissingPdf()">未提出PDF</button>
+    <button class="secondary" onclick="exportCSV()">CSV書き出し</button>
+    <button class="danger" onclick="resetCurrentItem()">選択項目をリセット</button>
+  </div>
+  <div id="unsubmitted" class="unsubmitted" style="margin:10px 0"></div>
+  <div class="table-wrap"><table id="table"></table></div>
+</div>
+
+<div class="card">
+  <strong>📦 バックアップ・復元</strong>
+  <div class="row" style="margin-top:10px">
+    <button class="secondary" onclick="exportBackup()">バックアップを保存</button>
+    <button class="secondary" onclick="document.getElementById('backupFile').click()">バックアップを読み込む</button>
+    <input id="backupFile" type="file" accept=".json,application/json" style="display:none" onchange="importBackup(event)">
+  </div>
+  <p class="small">クラス設定・提出項目・提出記録・提出日時をまとめて保存します。復元すると現在のデータはバックアップ内容に置き換わります。</p>
+</div>
+
+<div class="card">
+  <strong>項目管理</strong>
+  <div id="itemManager"></div>
+  <p class="small">記録はこのiPadのブラウザ内に保存します。Netlifyへ提出記録を送信する処理はありません。</p>
+</div>
+</div>
+
+<script>
+const KEY='submission-check-v1';
+let showDates=false;
+let state={
+  year:2026,grade:6,classNo:1,count:38,
+  items:[],
+  selectedItem:null,
+  records:{},
+  lastAction:null
+};
+
+function load(){
+  try{
+    const s=JSON.parse(localStorage.getItem(KEY)||'null');
+    if(s) state=s;
+  }catch(e){}
+  document.getElementById('year').value=state.year;
+  document.getElementById('count').value=state.count;
+  renderAll();
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function pad2(n){return String(n).padStart(2,'0');}
+function studentId(n){return `${state.year}-${state.grade}-${state.classNo}-${pad2(n)}`;}
+function displayId(id){
+  const m=id.match(/^(\d{4})-(\d)-(\d+)-(\d+)$/);
+  return m?`${Number(m[2])}年${Number(m[3])}組 ${Number(m[4])}番`:id;
+}
+
+function applyClass(){
+  state.year=Number(document.getElementById('year').value);
+  state.count=Number(document.getElementById('count').value);
+
+  if(!state.year || state.grade<1 || state.grade>6 || state.classNo<1 || state.classNo>9 || state.count<1 || state.count>40){
+    alert('クラス設定を確認してください。');
+    return;
+  }
+  save();
+  renderAll();
+  focusScan();
+}
+
+function setGrade(g){
+  state.grade=g;
+  save();
+  renderAll();
+  focusScan();
+}
+
+function setClassNo(c){
+  state.classNo=c;
+  save();
+  renderAll();
+  focusScan();
+}
+
+function renderClassButtons(){
+  const gb=document.getElementById('gradeButtons');
+  const cb=document.getElementById('classButtons');
+  gb.innerHTML='';
+  cb.innerHTML='';
+
+  for(let g=1;g<=6;g++){
+    const b=document.createElement('button');
+    b.className='choice-btn'+(state.grade===g?' active':'');
+    b.textContent=g+'年';
+    b.onclick=()=>setGrade(g);
+    gb.appendChild(b);
+  }
+
+  for(let c=1;c<=4;c++){
+    const b=document.createElement('button');
+    b.className='choice-btn'+(state.classNo===c?' active':'');
+    b.textContent=c+'組';
+    b.onclick=()=>setClassNo(c);
+    cb.appendChild(b);
+  }
+
+  document.getElementById('currentClass').textContent=
+    `選択中：${state.year}年度　${state.grade}年${state.classNo}組　${state.count}人`;
+}
+
+function addItem(){
+  const newItemEl=document.getElementById('newItem');
+  const name=newItemEl.value.trim();
+  if(!name)return;
+  if(state.items.includes(name)){alert('同じ項目名があります。');return;}
+  state.items.push(name);
+  state.records[name]=state.records[name]||{};
+  state.selectedItem=name;
+  newItemEl.value='';
+  save();renderAll();focusScan();
+}
+function selectItem(name){state.selectedItem=name;save();renderAll();focusScan();}
+function deleteItem(name){
+  if(!confirm(`「${name}」を削除しますか？\nこの項目の記録も削除されます。`))return;
+  state.items=state.items.filter(x=>x!==name);
+  delete state.records[name];
+  if(state.selectedItem===name)state.selectedItem=state.items[0]||null;
+  save();renderAll();
+}
+
+let scanTimer=null;
+
+function scanKey(e){
+  // Many Bluetooth scanners finish with Enter, Return, or Tab.
+  if(e.key==='Enter' || e.key==='Tab'){
+    e.preventDefault();
+    clearTimeout(scanTimer);
+    processScan();
+  }
+}
+
+function scanInputChanged(){
+  clearTimeout(scanTimer);
+  // Fallback for scanners that do not send Enter:
+  // process the completed scan shortly after characters stop arriving.
+  scanTimer=setTimeout(()=>{
+    if(document.getElementById('scanInput').value.trim()) processScan();
+  },180);
+}
+
+function normalizeScan(raw){
+  // NFKC converts full-width digits and many visually-similar characters
+  // to their standard ASCII equivalents.
+  let s=String(raw||'').normalize('NFKC').trim();
+
+  // Bluetooth scanners may insert invisible control characters or use a
+  // non-ASCII hyphen. For the shared ID we therefore trust the digits,
+  // not the separator characters.
+  const digits=s.replace(/[^0-9]/g,'');
+
+  // Shared ID is fixed as YYYY + grade(1) + class(1) + number(2)
+  // Example: 2026-6-1-01 -> 20266101
+  if(digits.length===8){
+    const year=digits.slice(0,4);
+    const grade=digits.slice(4,5);
+    const classNo=digits.slice(5,6);
+    const number=digits.slice(6,8);
+    return `${year}-${Number(grade)}-${Number(classNo)}-${number}`;
+  }
+
+  // Fallback for an already canonical value.
+  const groups=s.match(/[0-9]+/g);
+  if(groups && groups.length===4 &&
+     groups[0].length===4 &&
+     groups[1].length===1 &&
+     groups[2].length===1 &&
+     groups[3].length<=2){
+    return `${groups[0]}-${Number(groups[1])}-${Number(groups[2])}-${String(Number(groups[3])).padStart(2,'0')}`;
+  }
+
+  return s;
+}
+function processScan(){
+  const scanEl=document.getElementById('scanInput');
+  const raw=scanEl.value;
+  const input=normalizeScan(raw);
+  scanEl.value='';
+  document.getElementById('lastScan').textContent='読み取り値：'+(input || '－');
+  if(!input){focusScan();return;}
+  if(!state.selectedItem){setStatus('先に提出項目を選んでください','warn');focusScan();return;}
+  const re=/^(\d{4})-(\d)-(\d+)-(\d{2})$/;
+  const m=input.match(re);
+  if(!m){setStatus(`読み取り形式を変換できません：${input}`,'err');focusScan();return;}
+  const y=Number(m[1]),g=Number(m[2]),c=Number(m[3]),n=Number(m[4]);
+  if(y!==state.year||g!==state.grade||c!==state.classNo){
+    setStatus(`⚠️ 別のクラスです：${displayId(input)}`,'warn');focusScan();return;
+  }
+  if(n<1||n>state.count){setStatus(`⚠️ ${n}番は設定人数の範囲外です`,'warn');focusScan();return;}
+  const rec=state.records[state.selectedItem]||(state.records[state.selectedItem]={});
+  if(rec[input]){
+    setStatus(`⚠️ ${n}番は「${state.selectedItem}」登録済みです`,'warn');
+  }else{
+    rec[input]={time:new Date().toISOString()};
+    state.lastAction={item:state.selectedItem,id:input,number:n};
+    save();
+    setStatus(`✅ ${n}番　${state.selectedItem} 提出済み`,'ok');
+  }
+  renderSummary();renderTable();focusScan();
+}
+function setStatus(text,type=''){
+  const statusEl=document.getElementById('status');
+  statusEl.className='status '+type;
+  statusEl.textContent=text;
+}
+function focusScan(){
+  setTimeout(()=>document.getElementById('scanInput').focus(),80);
+}
+
+
+function removeCheck(item,id,number){
+  if(!state.records[item]?.[id]) return;
+  if(!confirm(`${number}番の「${item}」のチェックを取り消しますか？`)) return;
+
+  delete state.records[item][id];
+
+  if(state.lastAction && state.lastAction.item===item && state.lastAction.id===id){
+    state.lastAction=null;
+  }
+
+  save();
+  renderAll();
+  setStatus(`↩ ${number}番　${item} のチェックを取り消しました`,'warn');
+  focusScan();
+}
+
+function undoLast(){
+  const a=state.lastAction;
+  if(!a || !state.records[a.item]?.[a.id]) return;
+
+  delete state.records[a.item][a.id];
+  state.lastAction=null;
+  save();
+  renderAll();
+  setStatus(`↩ ${a.number}番の直前のチェックを取り消しました`,'warn');
+  focusScan();
+}
+
+function renderItems(){
+  const itemsEl=document.getElementById('items');
+  itemsEl.innerHTML='';
+  state.items.forEach(name=>{
+    const b=document.createElement('button');
+    b.className='item-chip'+(name===state.selectedItem?' active':'');
+    b.textContent=name;
+    b.onclick=()=>selectItem(name);
+    itemsEl.appendChild(b);
+  });
+  const managerEl=document.getElementById('itemManager');
+  managerEl.innerHTML='';
+  state.items.forEach(name=>{
+    const row=document.createElement('div');
+    row.className='row';row.style.margin='7px 0';
+    row.innerHTML=`<div style="flex:1;font-weight:800">${name}</div>`;
+    const del=document.createElement('button');del.className='danger';del.textContent='削除';del.onclick=()=>deleteItem(name);
+    row.appendChild(del);managerEl.appendChild(row);
+  });
+}
+function renderSummary(){
+  const summaryEl=document.getElementById('summary');
+  summaryEl.innerHTML='';
+  if(!state.selectedItem)return;
+  const rec=state.records[state.selectedItem]||{};
+  const submitted=Object.keys(rec).length;
+  const remain=state.count-submitted;
+  summaryEl.innerHTML=`<div class="pill">選択中：${state.selectedItem}</div><div class="pill">提出 ${submitted}人</div><div class="pill">未提出 ${remain}人</div>`;
+}
+
+function recordDate(item,id){
+  const iso=state.records[item]?.[id]?.time;
+  if(!iso) return '';
+  const d=new Date(iso);
+  if(Number.isNaN(d.getTime())) return '';
+  return `${d.getMonth()+1}/${d.getDate()}`;
+}
+
+function toggleDateView(){
+  showDates=!showDates;
+  renderTable();
+}
+
+function renderTable(){
+  const t=document.getElementById('table');
+  let h='<thead><tr><th>番号</th>';
+  state.items.forEach(i=>h+=`<th>${i}</th>`);
+  h+='</tr></thead><tbody>';
+  for(let n=1;n<=state.count;n++){
+    const id=studentId(n);h+=`<tr><td>${n}番</td>`;
+    state.items.forEach((i,itemIndex)=>{
+      const checked=!!state.records[i]?.[id];
+      const display=checked ? (showDates ? recordDate(i,id) : '✓') : '';
+      h+=`<td class="${checked?'yes':''}">${checked?`<button type="button" class="check-btn" data-item-index="${itemIndex}" data-id="${id}" data-number="${n}" title="タップで取り消し">${display}</button>`:''}</td>`;
+    });
+    h+='</tr>';
+  }
+  h+='</tbody>';
+  t.innerHTML=h;
+
+  t.querySelectorAll('.check-btn').forEach(btn=>{
+    btn.addEventListener('click',function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      const item=state.items[Number(this.dataset.itemIndex)];
+      removeCheck(item,this.dataset.id,Number(this.dataset.number));
+    });
+  });
+}
+function showUnsubmitted(){
+  const unsubmittedEl=document.getElementById('unsubmitted');
+  if(!state.selectedItem){unsubmittedEl.textContent='提出項目を選んでください。';return;}
+  const rec=state.records[state.selectedItem]||{};
+  const nums=[];
+  for(let n=1;n<=state.count;n++)if(!rec[studentId(n)])nums.push(`${n}番`);
+  unsubmittedEl.textContent=nums.length?`未提出：${nums.join('・')}`:'🎉 全員提出済みです！';
+}
+function resetCurrentItem(){
+  if(!state.selectedItem)return;
+  if(!confirm(`「${state.selectedItem}」の提出記録をすべて消しますか？`))return;
+  state.records[state.selectedItem]={};save();renderAll();setStatus('リセットしました','');
+}
+
+function drawCentered(ctx,text,x,y,w,font){
+  ctx.font=font;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText(text,x+w/2,y);
+}
+
+function fitText(ctx,text,maxWidth,startSize=24,minSize=10,weight='700'){
+  let size=startSize;
+  while(size>minSize){
+    ctx.font=`${weight} ${size}px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif`;
+    if(ctx.measureText(text).width<=maxWidth) return ctx.font;
+    size--;
+  }
+  return `${weight} ${minSize}px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif`;
+}
+
+function makeReportCanvas(itemSubset, pageNo, totalPages, includeDates=false){
+  // A4 landscape, approx 150dpi
+  const W=1754,H=1240;
+  const c=document.createElement('canvas');
+  c.width=W;c.height=H;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#111';
+
+  ctx.textAlign='center';
+  ctx.font='700 34px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  ctx.fillText('提出状況一覧',W/2,48);
+
+  ctx.font='500 19px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  ctx.fillText(`${state.year}年度　${state.grade}年${state.classNo}組　${state.count}人　　${new Date().toLocaleDateString('ja-JP')}`,W/2,82);
+
+  if(totalPages>1){
+    ctx.textAlign='right';
+    ctx.font='500 16px sans-serif';
+    ctx.fillText(`${pageNo}/${totalPages}`,W-35,50);
+  }
+
+  const left=35, top=105, tableW=W-70, tableH=H-140;
+  const numW=86;
+  const colW=(tableW-numW)/Math.max(1,itemSubset.length);
+  const rowH=tableH/(state.count+1);
+
+  ctx.strokeStyle='#555';
+  ctx.lineWidth=1;
+
+  // Header
+  ctx.fillStyle='#f1f3f5';
+  ctx.fillRect(left,top,tableW,rowH);
+  ctx.fillStyle='#111';
+
+  drawCentered(ctx,'番号',left,top+rowH/2,numW,'700 19px sans-serif');
+
+  itemSubset.forEach((item,i)=>{
+    const x=left+numW+i*colW;
+    const font=fitText(ctx,item,colW-10,21,10,'700');
+    drawCentered(ctx,item,x,top+rowH/2,colW,font);
+  });
+
+  // Grid vertical
+  ctx.beginPath();
+  ctx.moveTo(left,top);ctx.lineTo(left,top+tableH);
+  ctx.moveTo(left+numW,top);ctx.lineTo(left+numW,top+tableH);
+  for(let i=1;i<=itemSubset.length;i++){
+    const x=left+numW+i*colW;
+    ctx.moveTo(x,top);ctx.lineTo(x,top+tableH);
+  }
+  // horizontal
+  for(let r=0;r<=state.count+1;r++){
+    const y=top+r*rowH;
+    ctx.moveTo(left,y);ctx.lineTo(left+tableW,y);
+  }
+  ctx.stroke();
+
+  for(let n=1;n<=state.count;n++){
+    const id=studentId(n);
+    const cy=top+rowH*(n+0.5);
+    drawCentered(ctx,`${n}番`,left,cy,numW,'600 18px sans-serif');
+
+    itemSubset.forEach((item,i)=>{
+      if(state.records[item]?.[id]){
+        const x=left+numW+i*colW;
+        const mark=includeDates ? recordDate(item,id) : '✓';
+        drawCentered(ctx,mark,x,cy,colW,includeDates?'700 16px sans-serif':'700 24px sans-serif');
+      }
+    });
+  }
+  return c;
+}
+
+function makeMissingCanvas(){
+  // A4 portrait
+  const W=1240,H=1754;
+  const c=document.createElement('canvas');
+  c.width=W;c.height=H;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#111';
+
+  ctx.textAlign='center';
+  ctx.font='700 36px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  ctx.fillText('未提出者一覧',W/2,70);
+
+  ctx.font='700 27px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  ctx.fillText(state.selectedItem||'',W/2,118);
+
+  ctx.font='500 20px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  ctx.fillText(`${state.year}年度　${state.grade}年${state.classNo}組　${state.count}人　　${new Date().toLocaleDateString('ja-JP')}`,W/2,160);
+
+  const rec=state.records[state.selectedItem]||{};
+  const nums=[];
+  for(let n=1;n<=state.count;n++){
+    if(!rec[studentId(n)]) nums.push(`${n}番`);
+  }
+
+  ctx.textAlign='left';
+  ctx.font='700 26px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+  ctx.fillText(`未提出：${nums.length}人`,80,235);
+
+  const text=nums.length?nums.join('・'):'全員提出済みです';
+  ctx.font='600 28px -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif';
+
+  const maxW=W-160;
+  const words=text.split('・');
+  let line='', y=300;
+  for(let i=0;i<words.length;i++){
+    const candidate=line ? line+'・'+words[i] : words[i];
+    if(ctx.measureText(candidate).width>maxW && line){
+      ctx.fillText(line,80,y);
+      y+=52;
+      line=words[i];
+    }else{
+      line=candidate;
+    }
+  }
+  if(line) ctx.fillText(line,80,y);
+
+  return c;
+}
+
+function dataUrlToBytes(dataUrl){
+  const base64=dataUrl.split(',')[1];
+  const bin=atob(base64);
+  const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  return bytes;
+}
+
+function canvasesToPdfBlob(canvases){
+  // Each canvas becomes a full-page JPEG image.
+  // PDF page sizes use A4 points.
+  const enc=new TextEncoder();
+  const chunks=[];
+  let length=0;
+  const offsets=[0];
+
+  function push(data){
+    const arr=typeof data==='string'?enc.encode(data):data;
+    chunks.push(arr);length+=arr.length;
+  }
+  function beginObj(n){
+    offsets[n]=length;
+    push(`${n} 0 obj\n`);
+  }
+  function endObj(){push('endobj\n');}
+
+  push('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+
+  const pageCount=canvases.length;
+  // Objects:
+  // 1 catalog, 2 pages
+  // each page: page obj, image obj, content obj
+  const pageObjs=[], imageObjs=[], contentObjs=[];
+  let next=3;
+  for(let i=0;i<pageCount;i++){
+    pageObjs.push(next++);
+    imageObjs.push(next++);
+    contentObjs.push(next++);
+  }
+  const totalObjs=next-1;
+
+  beginObj(1);
+  push('<< /Type /Catalog /Pages 2 0 R >>\n');
+  endObj();
+
+  beginObj(2);
+  push(`<< /Type /Pages /Count ${pageCount} /Kids [${pageObjs.map(n=>`${n} 0 R`).join(' ')}] >>\n`);
+  endObj();
+
+  for(let i=0;i<pageCount;i++){
+    const canvas=canvases[i];
+    const landscape=canvas.width>canvas.height;
+    const pageW=landscape?841.89:595.28;
+    const pageH=landscape?595.28:841.89;
+    const jpeg=dataUrlToBytes(canvas.toDataURL('image/jpeg',0.92));
+
+    beginObj(pageObjs[i]);
+    push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /XObject << /Im0 ${imageObjs[i]} 0 R >> >> /Contents ${contentObjs[i]} 0 R >>\n`);
+    endObj();
+
+    beginObj(imageObjs[i]);
+    push(`<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpeg.length} >>\nstream\n`);
+    push(jpeg);
+    push('\nendstream\n');
+    endObj();
+
+    const content=`q\n${pageW} 0 0 ${pageH} 0 0 cm\n/Im0 Do\nQ\n`;
+    const contentBytes=enc.encode(content);
+    beginObj(contentObjs[i]);
+    push(`<< /Length ${contentBytes.length} >>\nstream\n`);
+    push(contentBytes);
+    push('endstream\n');
+    endObj();
+  }
+
+  const xref=length;
+  push(`xref\n0 ${totalObjs+1}\n`);
+  push('0000000000 65535 f \n');
+  for(let i=1;i<=totalObjs;i++){
+    push(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
+  }
+  push(`trailer\n<< /Size ${totalObjs+1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+
+  return new Blob(chunks,{type:'application/pdf'});
+}
+
+async function savePdfBlob(blob,filename){
+  try{
+    const file=new File([blob],filename,{type:'application/pdf'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:filename});
+      return;
+    }
+  }catch(e){
+    if(e && e.name==='AbortError') return;
+  }
+
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),3000);
+  alert('PDFを作成しました。Safariのダウンロードから「ファイルに保存」できます。');
+}
+
+async function makeAllPdf(includeDates=false){
+  if(!state.items.length){
+    alert('提出項目を作ってください。');
+    return;
+  }
+  setStatus('PDFを作成しています…','');
+
+  // Keep columns readable: max 6 submission items per A4 landscape page.
+  const chunks=[];
+  for(let i=0;i<state.items.length;i+=6){
+    chunks.push(state.items.slice(i,i+6));
+  }
+
+  const canvases=chunks.map((items,i)=>makeReportCanvas(items,i+1,chunks.length,includeDates));
+  const blob=canvasesToPdfBlob(canvases);
+  await savePdfBlob(blob,`${includeDates?'提出日一覧':'提出状況'}_${state.year}_${state.grade}年${state.classNo}組.pdf`);
+  setStatus('✅ PDFを作成しました','ok');
+  focusScan();
+}
+
+async function makeMissingPdf(){
+  if(!state.selectedItem){
+    alert('先に提出項目を選んでください。');
+    return;
+  }
+  setStatus('PDFを作成しています…','');
+  const canvas=makeMissingCanvas();
+  const blob=canvasesToPdfBlob([canvas]);
+  const safe=state.selectedItem.replace(/[\\/:*?"<>|]/g,'_');
+  await savePdfBlob(blob,`未提出_${safe}_${state.grade}年${state.classNo}組.pdf`);
+  setStatus('✅ PDFを作成しました','ok');
+  focusScan();
+}
+
+
+async function exportBackup(){
+  const payload={
+    app:'submission-check',
+    version:1,
+    exportedAt:new Date().toISOString(),
+    data:state
+  };
+  const text=JSON.stringify(payload,null,2);
+  const blob=new Blob([text],{type:'application/json'});
+  const filename=`提出チェック_backup_${state.year}_${state.grade}年${state.classNo}組.json`;
+
+  try{
+    const file=new File([blob],filename,{type:'application/json'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:filename});
+      return;
+    }
+  }catch(e){
+    if(e && e.name==='AbortError') return;
+  }
+
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),3000);
+}
+
+function importBackup(event){
+  const file=event.target.files?.[0];
+  event.target.value='';
+  if(!file) return;
+
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const payload=JSON.parse(reader.result);
+      if(payload?.app!=='submission-check' || !payload.data){
+        alert('提出チェックのバックアップファイルではありません。');
+        return;
+      }
+      if(!confirm('現在の提出チェックデータを、このバックアップ内容に置き換えますか？')) return;
+
+      state=payload.data;
+      if(!state.records) state.records={};
+      if(!state.items) state.items=[];
+      if(!('lastAction' in state)) state.lastAction=null;
+      save();
+
+      document.getElementById('year').value=state.year;
+      document.getElementById('count').value=state.count;
+      renderAll();
+      setStatus('✅ バックアップを復元しました','ok');
+      focusScan();
+    }catch(e){
+      alert('バックアップファイルを読み込めませんでした。');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function exportCSV(){
+  let rows=[['ID','学年','組','番号',...state.items]];
+  for(let n=1;n<=state.count;n++){
+    const id=studentId(n);
+    rows.push([id,state.grade,state.classNo,n,...state.items.map(i=>state.records[i]?.[id] ? new Date(state.records[i][id].time).toLocaleString('ja-JP') : '')]);
+  }
+  const csv='\uFEFF'+rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`提出チェック_${state.year}_${state.grade}-${state.classNo}.csv`;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function renderAll(){
+  renderClassButtons();
+  renderItems();
+  renderSummary();
+  renderTable();
+  showUnsubmitted();
+  document.getElementById('selectedItemLabel').textContent =
+    '選択中：' + (state.selectedItem || 'なし');
+
+  const undo=document.getElementById('undoBtn');
+  const a=state.lastAction;
+  undo.disabled=!(a && state.records[a.item]?.[a.id]);
+}
+load();focusScan();
+</script>
+</body>
+</html>
