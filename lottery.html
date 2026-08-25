@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#ff7fb0">
+<title>わくわく抽選｜アプリ集</title>
+<style>
+  :root{
+    --bg1:#fff7fb;
+    --bg2:#f3fbff;
+    --card:#ffffff;
+    --ink:#3b3b52;
+    --muted:#7b7b92;
+    --pink:#ff7fb0;
+    --pink2:#ffb5cf;
+    --blue:#6fb7ff;
+    --blue2:#bfe0ff;
+    --green:#66c99a;
+    --yellow:#ffd96a;
+    --purple:#a88cf6;
+    --danger:#ef6b6b;
+    --shadow:0 12px 28px rgba(76,78,120,.14);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 8% 8%, #ffe2ee 0 9%, transparent 10%),
+      radial-gradient(circle at 93% 15%, #dff3ff 0 10%, transparent 11%),
+      linear-gradient(135deg,var(--bg1),var(--bg2));
+  }
+  button,input,select{font:inherit}
+  button{touch-action:manipulation}
+  .app{max-width:760px;margin:0 auto;padding:18px 16px 32px}
+  .title{
+    text-align:center;
+    font-size:clamp(28px,7vw,46px);
+    font-weight:900;
+    letter-spacing:.04em;
+    margin:10px 0 4px;
+  }
+  .subtitle{text-align:center;color:var(--muted);margin-bottom:18px}
+  .screen{display:none}
+  .screen.active{display:block}
+  .card{
+    background:rgba(255,255,255,.94);
+    border:2px solid rgba(255,255,255,.9);
+    border-radius:24px;
+    padding:18px;
+    margin:14px 0;
+    box-shadow:var(--shadow);
+  }
+  .section-title{font-weight:900;font-size:18px;margin-bottom:10px}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .choice{
+    border:2px solid #e8e8f2;
+    background:#fff;
+    border-radius:18px;
+    padding:14px 10px;
+    text-align:center;
+    font-weight:800;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .choice input{margin-right:6px}
+  .choice.selected{border-color:var(--pink);background:#fff0f6;transform:translateY(-1px)}
+  label.field{display:block;font-weight:800;margin:12px 0 7px}
+  input[type="number"],input[type="text"],select{
+    width:100%;
+    border:2px solid #e4e7f0;
+    border-radius:16px;
+    padding:13px 14px;
+    font-size:18px;
+    background:#fff;
+    color:var(--ink);
+  }
+  input:focus,select:focus{outline:3px solid #d9ecff;border-color:var(--blue)}
+  .help{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5}
+  .primary,.secondary,.danger,.big-draw{
+    width:100%;
+    border:0;
+    border-radius:18px;
+    font-weight:900;
+    cursor:pointer;
+  }
+  .primary{
+    background:linear-gradient(135deg,var(--pink),#ff9cc2);
+    color:#fff;
+    padding:16px;
+    font-size:20px;
+    box-shadow:0 6px 0 #e96599;
+  }
+  .primary:active,.big-draw:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+  .secondary{background:#eef2f7;color:var(--ink);padding:13px;font-size:15px}
+  .danger{background:#fff0f0;color:#b84a4a;padding:13px;font-size:15px}
+  .disabled{opacity:.45;pointer-events:none}
+  .message{min-height:24px;text-align:center;color:#c05252;font-weight:700;margin-top:10px;white-space:pre-wrap}
+  .remote{
+    background:#fff;
+    border-radius:30px;
+    padding:20px;
+    box-shadow:var(--shadow);
+    border:3px solid #fff;
+  }
+  .mode-badge{
+    display:inline-block;
+    padding:7px 12px;
+    border-radius:999px;
+    font-weight:900;
+    background:#eef7ff;
+    color:#3b7dbc;
+    margin-bottom:10px;
+  }
+  .manual-box{margin:8px 0 14px}
+  .manual-box input{
+    font-size:34px;
+    font-weight:900;
+    text-align:center;
+    border:3px solid var(--blue);
+    padding:14px;
+  }
+  .big-draw{
+    background:linear-gradient(135deg,#ff7d7d,#ff9f72);
+    color:#fff;
+    padding:19px;
+    font-size:26px;
+    box-shadow:0 7px 0 #d85d5d;
+    margin:8px 0 16px;
+  }
+  .result{
+    border:3px dashed #e4d8ff;
+    background:linear-gradient(135deg,#fcf9ff,#f5fbff);
+    border-radius:24px;
+    padding:20px 14px;
+    text-align:center;
+    min-height:240px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  .result small{font-size:16px;color:var(--muted);font-weight:800}
+  .student-num{font-size:clamp(54px,13vw,82px);font-weight:1000;color:#4d93e6;line-height:1.1;margin:5px 0 12px}
+  .group-line{border-top:2px solid #ece9f5;padding-top:14px;margin-top:4px}
+  .group-num{font-size:clamp(48px,11vw,72px);font-weight:1000;color:#45a87c;line-height:1.1;margin-top:5px}
+  .status{
+    text-align:center;
+    background:#f4f5f8;
+    color:var(--muted);
+    font-weight:800;
+    padding:10px;
+    border-radius:14px;
+    margin-top:12px;
+  }
+  .notice{
+    display:none;
+    padding:12px;
+    border-radius:14px;
+    text-align:center;
+    font-weight:800;
+    margin-top:10px
+  }
+  .notice.show{display:block}
+  .notice.warn{background:#fff7df;color:#996b08}
+  .notice.done{background:#eaf9f1;color:#297452}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .groups-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .group-card{
+    background:#fff;
+    border:2px solid #ececf4;
+    border-radius:20px;
+    padding:14px;
+    box-shadow:0 7px 18px rgba(70,72,110,.08)
+  }
+  .group-card h3{margin:0 0 8px;font-size:22px;color:#4d9a75}
+  .members{font-size:18px;font-weight:800;line-height:1.7}
+  .table-wrap{overflow:auto;margin-top:14px}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden}
+  th,td{border-bottom:1px solid #ececf4;padding:11px;text-align:center}
+  th{background:#f5f7fb}
+  .confetti{font-size:34px;text-align:center;margin:5px 0 10px}
+  .hidden{display:none!important}
+  @media (max-width:520px){
+    .choices,.actions{grid-template-columns:1fr}
+    .app{padding:12px 10px 24px}
+    .card,.remote{border-radius:20px;padding:14px}
+  }
+
+  .pending-box{
+    margin-top:12px;
+    padding:12px;
+    background:#fffaf0;
+    border:2px solid #f4e1a6;
+    border-radius:16px;
+  }
+  .pending-title{
+    font-size:14px;
+    font-weight:900;
+    color:#8b6a17;
+    margin-bottom:8px;
+    text-align:center;
+  }
+  .pending-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    justify-content:center;
+  }
+  .pending-chip{
+    min-width:42px;
+    padding:7px 9px;
+    border-radius:999px;
+    background:#fff;
+    border:1px solid #ead79a;
+    font-size:14px;
+    font-weight:900;
+    text-align:center;
+  }
+  .simple-result-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:12px;
+  }
+  .simple-result-card{
+    background:#fff;
+    border:2px solid #ececf4;
+    border-radius:20px;
+    padding:14px;
+    text-align:center;
+    box-shadow:0 7px 18px rgba(70,72,110,.08);
+  }
+  .simple-result-student{
+    color:#5f6368;
+    font-size:14px;
+    font-weight:800;
+  }
+  .simple-result-number{
+    color:#4d93e6;
+    font-size:30px;
+    font-weight:1000;
+    margin-top:5px;
+  }
+
+
+  .hub-home{
+    position:sticky;
+    top:8px;
+    z-index:20;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin:4px 0 8px;
+    padding:9px 13px;
+    border-radius:999px;
+    background:#ffffff;
+    color:#54546a;
+    font-weight:900;
+    text-decoration:none;
+    box-shadow:0 5px 14px rgba(70,72,110,.12);
+    border:1px solid #ececf4;
+  }
+</style>
+</head>
+<body>
+<div class="app"><a class="hub-home" href="./index.html">🏠 アプリ集へ戻る</a>
+  <div id="settingsScreen" class="screen active">
+    <div class="title">🎲 わくわく抽選</div>
+    <div class="subtitle">みんなで楽しくグループを決めよう！</div>
+
+    <div class="card">
+      <div class="section-title">① なにを抽選する？</div>
+      <div class="choices">
+        <label id="groupChoice" class="choice selected"><input type="radio" name="lotteryType" value="group" checked>👥 グループ抽選</label>
+        <label id="simpleChoice" class="choice"><input type="radio" name="lotteryType" value="simple">🔢 ランダム番号抽選</label>
+      </div>
+      <div class="help">グループ抽選は「○組」を決めます。ランダム番号抽選は、自分の出席番号を入れると1〜最大番号の中から重複しない番号が1つ出ます。</div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">② どうやって抽選する？</div>
+      <div class="choices">
+        <label id="manualChoice" class="choice selected"><input type="radio" name="operationMode" value="manual" checked>✍️ 自分の番号を入力</label>
+        <label id="autoChoice" class="choice"><input type="radio" name="operationMode" value="auto">🎯 自動で1人ずつ</label>
+      </div>
+    </div>
+
+    <div class="card">
+      <label class="field" for="maxNumber">出席番号の最大値</label>
+      <input id="maxNumber" type="number" min="1" max="200" value="35">
+
+      <div id="groupFields">
+        <label class="field" for="groupSize">1グループの人数</label>
+        <select id="groupSize">
+          <option value="2">2人組</option>
+          <option value="3">3人組</option>
+          <option value="4" selected>4人組</option>
+          <option value="5">5人組</option>
+          <option value="6">6人組</option>
+        </select>
+      </div>
+
+      <label class="field" for="excluded">欠席・除外する番号</label>
+      <input id="excluded" type="text" placeholder="例：3,7,18">
+      <div class="help">いない場合は空欄でOKです。カンマ「,」や「、」で区切れます。</div>
+
+      <div id="forbiddenField">
+        <label class="field" for="forbidden">同じ組にしない番号</label>
+        <input id="forbidden" type="text" placeholder="例：2-8,5-13">
+        <div class="help">「2-8」は、2番と8番を別の組にします。</div>
+      </div>
+    </div>
+
+    <button id="startBtn" class="primary" type="button">🌟 抽選スタート！</button>
+    <div id="settingsMessage" class="message"></div>
+  </div>
+
+  <div id="remoteScreen" class="screen">
+    <div class="title">🎮 抽選リモコン</div>
+    <div class="remote">
+      <div id="modeBadge" class="mode-badge">グループ抽選</div>
+
+      <div id="manualBox" class="manual-box">
+        <label class="field" for="studentInput">自分の出席番号を入れてね</label>
+        <input id="studentInput" type="number" min="1" inputmode="numeric" placeholder="17">
+      </div>
+
+      <button id="drawBtn" class="big-draw" type="button">🎲 抽選する</button>
+
+      <div class="result" aria-live="polite">
+        <small id="studentLabel">あなたの出席番号は</small>
+        <div id="studentResult" class="student-num">―</div>
+
+        <div id="groupResultArea" class="group-line">
+          <small>あなたのグループは</small>
+          <div id="groupResult" class="group-num">―</div>
+        </div>
+      </div>
+
+      <div id="status" class="status">準備OK！</div>
+
+      <div id="pendingBox" class="pending-box hidden">
+        <div class="pending-title">まだ入力していない出席番号</div>
+        <div id="pendingList" class="pending-list"></div>
+      </div>
+
+      <div id="alreadyNotice" class="notice warn">この出席番号はすでに抽選済みです。前と同じ結果を表示しています。</div>
+      <div id="doneNotice" class="notice done">🎉 全員の抽選が終わりました！</div>
+
+      <button id="showGroupsBtn" class="primary hidden" type="button" style="margin-top:12px;background:linear-gradient(135deg,#59c894,#7ed8ad);box-shadow:0 6px 0 #42a779;">📋 最後の一覧を見る</button>
+
+      <div class="actions">
+        <button id="changeBtn" class="secondary" type="button">⚙️ 条件を変える</button>
+        <button id="resetBtn" class="danger" type="button">🔄 リセット</button>
+      </div>
+    </div>
+    <div id="remoteMessage" class="message"></div>
+  </div>
+
+  <div id="groupsScreen" class="screen">
+    <div class="confetti">🎉✨🎈</div>
+    <div id="finalTitle" class="title">今日の組み合わせ</div>
+    <div id="finalSubtitle" class="subtitle">みんなのグループが決まったよ！</div>
+
+    <div id="groupsGrid" class="groups-grid"></div>
+    <div id="simpleResultsGrid" class="simple-result-grid hidden"></div>
+
+    <div class="card">
+      <div class="section-title">抽選した順番</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>順番</th><th>出席番号</th><th id="historyResultHeader">結果</th></tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="backRemoteBtn" class="secondary" type="button">← 抽選画面へ</button>
+      <button id="newLotteryBtn" class="primary" type="button">🌟 新しい抽選</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'wakuwakuLotteryV1';
+
+const state = {
+  lotteryType: 'group',
+  operationMode: 'manual',
+  maxNumber: 35,
+  groupSize: 4,
+  excluded: [],
+  forbiddenPairs: [],
+  assignments: [],
+  randomNumbers: {},
+  drawn: [],
+  history: []
+};
+
+const $ = id => document.getElementById(id);
+
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadSavedSettings(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if(!saved) return;
+    if(saved.maxNumber) $('maxNumber').value = saved.maxNumber;
+    if(saved.groupSize) $('groupSize').value = saved.groupSize;
+  }catch(e){}
+}
+
+function setScreen(id){
+  document.querySelectorAll('.screen').forEach(el=>el.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateChoiceUI(){
+  const lot = document.querySelector('input[name="lotteryType"]:checked').value;
+  const op = document.querySelector('input[name="operationMode"]:checked').value;
+
+  $('groupChoice').classList.toggle('selected', lot==='group');
+  $('simpleChoice').classList.toggle('selected', lot==='simple');
+  $('manualChoice').classList.toggle('selected', op==='manual');
+  $('autoChoice').classList.toggle('selected', op==='auto');
+
+  $('groupFields').classList.toggle('disabled', lot!=='group');
+  $('forbiddenField').classList.toggle('disabled', lot!=='group');
+  $('groupSize').disabled = lot!=='group';
+  $('forbidden').disabled = lot!=='group';
+}
+
+function normalizeSeparators(text){
+  return String(text||'').replace(/、|，/g,',').replace(/[－−―ー～〜]/g,'-');
+}
+
+function parseExcluded(text,max){
+  const t = normalizeSeparators(text).trim();
+  if(!t) return [];
+  const nums = [...new Set(t.split(/[\s,]+/).filter(Boolean).map(Number))];
+  for(const n of nums){
+    if(!Number.isInteger(n)||n<1||n>max) throw new Error(`除外番号「${n}」を確認してください。`);
+  }
+  return nums;
+}
+
+function parsePairs(text,max){
+  const t = normalizeSeparators(text).trim();
+  if(!t) return [];
+  const result=[];
+  for(const token of t.split(/[\s,]+/).filter(Boolean)){
+    const m=token.match(/^(\d+)-(\d+)$/);
+    if(!m) throw new Error(`「${token}」は「2-8」の形で入力してください。`);
+    let a=Number(m[1]), b=Number(m[2]);
+    if(a<1||a>max||b<1||b>max) throw new Error(`「${token}」に範囲外の番号があります。`);
+    if(a===b) throw new Error('同じ番号同士は指定できません。');
+    if(a>b) [a,b]=[b,a];
+    if(!result.some(p=>p[0]===a&&p[1]===b)) result.push([a,b]);
+  }
+  return result;
+}
+
+function shuffle(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function capacities(total,size){
+  const groupCount=Math.ceil(total/size);
+  const base=Math.floor(total/groupCount);
+  const rem=total%groupCount;
+  const caps=[];
+  for(let i=0;i<groupCount;i++) caps.push(base+(i<rem?1:0));
+  return shuffle(caps);
+}
+
+function makeForbiddenMap(pairs,activeStudents){
+  const active=new Set(activeStudents);
+  const map={};
+  activeStudents.forEach(n=>map[n]=new Set());
+  pairs.forEach(([a,b])=>{
+    if(active.has(a)&&active.has(b)){
+      map[a].add(b);
+      map[b].add(a);
+    }
+  });
+  return map;
+}
+
+function assignRecursive(students,index,groups,caps,fmap){
+  if(index>=students.length) return true;
+  const s=students[index];
+
+  let candidates=groups.map((g,i)=>({
+    i,
+    remaining:caps[i]-g.length,
+    rand:Math.random()
+  })).filter(x=>{
+    if(x.remaining<=0) return false;
+    return groups[x.i].every(member=>!fmap[s].has(member));
+  });
+
+  candidates.sort((a,b)=>a.remaining-b.remaining || a.rand-b.rand);
+
+  const triedEmpty=new Set();
+  for(const c of candidates){
+    if(groups[c.i].length===0){
+      if(triedEmpty.has(caps[c.i])) continue;
+      triedEmpty.add(caps[c.i]);
+    }
+    groups[c.i].push(s);
+    if(assignRecursive(students,index+1,groups,caps,fmap)) return true;
+    groups[c.i].pop();
+  }
+  return false;
+}
+
+function createGroupAssignments(students,size,pairs){
+  const caps=capacities(students.length,size);
+  const fmap=makeForbiddenMap(pairs,students);
+
+  for(let attempt=0;attempt<300;attempt++){
+    const ordered=students.slice().sort((a,b)=>{
+      const d=fmap[b].size-fmap[a].size;
+      return d!==0?d:Math.random()-.5;
+    });
+    const groups=caps.map(()=>[]);
+    if(assignRecursive(ordered,0,groups,caps,fmap)){
+      const result=[];
+      groups.forEach((g,gi)=>g.forEach(student=>result.push({student,group:gi+1})));
+      return shuffle(result);
+    }
+  }
+  throw new Error('この条件ではグループを作れませんでした。「同じ組にしない番号」を減らすか、グループ人数を変えてください。');
+}
+
+function startLottery(){
+  $('settingsMessage').textContent='';
+  try{
+    const lotteryType=document.querySelector('input[name="lotteryType"]:checked').value;
+    const operationMode=document.querySelector('input[name="operationMode"]:checked').value;
+    const maxNumber=Number($('maxNumber').value);
+    const groupSize=Number($('groupSize').value);
+
+    if(!Number.isInteger(maxNumber)||maxNumber<1||maxNumber>200) throw new Error('最大出席番号は1〜200で入力してください。');
+    if(lotteryType==='group' && ![2,3,4,5,6].includes(groupSize)) throw new Error('グループ人数は2〜6人から選んでください。');
+
+    const excluded=parseExcluded($('excluded').value,maxNumber);
+    const pairs=lotteryType==='group'?parsePairs($('forbidden').value,maxNumber):[];
+    const students=[];
+    for(let n=1;n<=maxNumber;n++) if(!excluded.includes(n)) students.push(n);
+    if(students.length===0) throw new Error('抽選する人がいません。');
+    if(lotteryType==='group' && students.length<2) throw new Error('グループ抽選には2人以上必要です。');
+
+    state.lotteryType=lotteryType;
+    state.operationMode=operationMode;
+    state.maxNumber=maxNumber;
+    state.groupSize=groupSize;
+    state.excluded=excluded;
+    state.forbiddenPairs=pairs;
+    state.drawn=[];
+    state.history=[];
+
+    if(lotteryType==='group'){
+      state.assignments=createGroupAssignments(students,groupSize,pairs);
+      state.randomNumbers={};
+    }else{
+      // ランダム番号抽選：
+      // 参加する児童それぞれに、1〜最大出席番号の中から
+      // 重複しない数字をあらかじめ割り当てます。
+      const availableNumbers=shuffle(
+        Array.from({length:maxNumber},(_,i)=>i+1)
+      );
+      state.assignments=shuffle(students).map(student=>({
+        student,
+        group:null
+      }));
+      state.randomNumbers={};
+      students.forEach((student,index)=>{
+        state.randomNumbers[student]=availableNumbers[index];
+      });
+    }
+    saveState();
+    openRemote();
+  }catch(err){
+    $('settingsMessage').textContent=err.message;
+  }
+}
+
+function openRemote(){
+  setScreen('remoteScreen');
+  const isGroup=state.lotteryType==='group';
+  const manual=state.operationMode==='manual';
+
+  $('modeBadge').textContent = isGroup
+    ? (manual?'✍️ 番号入力・グループ抽選':'🎯 自動グループ抽選')
+    : (manual?'✍️ 出席番号からランダム番号':'🎯 自動ランダム番号抽選');
+
+  $('manualBox').classList.toggle('hidden',!manual);
+  $('groupResultArea').classList.toggle('hidden',isGroup ? false : true);
+  $('studentLabel').textContent = isGroup
+    ? (manual?'あなたの出席番号は':'選ばれた出席番号')
+    : 'あなたが引いた番号は';
+  $('drawBtn').textContent=manual?'🎲 抽選する':'🎲 1人を抽選する';
+
+  resetResult();
+  updateStatus();
+
+  if(manual){
+    $('studentInput').value='';
+    setTimeout(()=>$('studentInput').focus(),100);
+  }
+}
+
+function resetResult(){
+  $('studentResult').textContent='―';
+  $('groupResult').textContent='―';
+  $('alreadyNotice').classList.remove('show');
+  $('doneNotice').classList.remove('show');
+  $('showGroupsBtn').classList.add('hidden');
+  $('remoteMessage').textContent='';
+}
+
+function updateStatus(){
+  $('status').textContent=`${state.drawn.length}人／${state.assignments.length}人　抽選済み`;
+
+  updatePendingList();
+
+  if(state.drawn.length>=state.assignments.length){
+    $('doneNotice').classList.add('show');
+    $('showGroupsBtn').classList.remove('hidden');
+  }else{
+    $('doneNotice').classList.remove('show');
+    $('showGroupsBtn').classList.add('hidden');
+  }
+}
+
+function updatePendingList(){
+  const pendingBox=$('pendingBox');
+  const pendingList=$('pendingList');
+
+  // 「自分の番号を入力」モードのときだけ表示
+  if(state.operationMode!=='manual'){
+    pendingBox.classList.add('hidden');
+    pendingList.innerHTML='';
+    return;
+  }
+
+  const remaining=state.assignments
+    .map(x=>x.student)
+    .filter(student=>!state.drawn.includes(student))
+    .sort((a,b)=>a-b);
+
+  pendingBox.classList.remove('hidden');
+  pendingList.innerHTML='';
+
+  if(remaining.length===0){
+    const done=document.createElement('div');
+    done.className='pending-chip';
+    done.textContent='全員入力済み！';
+    pendingList.appendChild(done);
+    return;
+  }
+
+  remaining.forEach(number=>{
+    const chip=document.createElement('div');
+    chip.className='pending-chip';
+    chip.textContent=number+'番';
+    pendingList.appendChild(chip);
+  });
+}
+
+function showResult(item,already=false){
+  if(state.lotteryType==='group'){
+    $('studentResult').textContent=item.student+'番';
+    $('groupResult').textContent=item.group+'組';
+  }else{
+    const drawnNumber=state.randomNumbers[item.student];
+    $('studentResult').textContent=drawnNumber+'番';
+  }
+  $('alreadyNotice').classList.toggle('show',already);
+  updateStatus();
+}
+
+function draw(){
+  $('remoteMessage').textContent='';
+  if(state.operationMode==='manual') drawManual();
+  else drawAuto();
+}
+
+function drawManual(){
+  const num=Number($('studentInput').value);
+  if(!Number.isInteger(num)||num<1){
+    $('remoteMessage').textContent='自分の出席番号を入れてね。';
+    return;
+  }
+  const item=state.assignments.find(x=>x.student===num);
+  if(!item){
+    $('remoteMessage').textContent=`${num}番は抽選対象に入っていません。`;
+    return;
+  }
+
+  const already=state.drawn.includes(num);
+  if(!already){
+    state.drawn.push(num);
+    state.history.push({
+      order:state.history.length+1,
+      student:num,
+      group:item.group,
+      randomNumber:state.lotteryType==='simple' ? state.randomNumbers[num] : null
+    });
+    saveState();
+  }
+  showResult(item,already);
+  $('studentInput').value='';
+  if(state.drawn.length<state.assignments.length) setTimeout(()=>$('studentInput').focus(),80);
+}
+
+function drawAuto(){
+  const remaining=state.assignments.filter(x=>!state.drawn.includes(x.student));
+  if(!remaining.length){
+    $('doneNotice').classList.add('show');
+    $('showGroupsBtn').classList.remove('hidden');
+    updatePendingList();
+    return;
+  }
+  const item=remaining[Math.floor(Math.random()*remaining.length)];
+  state.drawn.push(item.student);
+  state.history.push({
+    order:state.history.length+1,
+    student:item.student,
+    group:item.group,
+    randomNumber:state.lotteryType==='simple' ? state.randomNumbers[item.student] : null
+  });
+  saveState();
+  showResult(item,false);
+  $('drawBtn').textContent=state.drawn.length>=state.assignments.length?'抽選終了':'🎲 次の人を抽選する';
+  $('drawBtn').disabled=state.drawn.length>=state.assignments.length;
+}
+
+function showGroups(){
+  const isGroup=state.lotteryType==='group';
+
+  $('groupsGrid').innerHTML='';
+  $('simpleResultsGrid').innerHTML='';
+
+  if(isGroup){
+    $('finalTitle').textContent='今日の組み合わせ';
+    $('finalSubtitle').textContent='みんなのグループが決まったよ！';
+    $('historyResultHeader').textContent='グループ';
+    $('groupsGrid').classList.remove('hidden');
+    $('simpleResultsGrid').classList.add('hidden');
+
+    const groups={};
+    state.assignments.forEach(x=>{
+      if(x.group==null) return;
+      (groups[x.group] ||= []).push(x.student);
+    });
+
+    Object.keys(groups).map(Number).sort((a,b)=>a-b).forEach(g=>{
+      const card=document.createElement('div');
+      card.className='group-card';
+
+      const h=document.createElement('h3');
+      h.textContent=`${g}組`;
+
+      const members=document.createElement('div');
+      members.className='members';
+      members.textContent=groups[g]
+        .sort((a,b)=>a-b)
+        .map(n=>`${n}番`)
+        .join('・');
+
+      card.append(h,members);
+      $('groupsGrid').appendChild(card);
+    });
+
+  }else{
+    $('finalTitle').textContent='ランダム番号 抽選結果';
+    $('finalSubtitle').textContent='出席番号と、引いた番号の一覧です';
+    $('historyResultHeader').textContent='引いた番号';
+    $('groupsGrid').classList.add('hidden');
+    $('simpleResultsGrid').classList.remove('hidden');
+
+    const rows=state.assignments
+      .map(x=>({
+        student:x.student,
+        randomNumber:state.randomNumbers[x.student]
+      }))
+      .sort((a,b)=>a.student-b.student);
+
+    rows.forEach(row=>{
+      const card=document.createElement('div');
+      card.className='simple-result-card';
+
+      const student=document.createElement('div');
+      student.className='simple-result-student';
+      student.textContent=`出席番号 ${row.student}番`;
+
+      const number=document.createElement('div');
+      number.className='simple-result-number';
+      number.textContent=`→ ${row.randomNumber}番`;
+
+      card.append(student,number);
+      $('simpleResultsGrid').appendChild(card);
+    });
+  }
+
+  $('historyBody').innerHTML='';
+  state.history.forEach(h=>{
+    const tr=document.createElement('tr');
+    const resultText=isGroup
+      ? (h.group==null?'―':h.group+'組')
+      : (h.randomNumber ? h.randomNumber+'番' : '―');
+
+    tr.innerHTML=`<td>${h.order}</td><td>${h.student}番</td><td>${resultText}</td>`;
+    $('historyBody').appendChild(tr);
+  });
+
+  setScreen('groupsScreen');
+}
+
+function resetAll(){
+  if(!confirm('今の抽選結果をリセットしますか？')) return;
+  state.drawn=[];
+  state.history=[];
+  saveState();
+  $('drawBtn').disabled=false;
+  openRemote();
+}
+
+function newLottery(){
+  state.drawn=[];
+  state.history=[];
+  saveState();
+  setScreen('settingsScreen');
+}
+
+document.querySelectorAll('input[name="lotteryType"], input[name="operationMode"]').forEach(el=>{
+  el.addEventListener('change',updateChoiceUI);
+});
+
+$('startBtn').addEventListener('click',startLottery);
+$('drawBtn').addEventListener('click',draw);
+$('studentInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter' && state.operationMode==='manual'){e.preventDefault();draw();}
+});
+$('showGroupsBtn').addEventListener('click',showGroups);
+$('changeBtn').addEventListener('click',()=>setScreen('settingsScreen'));
+$('resetBtn').addEventListener('click',resetAll);
+$('backRemoteBtn').addEventListener('click',()=>setScreen('remoteScreen'));
+$('newLotteryBtn').addEventListener('click',newLottery);
+
+loadSavedSettings();
+updateChoiceUI();
+</script>
+</body>
+</html>
