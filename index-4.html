@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#6fa8ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="アプリ集">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<title>アプリ集</title>
+<style>
+:root{
+  --ink:#3c4057; --muted:#73788e; --blue:#6fa8ff; --pink:#ff8db9;
+  --green:#73c99e; --yellow:#ffd76e; --purple:#a997f4; --shadow:0 13px 30px rgba(68,73,110,.13);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic","Noto Sans JP",sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 9% 8%,#ffe2ed 0 9%,transparent 10%),
+    radial-gradient(circle at 92% 14%,#dff3ff 0 10%,transparent 11%),
+    linear-gradient(140deg,#fff8fb,#f2f9ff);
+}
+.wrap{max-width:900px;margin:auto;padding:30px 18px 45px}
+.hero{text-align:center;margin:8px 0 28px}
+.hero .emoji{font-size:46px}
+h1{margin:6px 0;font-size:clamp(30px,7vw,50px);font-weight:1000}
+.hero p{color:var(--muted);font-weight:700;margin:8px 0;line-height:1.6}
+.privacy{
+  display:inline-block;margin-top:8px;padding:8px 13px;border-radius:999px;background:#fff;
+  color:#5d6783;font-size:13px;font-weight:800;box-shadow:0 5px 15px rgba(60,65,100,.08)
+}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card{
+  min-height:185px;background:rgba(255,255,255,.96);border:2px solid #fff;border-radius:26px;
+  padding:22px;text-decoration:none;color:inherit;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;transition:.15s transform;
+}
+.card:active{transform:scale(.985)}
+.icon{font-size:45px}
+.card h2{margin:9px 0 5px;font-size:24px}
+.card p{margin:0;color:var(--muted);line-height:1.55;font-size:14px;font-weight:650}
+.go{align-self:flex-end;margin-top:16px;font-weight:1000}
+.lottery{border-color:#ffe0ec}.lottery .go{color:#e5679c}
+.recipe{border-color:#ffeebd}.recipe .go{color:#b4831e}
+.attendance{border-color:#d9f0e3}.attendance .go{color:#3d986b}
+.assessment{border-color:#e6e0ff}.assessment .go{color:#7866d4}
+.submit{border-color:#dceeff}.submit .go{color:#4f87d8}
+.barcode{border-color:#dff3e7}.barcode .go{color:#49936d}
+.coming{opacity:.72}
+.badge{
+  position:absolute;right:14px;top:14px;background:#f1f3f7;color:#7a7e91;border-radius:999px;
+  padding:5px 9px;font-size:11px;font-weight:900
+}
+.note{
+  margin-top:22px;padding:16px 18px;background:rgba(255,255,255,.88);border-radius:20px;
+  color:#687086;font-size:13px;line-height:1.65;box-shadow:0 8px 20px rgba(70,72,105,.07)
+}
+@media(max-width:620px){.grid{grid-template-columns:1fr}.card{min-height:150px}.wrap{padding:20px 12px 34px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="emoji">🏫✨</div>
+    <h1>アプリ集</h1>
+    <p>よく使うツールを、ここから開けます。</p>
+    <div class="privacy">🔒 個人情報をWebアプリ本体に保存しない設計</div>
+  </header>
+
+  <main class="grid">
+    <a class="card lottery" href="./lottery.html">
+      <div><div class="icon">🎲</div><h2>わくわく抽選</h2><p>グループ分け、席番号などのランダム抽選。欠席者や組み合わせ条件にも対応。</p></div>
+      <div class="go">開く →</div>
+    </a>
+
+    <a class="card recipe" href="./recipe.html">
+      <div><div class="icon">🍳</div><h2>食材レシピメーカー</h2><p>児童用ページと先生用のレシピ管理ページをここから開けます。</p></div>
+      <div class="go">開く →</div>
+    </a>
+
+    <a class="card submit" href="./submission-github-2.html">
+      <div><div class="icon">📚</div><h2>提出チェック</h2><p>Bluetoothバーコードリーダーで読み取り、宿題や提出物をすばやくチェック。</p></div>
+      <div class="go">開く →</div>
+    </a>
+
+    <a class="card barcode" href="./barcode.html">
+      <div><div class="icon">🏷️</div><h2>共通バーコード作成</h2><p>出席・評価・提出で共通利用する児童IDバーコードをA4一枚に作成。</p></div>
+      <div class="go">開く →</div>
+    </a>
+
+    <div class="card attendance coming">
+      <span class="badge">設計予定</span>
+      <div><div class="icon">📋</div><h2>出席チェック</h2><p>児童名を使わず、学年・組・出席番号をキーに記録する方式で統合予定。</p></div>
+      <div class="go">準備中</div>
+    </div>
+
+    <div class="card assessment coming">
+      <span class="badge">設計予定</span>
+      <div><div class="icon">⭐</div><h2>評価・提出記録</h2><p>氏名をWebに置かず、出席番号やQR IDを利用する方式で統合予定。</p></div>
+      <div class="go">準備中</div>
+    </div>
+  </main>
+
+  <div class="note">
+    このWebアプリ集には児童氏名を埋め込まない方針です。抽選は出席番号のみを使用します。
+    出席・評価を追加する際も、学校・自治体の情報セキュリティ規程を確認したうえで、
+    外部サーバーへ個人情報を送信しない構成を基本にします。
+  </div>
+</div>
+</body>
+</html>
