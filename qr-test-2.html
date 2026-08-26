@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>共通QRコード作成｜アプリ集</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:#354052;background:#f4fbf7}
+.wrap{max-width:980px;margin:auto;padding:16px}
+.home{display:inline-block;text-decoration:none;color:#526177;background:#fff;border-radius:999px;padding:9px 13px;font-weight:900;box-shadow:0 5px 15px rgba(60,70,90,.1)}
+h1{text-align:center;margin:14px 0 6px}.sub{text-align:center;color:#778190;margin-bottom:18px}
+.panel{background:#fff;border-radius:22px;padding:18px;box-shadow:0 10px 24px rgba(60,80,70,.1);margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+label{font-weight:800;font-size:14px}input{width:100%;padding:11px;border:2px solid #e0e7e3;border-radius:13px;font-size:17px;margin-top:5px}
+.actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+button{border:0;border-radius:14px;padding:12px 16px;font-weight:900;font-size:16px;cursor:pointer}
+.primary{background:#58b786;color:white}.secondary{background:#edf2f7;color:#465367}
+.sheet-title{text-align:center;font-weight:900;font-size:18px;margin:0 0 5px}
+.sheet-sub{text-align:center;font-size:12px;color:#687482;margin-bottom:8px}
+.qr-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
+.qr-card{border:1px solid #cfd6d2;border-radius:6px;padding:4px;text-align:center;background:#fff;min-height:29mm;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.student-label{font-weight:900;font-size:10px;line-height:1.2;margin-bottom:2px}
+.qr{width:72px;height:72px;display:flex;align-items:center;justify-content:center;overflow:hidden}.qr img,.qr canvas{display:block!important;width:72px!important;height:72px!important;max-width:100%;max-height:100%;image-rendering:pixelated}
+.code-text{font-size:6.5px;white-space:nowrap;margin-top:1px}
+.note{font-size:12px;color:#697483;line-height:1.6}
+.test{margin-top:10px;background:#eef9f2;border-radius:13px;padding:10px 12px;font-size:13px;font-weight:800;color:#397b59}
+@media(max-width:650px){.grid{grid-template-columns:1fr 1fr}.qr-grid{grid-template-columns:repeat(4,1fr)}}
+@media print{
+ @page{size:A4 landscape;margin:5mm}
+ body{background:#fff}.no-print{display:none!important}.wrap{max-width:none;padding:0}.panel{box-shadow:none;padding:0;margin:0}
+ .qr-grid{grid-template-columns:repeat(8,1fr);gap:1.5mm}.qr-card{min-height:29mm;break-inside:avoid;padding:1mm}
+ .qr{width:18mm;height:18mm}.qr img,.qr canvas{width:18mm!important;height:18mm!important}.sheet-title{font-size:14px}.sheet-sub{font-size:8px;margin-bottom:2mm}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="no-print"><a class="home" href="./index.html">🏠 アプリ集に戻る</a></div>
+<h1 class="no-print">🔳 共通QRコード作成</h1>
+<div class="sub no-print">出席・評価・提出チェックで同じQRコードを使えます。</div>
+<div class="panel no-print">
+<div class="grid">
+<label>年度<input id="year" type="number" value="2026" min="2020" max="2100"></label>
+<label>学年<input id="grade" type="number" value="6" min="1" max="6"></label>
+<label>組<input id="classNo" type="number" value="1" min="1" max="9"></label>
+<label>人数<input id="count" type="number" value="38" min="1" max="40"></label>
+</div>
+<div class="actions"><button class="primary" onclick="generate()">QRコード表を作る</button><button class="secondary" onclick="window.print()">A4横で印刷</button></div>
+<p class="note">共通ID形式：<strong>年度-学年-組-出席番号</strong>。児童名はQRコードに入れません。</p>
+<div id="test" class="test"></div>
+</div>
+<div class="panel"><div id="sheetTitle" class="sheet-title"></div><div id="sheetSub" class="sheet-sub"></div><div id="qrGrid" class="qr-grid"></div></div>
+</div>
+
+<!-- QR generation library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+function pad2(n){return String(n).padStart(2,'0');}
+function generate(){
+ const year=Number(document.getElementById('year').value);
+ const grade=Number(document.getElementById('grade').value);
+ const classNo=Number(document.getElementById('classNo').value);
+ const count=Number(document.getElementById('count').value);
+ if(!year||grade<1||grade>6||classNo<1||classNo>9||count<1||count>40){
+   alert('設定を確認してください。人数は1〜40人です。');return;
+ }
+ document.getElementById('sheetTitle').textContent=`${year}年度　${grade}年${classNo}組　共通QRコード`;
+ document.getElementById('sheetSub').textContent='出席・評価・提出チェック 共通';
+ const grid=document.getElementById('qrGrid');grid.innerHTML='';
+ for(let n=1;n<=count;n++){
+   const id=`${year}-${grade}-${classNo}-${pad2(n)}`;
+   const card=document.createElement('div');card.className='qr-card';
+   const label=document.createElement('div');label.className='student-label';label.textContent=`${grade}年${classNo}組 ${n}番`;
+   const qr=document.createElement('div');qr.className='qr';
+   const text=document.createElement('div');text.className='code-text';text.textContent=id;
+   card.append(label,qr,text);grid.appendChild(card);
+   new QRCode(qr,{text:id,width:128,height:128,correctLevel:QRCode.CorrectLevel.M});
+ }
+ document.getElementById('test').textContent=`確認：1番 ${year}-${grade}-${classNo}-01 ／ 17番 ${year}-${grade}-${classNo}-17 ／ ${count}番 ${year}-${grade}-${classNo}-${pad2(count)}`;
+}
+window.addEventListener('load',()=>{
+ if(typeof QRCode==='undefined'){
+   document.getElementById('test').textContent='QRライブラリを読み込めませんでした。ネットワーク接続を確認してください。';
+ }else generate();
+});
+</script>
+</body>
+</html>
