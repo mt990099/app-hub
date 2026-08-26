@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>共通QRコード テスト表</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;color:#354052;background:#f4fbf7}
+.wrap{max-width:980px;margin:auto;padding:16px}
+.home{display:inline-block;text-decoration:none;color:#526177;background:#fff;border-radius:999px;padding:9px 13px;font-weight:900}
+h1{text-align:center;margin:14px 0 6px}
+.sub{text-align:center;color:#778190;margin-bottom:14px}
+.panel{background:#fff;border-radius:22px;padding:14px;box-shadow:0 10px 24px rgba(60,80,70,.1)}
+.actions{text-align:center;margin-bottom:12px}
+button{border:0;border-radius:14px;padding:12px 16px;font-weight:900;font-size:16px;background:#58b786;color:#fff}
+.sheet-title{text-align:center;font-weight:900;font-size:18px;margin-bottom:8px}
+.qr-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
+.qr-card{border:1px solid #cfd6d2;border-radius:6px;padding:4px;text-align:center;background:#fff;min-height:30mm;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.student-label{font-weight:900;font-size:10px}
+.qr{width:20mm;height:20mm;object-fit:contain;image-rendering:pixelated;margin:2px 0}
+.code-text{font-size:6.5px;white-space:nowrap}
+@media(max-width:650px){.qr-grid{grid-template-columns:repeat(4,1fr)}}
+@media print{
+ @page{size:A4 landscape;margin:5mm}
+ body{background:#fff} .no-print{display:none!important} .wrap{max-width:none;padding:0}
+ .panel{box-shadow:none;padding:0} .qr-grid{grid-template-columns:repeat(8,1fr);gap:1.5mm}
+ .qr-card{min-height:31mm;break-inside:avoid;padding:1mm} .qr{width:20mm;height:20mm}
+ .sheet-title{font-size:14px;margin-bottom:2mm}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="no-print"><a class="home" href="./index.html">🏠 アプリ集に戻る</a></div>
+<h1 class="no-print">🔳 共通QRコード テスト表</h1>
+<div class="sub no-print">まず38人分が安定して読めるか確認する版です。</div>
+<div class="actions no-print"><button onclick="window.print()">A4横で印刷</button></div>
+<div class="panel">
+<div class="sheet-title">2026年度　6年1組　共通QRコード</div>
+<div class="qr-grid">
+<div class="qr-card">
+<div class="student-label">6年1組　1番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABjUlEQVR4nO2ZMW6EMBRE34+RUsINchR8tRwpN8AHioTLSKBJYbPJZoukCAsL3w3CPIkRfA2jwcTvKz39AQKnnHLKKaf2TlldDRYByMtO3FTXKahekjSCBsAiQZKka+r+uk5B5TrjZt1s5QWYNdvrOjLV/DgX+fk2du5V/QEpi/e+4ympZe5bARmsfwOR4fv071X9IahkZmZd3bTIXGLO1roOTZW5/5pxpZcP0/XU71f9Y1OUKNmPoWZMjUCvCWkMKuFz2Kv641DpRSJ1QXrtgqCd9qHrqFT1nNRhIjeT0Y5Ark6vrXSdgbrk+zBZv/i89ZobpbihrjNQi99rApYmQQNBgPv9qhS6XvRjLXVqx+PPfjWqeM6S48NE6sBo3xvInfv9mtTFcyTpEjSHq6s+9+tSS49Z5j4ufl/2dq/+MamfPSYlYzIXG3LPuSNlEYDcoKH98P9W96BaSQOgITdYbCf41uTvXf1jUtVzUrGYUBKPyB30mr3HXJO66THLoRVQPrjb6HLKKaeccup/qU+HP8Uz/spCowAAAABJRU5ErkJggg==" alt="2026-6-1-01">
+<div class="code-text">2026-6-1-01</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　2番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABd0lEQVR4nO2aTW6DMBCFvylIWZob9Chwg1wZjtIDVMJ70OvCBvJTqVmUQMJ4YdnWJ/E0jK3xAxN/t+7jAQiccsopp5zaO2W5ldNynFaaTXUdgqolST1YE82soZAk6Zp6vq5DUDHnuNowpJXLbbB39e9CxfIR6j+feFTqNtBGGO6Dv1f1r01NcQ4CIghGlEcb6joQ1ZmZWQXWxJOsYUxlzta63ppKeb/kuLqqQNdZv1/170BZE8vU5WnqRs/7NSlSHd8yl5dh4GJaS1K7V/WvTeXYp9YXUhsGpL4QdZ8vWB77dag59lPKqwcI06vw2K9PxRK1scSsAunLzBpG93PWpK7OHElLyudt4Hm/MrX4mNlQCwMQT+6lPYGafczl9KHut9d1CGryMfPlNpX2ft6vSt36ZurO36buUxjM19u9qn9t6hcfEyCWg0BY3W6j6wjUnY/ZncEIPRCr7XQdgeLy0yBFGqmlkNoguaewImX+b5RTTjnl1CGoH2Wo1yrvou5VAAAAAElFTkSuQmCC" alt="2026-6-1-02">
+<div class="code-text">2026-6-1-02</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　3番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABeklEQVR4nO2aT2qGMBDF36tClwo9QI+SXLk30KP0AIVkWVBeF0msfpt24+efzCxCjD/II4zhzSCFv2N8+QcEGGWUUUYZdXaKOVoAmEkfy4o/VFcVlJMkBQCIr9KARpKkLfV8XVVQseT42OeV8hkcq6suqptA/9QdjVpi5rN3rJQq10onABEgukZABNZF11nV34IaSZI9APfZgh5zsjlH67o1lfL+N8eVU37bajir+jtQ9JiJkS3ou2+S/fbSP7f6q1JINt4FQNJUhgBo6KZs/Iezqr82lc5eAwC4UNZSbRWWt2dVf21qffbotFSzTSpuLe93pBaP+dUKsZ2YZz3hQm8+Z08q5/0ScCGnvIbyGVje70Nh3TIrtzxcaJQHO/u9qaWPSZ+u+hx5dnL1F6dKH1MDALKfmWb+YF01UfTIHnNdYB2v645U+/Cs8f2bAnJXgUfpqoF67GMCsQWdALqPt+kwXTVQjz4H2NpL85j7UbR/o4wyyiijqqB+ADgO4RK8DKVoAAAAAElFTkSuQmCC" alt="2026-6-1-03">
+<div class="code-text">2026-6-1-03</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　4番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABj0lEQVR4nO2ZQY7jIBBFX7WRemlLc4A5ChzdOUofYKSwHAnr9wLcSSeL7o1j4hQLZMGT/FUuw6cw8XM7vf0CAqeccsopp3qnrLWApRyAvI6kXXW9BBUlSWfQzGKWGCRJ+k49XtdLULnluNkEmgEzC/vreiWqhj098I1OXbXh3vJ3oetw1LqsjAIyGOMZkeH6C/Sq/hDUyczMJiB+BCyxVJuzt65DUzXvLzku8mL6nvX9qj8CdXH1nCawxGKQA5Z21XVsquX96W/BGIXF85/S5sb1oVv1z01xfYRikObaXc9q7lX9c1MtulIBRql2UaU6fY/9htQaXQYRz5e8HwQMqsUGj/0mVPP3sVqbgkUtJliMOH/ZnV7VPzdVY7/6+KFAnjDGfwHy5LHfkmp7batjtm3W99qHUvmrVj8WLK3rfRvrXf1zUuF2IH68C1jqMuRrzgMpSwDkgObxv99bbUnd1jHrCTfOJUB+l+2l6xWo23MtjOvtoVRwf78hdV/HBNpvcLlF6VW9U0455ZRTv6U+AccoyJtB5GQ7AAAAAElFTkSuQmCC" alt="2026-6-1-04">
+<div class="code-text">2026-6-1-04</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　5番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABi0lEQVR4nO2ZQW6DMBBF39SRunSkHiBHgZvlTL2Bc5TewCwrGf0usAvNptkETLBXlv0kvobP2DOY+H/c3h6AoFGNalSjGlU7ZXmcMDuD9UNZ6TfVdQiqkyRFkCIATpKkv9T6ug5BDb8eZzQFwMxO2+s6EjUlnn7FJzbqd3Rx7ScelippxQsY8swAlkVXrer3TeXY3wwABwwfCRhtW11HoKbY3zUWdL9Sq/p9U0xXyU5SSfWuxN3nDYVa1e+byr6/mUvgU05B3ecZMVixf63q901NvpdidrsCTnRKNN8/m8qxD15S8AlJiTkF5d1a1e+bKr5XYu4pKADTt9B8vwLlBF4yuyTsqoT180WzevW7pKbDtcTYJbowIoYzc5VVr/p9U4s7phRz91IBV9qaLec8nSp9zNy/n9KNk/Ub6zoSpVBmZpfvlu9XpbqvE+ATCsO78quoQNcLU14lzoxGF53sGsH6jXW9MsXy1yCuVFTRCXyustpZ+xzqvo+ZW5g+ocV6reob1ahGNapRj1I/NQ7gyQbE9swAAAAASUVORK5CYII=" alt="2026-6-1-05">
+<div class="code-text">2026-6-1-05</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　6番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABh0lEQVR4nO2aQW7kIBBFXwX2+AY+irnZaG5mjpIDRDLLlmj9WeB20p1FZuO2O8DCEqUn8WV9SlVlm/h5pbf/gKBTnepUpzp1dsrW5YFsZjHfIvFQXU1QkyRpAYuAZpwkSffU83U1QeXV4/o7lhpZr8HBupqipuXZJ3ZqXRazx+ITT2yXuqWVICCDvjyO1NUQlczMbACLOFnkWsuco3X9aqr6/tPjSoND964/r/rfQK1ZPnsgFCwCFrl23+9Jrb5P48UgXAzC1SuZK0rDBzbNx+hqgaK2UNMCTIuTZkBanOpWkjSfVf1rU7d8n12xNBYgfHgjlFrsHKarBWrzvZNmXL0B0sLaZU3d97tRW51TYKrFjStAvQZeR+lqgeLryIzN/DXW8/0zqG2OCYDm7O8mOydX/+LUbY5pf5bP0v7a5/d7Uv5hrzReTGkUBlt7e1b1r009vnub3j2QfRGo91Z7Ut/mmGkAIyxAHo7T1QL1WOdAKOs3wzlIvb7fkbL+b1SnOtWpTjVB/QPeYMBwnB/VVAAAAABJRU5ErkJggg==" alt="2026-6-1-06">
+<div class="code-text">2026-6-1-06</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　7番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABkUlEQVR4nO2ZQW6DMBBF39RIWTo36FHMzaoeqTcgR+kNzDKSo9+FMaKRqmZDMMRemeFJ/hrM8D2Y+H9c3h6AoFGNalSjGlU7ZdPosB6AsUT6TXW9BBUkSRH0eb4Z4CRJ+k09X9dLUOO8x8dTzriZddvrOjLV3V0bPq67YqP+pML3/AY8acWXpcq+9wJGAFwygOWhq1b1+6am3F8MADfHb7bWio0qI+f+rrGg+0it6o9AWQ9YP5qBT8Xun6cbtavfK0X28YpOBCXAK8+y3ZckDbWqPwh1My52kvQ9fQLM3iXrt9Z1YGr29y4BYPhrPtda+LJS9mtVv28qVxWCJEJ0IkTQAJQ61GrOWtTC5wjy3seCbp2Fr9lo1qp+31TOfcmxS+BTJ8Yz4FVu1Kp+39Si5kjRSYOXNODUfM6zqNLHtH7ssJ6pkWz9xrpeidJQZmbv11bvN6B8QsN40vQoqtF1SCpXeQB/NUJ0so/YegqrUix/DeI0xaIT+ETz9ytS933MaeYTWsRrVd+oRjWqUY16lPoBKHu2ZmpWUX8AAAAASUVORK5CYII=" alt="2026-6-1-07">
+<div class="code-text">2026-6-1-07</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　8番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABeElEQVR4nO2aTW6DMBCFvylIWZob5Chws6g3g6PkAJXw3uh1gclvq3ZDgDBeWLL5JD+Z8Zh5wsTfrfv4BwROOeWUU06tnbLcSuiqwSBOM82iunZB1ZKkHux0PsgaCkmS7qnX69oFFXOM67PKM+MxWFrXO1Pl00z4MhHnW9Gp3yg7nUuseeGK+6WmuA8CIqirQES4LbrWqn7bFLdXKoWo+0LU/TRTS1K7VvXbpsa4v8a4umNC91G/XvXvQFkTy7HLw7EbbGFd702NOWdqCeoe1IYEhOQ5Z04q7317GbYhIfU58+ena1X/JlQhtSHfumbHxPV9bED9hilrQgJi/rSXzmbWMLifMyd1n+8lCNKYcwgJzzmzU1cfU20smY7Bwb20OalcW2Ufs7jp/K59FTX5mFM3GHi+n5d69DFFHEzdUdg4XEjXHqjHvc+VbCyTQFjdLqNrD9Szj9mAEXogVsvp2gP1g48Jai+llnsK81Hm/0Y55ZRTTu2C+gan2OLDzhezngAAAABJRU5ErkJggg==" alt="2026-6-1-08">
+<div class="code-text">2026-6-1-08</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　9番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABi0lEQVR4nO2ZQW7DIBBF35RIXTpSD4Sv3BuQo/QGZlkJ63cBdp1UVbNx7DrDAtnwJL7GA8yMTfzdLi93QOCUU0455dTeKWvtRO36PI30m+p6CipKkgZQ6gpAkCTpmnq8rqeg8uzjjAZQd8Dmuo5MnW7eLQ4I8norOvU7tdgBD1rxWanJ7ztRvf1yDsUAlknXXtUfgrqYmdkZiAMAYw1zttZ1aKr6/dLHu4KuR/ar/giU9YD12eYQp20D6zfVdWyKGsen+lQgDkFTN8/uVf3/plikULOxiSpAJ9Wky22/IqVEEHSS2Xk0IIj4Yaa0qa5jU/WubfFMfisA6GIgcigW0za6noFaxDmCanosajxZfB89xlyTuvJ7QiGmEZHPQKdpYq/q/zc1X66SNLTqpRKhlTU9zlmfmqo4rX5Pu3Ct31jXkanbOuZ3Pmt0n37eP5bKJ2phIeVXeYy5IvXjvE9dqb+xWnLr5/1q1DKvrRmVCtIQBNNXcNuvQ93WMQXN7FqM71W9U0455ZRT91JfOBPPId8U90cAAAAASUVORK5CYII=" alt="2026-6-1-09">
+<div class="code-text">2026-6-1-09</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　10番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABf0lEQVR4nO2aTYqEMBCFvxqz1xv0UfQGc2VzoIa4bFDeLIz9Nw0zG1vtVC0Ewwd5hEpZ9dDE3xG//gGBU0455ZRTe6csR4BoARiWlW5TXUVQrSQpgXVMBlSSJD1S79dVBDXkHJdSNZ/4fA221lUUFU8j1r1zx2Kp8PRuYOvu6NQSy9nXAgZQ7EAMcD907VX9sSnuP6lUok2VaNOy0kpSv1f1x6bmvL/l+JLyj1bDXtV/AmXdEOYHsQHruHWbW+r6bOqa9xcTjACTKTbnoNicsbbfRlcJVK73rUbmKt+mpclvUx6wvN6vQ+U+J1ol4mkMig0Y9eWh09yr+mNT5My+tTgakRLLNfC8X43KZ3+NXGlSJahHvOasSD3397nUz2te799BXX1MYgPqh8DdgLV39QenFh/TunrEcms/uX+/JvXspSl+T0HxpNlS01a6SqB++5g1wBBGgXy2WpN64WMGjDoBQ7OdrhKoFz4mqKeS+lry/n5FyvzfKKeccsqpIqgfbADfSjmiwqgAAAAASUVORK5CYII=" alt="2026-6-1-10">
+<div class="code-text">2026-6-1-10</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　11番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABfklEQVR4nO2aTW6DMBCFvymWunRukKPAzXo1OEpugJeVjF4XhvyqajcEEs8sLGw+iadhDMMTJv6O4eMfEDjllFNOObV3yuYIMJiZdWlZ6TbVVQXVSpJGsC5KQCNJ0i31fF1VUGmucfXLmbINttb1zlS4X2hPtu4VnVriPvdGzA/3Y7fqX5ta8hwFJBApoHK0pa6KqMHMzA5gHY2sYyptzta63poqdX+pcQ3HjG6rfr/qX5uitJLt2JRhnpYhl7Pq96r+tak598SM+ijRjiApoz7mufH33K9C3dY9SGW43gae+3Woq35SoNJjGvH7psvfq/p3oNTHXEwd2lNAOgWAyf2cNan5bXoOipUzNvM7wJ85a1MXH1NSxrqYgfTpXtoTqLOPyWAB9SlAO26vqwpq8THtawTrmAx/3q9M3ftmIk2m4SisTDfSVQP1i4+ZQi4tZ9tvo6sG6sHHHLqAEUcgHbbTVQO1eAollo/bnkazxeA95mqU+b9RTjnllFNVUD+IFdnK4eN6VQAAAABJRU5ErkJggg==" alt="2026-6-1-11">
+<div class="code-text">2026-6-1-11</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　12番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABjUlEQVR4nO2YTWrDQAyFP3UMXbrQA+Qo46PbR+kBCp5lweF1IU9IU2i7cT1xJPDf8IEf4lkjy8TvMT39AYKgggoqqKBap2yNDhsAG0pdGXbVdWyq80seAcormgxESQsAtpeuR6JK9XiWZANgZt3+uo5MdTfPRv/eibLdG4P6kbLhv9/4kFT1fS+gAHlEBnD909Wq+vum1txPvqkmoLwuwNn21fUIlOf+2uP9gr6utKv+CJQNrF09lK62+y+Xyt+2+nulLjUnLZpOwugXoJ+BYtX+raq/bwp5zAAkSXMSWQvQS2RJGltVfwTK7CSR9WE29B++zUpvZhp31XVsyn1PnoE8J/8CNAL1Cwjfb0XVmlPDy42fZojcb0j5Xlub+bSwztJegF4xS9uSqjXHN9y0un+kVh+F7zen6hyzdvVnA5JPNNtXf5/U7RxTlK6O7mvH0676g1HTacEHC2N5VvSYG1Lf6/2Mdzfk6DG3pdbcr5Hklte83kXuN6Ru55jyw4eZl/VW1QcVVFBBBfVX6hN2d99vqqrXlQAAAABJRU5ErkJggg==" alt="2026-6-1-12">
+<div class="code-text">2026-6-1-12</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　13番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABj0lEQVR4nO2ZUYqkMBRFz2uF/owwC5il6M6G3pm1lNqB+RyI3PlIrKq2aWY+xoqlLyAYPZBLiDc3TxN/b5e3f4DAKaeccsqpvVNWWosNzAZxeTJU1XUKqpckTaCPrpENNJIkfaaer+sUVLyt8diiETCztr6uI1Ptqm/99GPbEZ36lrp08/IFPGnE01LLug8CIkCYMIDHQ9de1R+CupiZWQf01xZgzjGntq5DU7aqKRg0aQ15TWFDygbAhmgGIS1xvysv9q7+VSlyjtdUAr3GID3E/fxsr+pfm7rttSnbjfXXNgFzC0FYP9bRdQYqz32Z4jAh4px3WBFtCTt7Vf/aFKV0ENKtm/K5Vpqa4j7uORtSd7/PO+wvJSxX1arqOjZVPKf0SrwUsSP7fS1dZ6CK5/SrsEPjOedp1FLHtCHeivg0sqGyriNT6zqmLj/LrmuE3+73FaiQ0BjfpfFZI56Q+ur3E/k3Fr1nzG2pJd/n1uSkn6M9IeFzvyGV/f5ezFS+QlruKulyyimnnHLq/1J/AHp12dQZA48/AAAAAElFTkSuQmCC" alt="2026-6-1-13">
+<div class="code-text">2026-6-1-13</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　14番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABg0lEQVR4nO2aQW6DMBREZ2qkLkHqAXoUc7NeDY6SG+C9reni44SkqtoNMcH2CsyTPDKfYWyg8Heb3/4BAY1qVKMa1aijU1xbB8xDIseQe8aiuqqgvCRpufU7SZLuqefrqoIK1xoPnfXYY1Ba15mp7meXi0DYb8RG/Ur5JeUn4EkjVkvluu8FIAC8Hm0XXUdVfwpqJkkOAPylA0ckizmldZ2asrq/1biACN1X/XHVn4HiiETM7EAOieSQ+JN6vq5zU7Acb9G+lzQB0NRLmvq4Bv/pqOpfm1rnfoIT/OIEvwCa4Ox+rFePqv61KfN7AokCIoBedgrARfqpjK7KKI6BxDwkmgX5JbWcsyeV/T43AM4syEy/ec5+FLZbZjbjEdn5ndq7dkdqXdearYcP0F/eddvPUSldNVF5H1MTYCHfjsbCumqiyM9oGXO7wCqv64zU4x6yEGhOIwBgKV01UXlJi3kA+KUIjqF9O9mVesw5a7Dpt7mz5Zx9KLZ/oxrVqEY1qgrqGzwW0Hgiwj2YAAAAAElFTkSuQmCC" alt="2026-6-1-14">
+<div class="code-text">2026-6-1-14</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　15番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABiElEQVR4nO2YwW2EMBBF38RIOUIHKcV0lpq2AyhlO4DjSqCfg3FCVoqyFy8sjE/GfpK/RoP9Z0z8P/q3ByBwyimnnHJq75Qto8LMKmDMK+2muk5BRUnSAJJuZi1BkqTf1PN1nYIac473zbKy/AEb6zoyVd19W7xWiLHciU79TdUT1j71xLNSOe9rASPQN4MMYF107VX9IajezMwaIF4rgDnZnK11HZqyu56CQZjuIe8pFKSsBawdzYiast1vlo29q39ViuTju1qCWlJHEHGAbPcldXtV/9pUii5xCFIHQC0RNX3PPPalqCX21FMqblPYoybP++LUKvY575eZNATP+5JU8vcCRBQYgEXNlcXL7B6zJJVin2McJuKlQowNUCtv7FX9a1P5rU19zKV7qY4gv++fReU+Znb1swFB1m6s60yUunFp8Zh93Py+34CqJ9SN79nz70bXIalU0gIwG3EIss/BewpFqezv0/hpJ4RVveVvbRnqx9+TZyLdOav1vap3yimnnHLqUeoLycDa/y6N1akAAAAASUVORK5CYII=" alt="2026-6-1-15">
+<div class="code-text">2026-6-1-15</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　16番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABfklEQVR4nO2aTW6DMBCFvylIWcINOArcrOrN4Ci9gb2MRPS6sJ2kyaLd8JMwXhjb+iQ/WebZM2Di7zJ9/AMCp5xyyimn9k5ZLjXAxSCWkWFTXYegeklSABviSUAlSdJvan1dh6Bi3uMam3NqlddgW12HoqZ27RkPS9UPfevDZdkZnSqlrH0jIIImAxHhPujaq/rXprg/UqlEHyrRhzLSS9K4V/WvTaV9f9vjZcv/TjXsVf07UDbEOlW5m6qLbazrvankORoBaCSNzYxGqtRyz1mQymuvAFKoBM2cW33IAZav/ZKUDQA052QyZt3Znqn1dR2B0ldbCeIpuY/0nTM7Nmyq672p4jmlZKe5uY97zmLU4/1eYyPRpzH3+zWoax4TYo3GWHMXYO1d/YtTJY9pn+F2tXe/X5R6zKVpajFNnTC4hrd7Vf/a1FMeMz1iPQuE9eM2uo5APeUxiS1GE4DYbqfrQNRkZmYtmHVzPmunzr8ZLkqZ/xvllFNOOXUI6gcyidIOZ4febAAAAABJRU5ErkJggg==" alt="2026-6-1-16">
+<div class="code-text">2026-6-1-16</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　17番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABiklEQVR4nO2YTWrsMBCEv34yZKmBHGCOYt0sV7OPkgMErGVAobKQlAwvi2Tjn/F0byxLH6gQoimVid9r/vcHCJxyyimnnDo6Za0GLOUBS7nPpF11nZsa6mecAPIzmq8FkUMBwPbS9UhU7nd8fB2wBJjZsL+uR6IsxbLtjk7d1IdtveODUr2tRAEZmC3IAG4fXUdVfwpqNjOzCzAuAHxUm7O3rlNT9l+mYBB+NHzPFFakLAGWcrvozdtf2sLR1d8rhb4KoqQpSowqSEtfnY6q/gyUpWymKQ/Yy9JWzK6SpV11nZsavodGfDPNl7c6J7J1s3NU9fdNtXOer8LIT2q/te+HYjVsOKr6+6Zu+n1t+uMCjCr0kff7tah677uPb/ZS5AsQ5VnamhTttkuSllB9jiaC3OdsRfUcs+X3NdQJ7nO2pDT1HNPs+u6ZwqbU+DoAsaApP0nTUXSdkPrR76VS3Q3jEuQ+Z0WqnX2r0Py9liCIxT3mmlR/w/Zqo1jQzfxR1TvllFNOOfVX6hPU/8tlAJY7CwAAAABJRU5ErkJggg==" alt="2026-6-1-17">
+<div class="code-text">2026-6-1-17</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　18番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABi0lEQVR4nO2ZTWrkMBCFv4oEWco3mKNYV8uRcgP7QAPWMmDzZiG5000WyWLafyltLOQP/JCLV6WSie/H+PIDCJxyyimnnDo6ZW1ELJeI5bKu5F11/QqqlyRNoLcOgCBJ0iO1va5LU7E9Swf9OxgsJgoYhHk3Xb+R0pAkyxt+0Smn9vOcJGhOE2dR4P7QdVT1l6BGMzPrgH4Cyyy1zNlb16WpGvefMa7xz4fpMeqPq/4KlOUSgWIGJWKZ5TbbU9e1qRb3Y4eJNEdaZRlk/bCWmIdVf26KeoTqpyBpCm02PLzVcFT156bi59RIM5BmrBfYHXVU9eem1shOMxoADQRpIAgIqs0Gj/unUG3vb4Ne7S+0Ho/v/dOo6jmrv7QGjpH+RijdWmoeVf25qTXX1j5mS7Oeazelyq1XD1he/b6tHV39Oan4ZSVNAEu1IfecDan1hBvRkD783moLKunO6i2nGSivfm/1TKp5zlgtJtSKR/UaS4v3MZ9Jfelj1kcSUBPuPrqccsopp5z6v9Q/sfy+Ez7Syd4AAAAASUVORK5CYII=" alt="2026-6-1-18">
+<div class="code-text">2026-6-1-18</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　19番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABg0lEQVR4nO2aMW6EMBBF3wSklCDtAfYo5mo50t4A3wjKSKCfwoYspEgaAgszBQLzJL7Gg/1tMPF7xLc/QOCUU0455dTRKctRQrQS6KeWZlddl6CCJKkDQgdAIUnSkvp/XZeg+qnG4/0znaXXYG9d16L695+28wi6zkeV64ag0TZ9olNTTLmvBPRgUAh6eK7+o6o/BRXNzKwmzbXWMCabs7euU1Op7r9rXPE+oGXVH1f9GShrGI1oZTozq5eD/rHVvyrFZOOfDb2kAaiGbPzbo6p/bSrnPswd0FYDainSUit1iOd+E2rOfa5xks9JUcjrfkMqz7XRChENBKOJvobwqN3nbEnlUWUOQlcojTltNTV63W9CzXMtkMZ7gNAVygfP/WZUXteGFqC/YaG7DdDn29pL15WoaR9THzWY1aOpBazZWdeZqfVemgEoNsVg09Uuuq5ISV1e0vq3k62p9T4mVENpQWDhcRt203UFau1zssesFsbTfc4mlPm/UU455ZRTl6C+AClL29kpG8PmAAAAAElFTkSuQmCC" alt="2026-6-1-19">
+<div class="code-text">2026-6-1-19</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　20番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABdklEQVR4nO2aQY6DMAxFnwekLukN5ijh6HCU3oAsK4H+LBLagjSa2aRQsBcRiZ6UL8s4jsHE39Z//QMCp5xyyimn9k5ZthprmczaOK+0m+o6BRUkSQNAvAioJElaUu/XdQoqzjHef49pxczq7XUdmapXcxHrUcRyOzr1G2XtPLxrx/NSc9w3AiII7gbA66Vrr+oPQfVmZnYFa9NZO6UyZ2tdh6ZS3D9jXMTJ8muwpa4zUKRSMihXNwRJ0EiEIU/V7VX9Z1PZ9zTj7HYqEYY8JHPfF6HmuB9AHaCOKt2y8pP7vhj1GvePTCNpfAzu+1LUMu6r3E54PHm+L0jlyH5YOnXTMOBnbUlqzjnJqlziPM19X5x69jHDzQyaEXXNuKLer+sU1LKPGW4XQfQ+ZlFq3cckdBPQ3E3hmXv2qv5YVKrqu1hDf538u1VJat3HpG+rkb7Ny9pK1xmo7Ps+dSwrLGgyBU2LZLRX9Z9Nmf8b5ZRTTjl1CuoHa9rnunzlYh8AAAAASUVORK5CYII=" alt="2026-6-1-20">
+<div class="code-text">2026-6-1-20</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　21番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABd0lEQVR4nO2aS26sMBBFTwXPYQe9FHvpeEd4bnTfwJDuRJGSCe1+7bLEV0fyVakoFxdM/D7yxx8gcMopp5xy6tUpO0aAvOwG5byTuuoagoqSpA0sMckSkyRJX6nn6xqCKkeOay0BrUB7DHrrGoqKG1h65ozDUuHbtR3bdTM6dY4z9rOAAqIsqJ311DUQlc3MbLmvtXtrc3rremuq5f09xwUVfc3611X/DpSlEtoOSsASYInd8/5KirONnySpAnNFUkXrXI/Gf31V9f83dcQ+qrb2kqiKtE0ibscLlsf+Guqo93nZBAiygTHXzrpGoFrsLW5ATlO1qD2IYgC7Edc+ukagHvuc2A6TgKlavtWgXrpGoHi0zJh0lPqH9dfr/cXUp49JvtVmqLWlt7OuIajTxzx3uwG7+/dXUt+9NMEelG9qjprX+ydSZgtACWidJUsvousdqR98zIAxb0BZ+ukaiLr7mPa51uabfzO8lDL/N8opp5xyagjqHxF7tDy+oJRaAAAAAElFTkSuQmCC" alt="2026-6-1-21">
+<div class="code-text">2026-6-1-21</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　22番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABfklEQVR4nO3aTW6jQBiE4bcGJC9BygHmKHC1HGluQB9lbuBejgSqLBrwTxaZjdOkaXa0nkVJ/sClz5b5+gq//gNBVVVVVVVVR1darxapXwRxOxmz5jqFGmzbV4DYAjS2bT+q7891ChW3GR+uoBGQ1ObPVbJqn+4N8/PZcdOXpTTGy+fKnz9XiWqb8c5ABBMXAXD/CRw1fREqSJJ60EhjYEk1J3euolWa+9uMr3PfPb53jpr+ZytSlRw87yeNobMZrqzlczpq+nLUYBu6ORVNoLGnA+QqVW3ftfHNBDWzie1sYo9D3+TLdQa1d/lFDF7kMCLTzW26zZXrPMoTjQla1wkEXSzpYo1Zc5Wt9n4/p7Kj/Qlg+NPXjvlKxf3KbK84t6v2nJer+z2mlB6DqZuf1PfnOoXa95gADH8v3rbJeXOdSqVq3/3T+ro5Sq4TKL//tj3FFkK/1N+tXqme95hp7sO4Htd+/3p122OqX/Sw3smaq2il+t+oqqqqqqpTqA+LQ5rc44j9HwAAAABJRU5ErkJggg==" alt="2026-6-1-22">
+<div class="code-text">2026-6-1-22</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　23番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABiElEQVR4nO2ZQYqEMBBF/58IvYw38CjxZkPfTI/SNzDLhjR/FjGN0zBMbzS2VhZB44N8iqLyU1L4f4xfb0CAUUYZZZRRe6c4jwbsI5knkmRfVdcpqCBJmgBdOwmAkyTpN7W9rlNQ8ZnjZZBs1tzRqOblneFGCHG9HY36kxq7BPZb7nhaquS9FzBnuxMBYHnp2qv6Q1AjSbIFEG4NADyyzamt69BUzvuXxoJeV/aq/rMpZCsZJCFMAABX4u7nDxr2qv6zqRx7SQkafII0OS3sviz2q1HlrI0tCFwE+AQAjwbwAsNQR9eJqLF1Oezs8SDyvfZGaqir6xSUv1NDbJCna7Y4Tuwr6zoy9az388gHblBCebJ6vxaV633x8S5hbAEhtsj1vpauM1ALjylNbp4GOPM5m1Glj0l2ywOXfWVdZ6I0xNl2kt3degrbUj7lSUO8yDzmBpRXiXMkESYnfk8A+8q6jkxh+WsQLnvM3FiAT+Yx16Re+5hzC9MnaLG+V/VGGWWUUUa9S/0AYNXX3fuX7nUAAAAASUVORK5CYII=" alt="2026-6-1-23">
+<div class="code-text">2026-6-1-23</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　24番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABj0lEQVR4nO2ZUWqEMBRFz2sC/YzQBcxSdMvdgS6lCyiYz4LD7UfidDptaT/q6DgvoCRywEt4XF+uJn4fw8MfIHDKKaeccmrrlNURMWuOBnl+0q2q6y6oVpI0gvTyKCBIkvSZur6uu6DyqcbTW5mZWVxf156peLE20isiL/dGp36k2hGsu+Yb75aa6z4JarUHGcD5oWur6m+bqns/GAAByE8TcLR1dd0DZReZgpHGL5BnCgtS1gHWZSvVXnv75uT821Z/q9Ts97mB4TCdtT0i22z6W1W/EypIfY5AjtBqwuwgWbe2rh1TpdA1NBik10jbHw0Iwut+YYqSHWiktPaQJtQD0hhUwoZ+q+pvm/rU3yOMHLFWx2jt86nR3Kr6PVAfOSbtCNX5k2dpi1LFc+YcM9RbT5hjTfecxak5xzQ7TFhH/eBat7KuPVOXOabIcQLASG/u91elhgZqs5MfpX4runZIfeP3lN9YtN5jLktx/muQoFLyGuvM935Bqp5rT2uVK03zbCVdTjnllFNO/S/1DpPhv5BzkeFpAAAAAElFTkSuQmCC" alt="2026-6-1-24">
+<div class="code-text">2026-6-1-24</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　25番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABjUlEQVR4nO2ZXWqFMBCFv6lCHxW6gLuUuLOuqTvQpXQH8bGQy+lDktJKaftQf653AgajH3gIJ+NkYuL3Nj38AQKnnHLKKaeOTllpLWY92DDXJ8Ouuu6CCpKkCFK8GtBIkvSV2l7XXVBz9fhkLRoBM2v313Vmql2MLcSntOoXnfqButYov9kX75Sqvu8EzMB0EQbwedN1VPWnoCYzM+uB8NoCXHOas7euU1PZ94vCgpZPjqr+DJQNlKw+D60uAxt21XVuqvh+MoAutYIE4aVHzFbtf1T1t02Rt1BBKWf1GmnyEDopb7rGo6q/barG+7nHgoAQ+7yvxX2/MpV9r7FLkGccygpQbNz3G1AhNpKUIESwZyVs4Oo55ppUjjl1jptUfrhzD3SqL46q/rapj3+tJMWmdCNNLWt6zFmdqnXM2pVCsg076zoztaxjarqUMqbRvXm835aaW6BLaJwfpfEwus5HfRPvycdYBM8x16X4fDRIo2x5xXLnc78itaxjKl9dqnc76XLKKaeccup/qXdHDM6wZOlCnAAAAABJRU5ErkJggg==" alt="2026-6-1-25">
+<div class="code-text">2026-6-1-25</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　26番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABk0lEQVR4nO2ZS4rDMBBEq8aGLBWYA+Qo0tVypLmBc5S5gbUM2NQsJDk/wmTjWHZaC4GlBy5aTbvUpvD/OH29AAFGGWWUUUbVTjGPFgwYyRDLSlhU10dQXpLUAzqyBYBGkqRb6v26PoKKU46jSREn0yksq2vLVHv3zNnfaNRTyuv8GP8KdG2QKnnvBCACQPwWAeD60lWr+nVTOfanlOvNtD7eJH+t6tdN8a6nQLj+AbKewowUAwCGSML/tsXu7/NG7erXSuHaxrsBSB7TDUh2X5LU1ap+E5TvAXVxJ/g+P5IHiWFZXZum0rdWwNDSC9DpcCZS8kcWs1Or+i1QDHEndTG7Hh3JdAAMi+raNnXJewBuAH0/gl5jS/8zGc1a1a+bSrEvMW4GIO4hxD0Ap7JRq/p1U9nn5D5mI3Uok/mcN1Glj1mm0er97NR9H/NyzSXc2er9e6nYIt2turiTump0bY96rPduSL+x4Psmb1i9n4W66SmgEbwGSH1uLFjsZ6Qmf5+HLv2cq/Va1RtllFFGGfUq9QfyBrpJ8U0PHAAAAABJRU5ErkJggg==" alt="2026-6-1-26">
+<div class="code-text">2026-6-1-26</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　27番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABfElEQVR4nO2aQWrEMAxFn5pAlw7MAXoU58q9QXKUOUAhWRbG/C7s0Ey6aDcZTxN54YX8IB8hmy8RE7+v8eUPEDjllFNOOfXslJXVAnMLzEukr6rrFFSUJE0AJLOeRpKke+rxuk5BzUuNj28l4+UaVNZ1ZKrdBuLV9v2iU07Vp5a6DwJmsPje3GCGddP1rOoPQY1mZtaVoPWkbHNq6zo0lev+u8ZVSv5+1PCs6o9AWU8yRmsx65KZdcl+Uo/XdRKqkfXhM2dcur6KsUveW+1JkXuoASBOAOGGBprcapXTZ1X/v6mS3VWegwQ0ZYue+50p64O0NLLJpCkZcUruc/aklrpfFnFqlN+cISxBr/tdKNYjs5zxG8SpUdk897tRpa+NA8B8wQiNYC7HqqXrTNQyx5QmssnXAFhfWdeZKOvnNnvMdYNVX9cRqe0MWWOHCcpzY7V0nYHazjEhfLQWBRbfL7dqus5AbX1O8Zjhzni6z9mFMv83yimnnHLqFNQX2H3N602bRTMAAAAASUVORK5CYII=" alt="2026-6-1-27">
+<div class="code-text">2026-6-1-27</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　28番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABjUlEQVR4nO2YQWrDMBBF31SGLhXoAXoU5WY5U25gH6UHKMjLgMPvQlKaZNNuHDvOaGGE/EAfexj+fBN/r+HtHxA45ZRTTjm1dsrq6soOxnayX1TXS1BJkpRBPUFAkCTplnq8rpegxkuNx5MBYGbd8rpeibLD17ts/8Abnfpdre4fd+OrUq2tRAEjMFiQAVwPXWtVvwlqMDOzHZAyAGerjmdZXZum7C5TMAjTPeSZwoyU7QHbj2akfLH7u/pi7eqflWr9fvyYNHxOHcQJIEyWjtaa/lrVPzdFmaF6QMqUKYukCYhSGbr6tap/buric767YnaG3XcHBMHodT8rRY0OoiTlcAkWQMrB635OqtR9Le84YQCWdO4sHc/uMeenfnNMUgb1Y0fp98vq2jZVe07NMUN99LTuI+85s1Mtx2yu/mxAaKna2tVvg1LfdmafJ+/3C1BxQv34rvorVqNrk1RU+87xZKQcZIfsmcKsVPP3ZQXVsxxU0gX39/NRN/6ea6evq/O1qnfKKaeccuq/1A+cobmPs36vtwAAAABJRU5ErkJggg==" alt="2026-6-1-28">
+<div class="code-text">2026-6-1-28</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　29番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABd0lEQVR4nO2aMW6EMBBF3wR6kHKAPQrcLFfDR8kNcBkJ9FMwTthtkoY1i+0Cgf0kf9mD+WNj4u8S3v4BQaUqValKVerslHlpIfRgY0w1Y1ZdRVCDJGkGhs8WTTSSJN1Tz9dVBBVTjId+NQC21yC3ruIoG5/dY6UAhvnZPRZLpWWlExDBoFkgwj7pOqv6S1DBzMx6tri3kXWzObl1XZra4v43xgULuo/686q/AmUjqxGsTU4/mZ3MuoqgQg/QfRmDFqQZzPq15lZHUmwplLubZltqPLeavVXTWdW/NpVGFzy5nToJn4VGXndW9a9NkbYOfLA92mfc6dexP47a+RwBGJ0gjM1CuP2YnbOqf22K/ZYZjTR1CwxzI7/UuD+M8rx2mADiOzbMCKI3K5eukqi0j6kJt5fb3ZhZV0mUWe8ec59g5dd1Rap9eBbR7j69mXSVRHXJ5Ifbgn1owcZYz04OpR59js9Cp32pPucQyuq/UZWqVKUqVQT1DfDpvYIzLan7AAAAAElFTkSuQmCC" alt="2026-6-1-29">
+<div class="code-text">2026-6-1-29</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　30番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABiElEQVR4nO2ZQW6DMBBF39SWuiRSD5CjwNHhKD1AJbyMRPS7sAlts2g2BEPGC0DmLb7Gw/A9NvH/GN4egMApp5xyyqnaKSsjYl0yyxczM+s21XVsKuZb2wOkDwRTFClMANhWul6JSiXHS/LPT5vreiVKPeHedm6vyymnVqj3NAISGM2ISPAz+2tVfwhqMDOzE9B+Rqzjmm3O1roOTeW8X3JcpKvpd9bXq/4IlHUpAsmM4TxhHVeDVBxP7er3SpV6P5wvBs0UIb0LCIJm2k7XK1BIUo6z+jwTND+Vt+prVb9vqkS3LICU/X0r5QXw2K9IzdG9ZfsS9h+rUKv6fVNzP0flYqRTNjnWLnanVvX7pnLsZx8fJoYTGM1X5LYK9arfN1X+ta0kaQyStPx1vd4/hZr7mAy5jxmy0cxz1avfJxXvZpoR4JrLkNecJ1LzDjeivrn4udWa1N8+ZrE4fdnh+rnVitS8r80jiHYMkkaQNOH+fkXqvo/JRPkMlhOsWtU75ZRTTjn1KPUN/sPBS5dqbcMAAAAASUVORK5CYII=" alt="2026-6-1-30">
+<div class="code-text">2026-6-1-30</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　31番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABdUlEQVR4nO2aS26DQBBEXwXvQcqB4Ga5GhzFN4A9qLKYgdjOItnwMfQsEAxPotQ0Q3WDzN+j+/gHBEEFFVRQQR2dUh436CTBMM80u+q6BFXbtnuAckQNhW3bz9T2ui5BDUuOA26B9BjsretiVGE1217xotTtdaK+a90rBjWPOfalgQG07D0WXUdVfwqqkyRVQH2/oYYp2Zy9dZ2aSnn/k+POKf/cajiq+jNQaphEpxtSNUmqJv2mttd1bork49vShjIbetsjbssxG//2qOrfm+KhhKr7JewUqdTKd+ao6s9AzSWtTfb3k+iqxekfW/27UsuaM6ZqNs/1Oe9jzVmRyrFfRg42RXoHxJqzIvW43pM6aCPUfeG8idivRuW6tm4Bhk9E2RuGfNp76boSNfcx3Q7Z5KdmZrOzrjNTr700AbhrilHz0S66rkjZfS5p49vJVlRpJ4/ZVaAvj6gZ4tvJqtSrz4Fnexkecz1K8W9UUEEFFdQlqG9zWOIcjt7a3AAAAABJRU5ErkJggg==" alt="2026-6-1-31">
+<div class="code-text">2026-6-1-31</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　32番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABc0lEQVR4nO2aTWqEQBCFv4pClj0wB8hReq6Wm7VHmQME2mVAeVnYOj8Qko0/o9ULkfaDfpTVWvXUxN+jefsHBE455ZRTTm2dsjJqaMwM2nHmsqquQ1BRkpTBLkECKkmSHqnldR2Casccj9dyNmyDtXUdimpOS6/oVBlKoVt2xeNS42MlCGgB2ncZwH3TtVX1r02V2DcGQIXFfAbobV1dR6CG2D8YC72VbTDPik49UnYBoK2BINHcKv1Vde2bYqjjlW+v2UpEScRcinylrap/bWqIPTFXImaQ1I2HXO6Cx34eirF9rURUx322hw7P+xmpKfbA5CQoAUp43s9KPdc5Rvga5izm83hhq+r3QN18zJLtGfR5mgqgbat/cWryMaE1o/nogPDtNeYS1ORjDm/dXIl4rVFaWdeeqfqX+b6+b263qn5nVMyg1NYo0ft3qyWoUCrL4t9PHe7auvZMPdf3ELrRXQhyT2FOyvzfKKeccsqpQ1A/HQDISjKoMM4AAAAASUVORK5CYII=" alt="2026-6-1-32">
+<div class="code-text">2026-6-1-32</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　33番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABj0lEQVR4nO2ZQW7kIBBFXwWkLG1pDtBHgavlZnCUPkAks7Rk688CdyedLGY2blo2LGwZnsRXqfxVFCb+PfLbf0DQqU51qlOdenXKtuGpj1huM7GprlNQQZI0gRKrKeEkSXqknq/rFFTZctwirkbczHx7XWeipOnJO3bqPvJlweIzdzwtdbOVQUABC1e/iALfD12vqv4QVDYzs3GbtMhay5zWug5N1bz/ynHly2x6zPrXVX8EymLxQNkS3SKrQfFYbKrr2NSW9/kyGyEt3sKEyOYEw9JO1xmoGnsDj2rEy58FWOsfoFa6zkBRz6+anGDYPuoxN91X06uqPwJlcZiNcLXq8vqoJY6Txaa6jk3d6xwnQFhIswnAgrrn7Erd/R4At5DHT4zh00MZe+z3pPhm8JqclIYFpYfV7vf7Urc+JuHqsa2Z2f1+V8r/mhkEvcZsQd1OuB6lYe73VntSP/uYyqPDQlo8lHdZK11noLbY5xpkVyseUUYIWnsfc0/qVx+zvqrpu35f26lOdapTR6H+AmgZpys2FNUOAAAAAElFTkSuQmCC" alt="2026-6-1-33">
+<div class="code-text">2026-6-1-33</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　34番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABgUlEQVR4nO2aQY7cIBRE3w/s8Q3mKObo5kCRzDKSrcoCnJnujpRs3HgMLCyDnuSSVYbiYxP/bunHf0AwqEENalCDujpltXlI026Qj5HYVFcX1CxJWsEiThZxkiQ9Uu/X1QWVq8e1ZI8WoHwGrXXdmfLPA7N2e8mdV1V/L8psAotvfGK/1OH7ICCDyB6Vu5a6OqKSmR2Wd7LIXmJOa123porvPz2uNDn06Prrqr8DZTH7cmFe63xvkX34/kzqS85R+tgAdlOaVpSmn9i8tNHVA0XZQ2kF5tWJWRvS6sS81g2Wlquq/95U9X2KbjPCVt1O+GUiN9TVA1V8Xz2+wqfvj+7w/VnUn5yzAUEYuJJxjLB5tdLVA8XXkhlOWoLEXMbGfH8qdcw5ZcE9XvZYa99JHXVMM/NYjfb7qN+fST3XMVXy/Yew2m2jq0fKbALIHi1BsngRXXekXuqYKXqMsAJ5aqerB+o550DY0PKQeMZaew71ekb1lzb+jRrUoAY1qG9P/QZCiNh4s4v8jgAAAABJRU5ErkJggg==" alt="2026-6-1-34">
+<div class="code-text">2026-6-1-34</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　35番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABm0lEQVR4nO2ZQW7bMBBF35QEspQBH8BHIW/Qs/YG1FF6gALi0gCN3wUpxXGAJosqkhXOhhL5AH4QH8PRyMTHMf74BASd6lSnOtWpvVPWwmORm1nM80zcVNexKV+HkADyGZHPguwKALaVru9E5eZxs8t1fjK/va4jU/7hXWSPyOvt2Kl/UE4Wv3bHb0rNvh8EZLDwi+r7+4+uvao/BDWamdmpTVrkVsucrXUdmqq+f/W4xsvV9Nb1+1V/BMpi9kA2I0zN95A9FjfVdWwK1ZhAaSgQJielodQFgiSlvap/bqrdtePP4g08Gi+FanlYUs9e1T831XyfAIIkwuRmt7+u7lX9c1NLailIEwCuHXvC9ZyzJrXUOU4wCAvpZgKwoJ5zVqXq2c91vCuQTxjDHw/51M9+Teq+nNFS4qQ3qz3nrEvlpVcPWMSJu87O3tU/J/XYxyT8fhFwq2mo55wvpCwOrb5XGq79v9Wa1GMfU+RzsZCKh/yi/t9qRardtS3ccuuCpEKv71ek3vUx6zAIas2/ka5OdapTnerU/6X+AkZeyiQX8iAOAAAAAElFTkSuQmCC" alt="2026-6-1-35">
+<div class="code-text">2026-6-1-35</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　36番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABgUlEQVR4nO2aS27EIBBEq2KkWWIpB8hRmJvlanCUuYG9jASqLMCZyWSRbPwL3SuDnkSpwK2mbQq/R3r5AwQYZZRRRhl1dIotHMgR4HVeZq676uqCCpKk6T4/SJL0ndpeVxfU/HXGUagIgKTbX1dPlOLWKxq1BN9vF/G64Yr9Ukta8QIwA0ojCAB4vHQdVf25qeZ9qn4PYJheM4HCfXX1QFXv72dcmAvba7Cnrh4o1FIyKLdxkAR4CWFqQ8Wjqj83Vb2XlLFswNC2IkytyDfv16EW76elvKyO16F5vypV8z3hswP8BKYRFLzAoELtpasHqp37iKHarOglRbRzb/l+RarVmEGt2GG4EQgqjmEal0LzqOrPTS05p8aQAS8wEUAad9TVEfXQx5xJwGco+vxEba+rC+qhjwkg3C4CZutjrkq554n0lh3gP6hwv9seVf3/ompVH2cHpLHYd6s1qec+Zo10bQ9W369I/ehjwhenoPItGR1V/bkp2r9RRhlllFFdUJ+FkbilMlUmPwAAAABJRU5ErkJggg==" alt="2026-6-1-36">
+<div class="code-text">2026-6-1-36</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　37番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABfklEQVR4nO2aQW6DMBBF3xSkLskNchRzgx6p6s3gKDlAJXtZieh3gZ0SsmgXJYEw3tl6kr+G4Xs8YOL30b/8AQKnnHLKKafWTlkedVlOZaV9qK5dUEGSFMHaVGMtlSRJ19T9de2CSjnH9XE4GwDT12Dt6p+FaoZ777hXqp7N7Xbpn3d0qowS6EZAAvVvn7VIML10rVX9timmRyqVCLESIZaVIEndWtVvmxrz/ifHBQO6zvr1qn8GKleWqQbGGhOsJVc8a1e/VWr0HCleCvpmYJx2zeCesyRVYq8BQgR1JfaE8jw89stQOfZdI/1cbifJ77G/A3U2erPR4KXTq4Cz93OWpC6ek0d2mlgV5/e8X4ya1/fqqEb3Gace+8WpmdV3qWZywVq7+o1TpY9p76cay6W9+/2i1Lxxpv74ZeqPwuByvV2r+m1TN33MEM9AqgeBsNA9RtceqJs+JoDRRCAdHqdrR1RvZmYHsBbyWdsf/ZvhopT5v1FOOeWUU7ugvgEpkOnPjfZh/AAAAABJRU5ErkJggg==" alt="2026-6-1-37">
+<div class="code-text">2026-6-1-37</div>
+</div><div class="qr-card">
+<div class="student-label">6年1組　38番</div>
+<img class="qr" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASIAAAEiAQAAAAB1xeIbAAABhUlEQVR4nO2aQW6kMBBF3x9byhKkHMi+Wo40N8BHmQOMhJeRQJWFoZPuLGY2NATKCwTmSXxZRflXgYx/j/LrPyBwyimnnHLq6JSWEaFIgrrO5F11XYJKZmY2AmkMpkwwMzO7p56v6xJUvcU4swBor8Heui5FlT58t50H0HUNaon7Jz7xotSaVjoDKohubGdfo/+o6k9BFUlSD6Q/EWXmZnP21nVqqsX9Z4xb6QN2H/XHVX8GSplZFEWUu3dJ/X3SP7b6n07ViHI3YUON2ABI/ey11ZbUzcKHiZIFdH8j1BeDGtfUc1T1P5ui1a9DK2QnPqtZGwjWCt7hqOrPQXXvUq4vRpFkNgYjjbP7nC2pJe5vgzSG5TUYunXS434T6kuSgbbiU2uoLQdf+82oZa9NA0B9RWnEoC63fa99ArX2Me1NsdnLZjTzzrrOTMWHa9GNWMlhEuB77TMpG9Y+pn872Zp67GO2XloyUPr9Ou2m6wrUo8+Be3vpHnM7Sv5vlFNOOeXUJagPdBnDYcvGzggAAAAASUVORK5CYII=" alt="2026-6-1-38">
+<div class="code-text">2026-6-1-38</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
