@@ -294,13 +294,8 @@
 
       <div id="groupFields">
         <label class="field" for="groupSize">1グループの人数</label>
-        <select id="groupSize">
-          <option value="2">2人組</option>
-          <option value="3">3人組</option>
-          <option value="4" selected>4人組</option>
-          <option value="5">5人組</option>
-          <option value="6">6人組</option>
-        </select>
+        <input id="groupSize" type="number" inputmode="numeric" min="2" max="200" step="1" value="4">
+        <div class="help">2人以上で、作りたいグループの人数を入力してください。</div>
       </div>
 
       <label class="field" for="excluded">欠席・除外する番号</label>
@@ -554,7 +549,7 @@ function startLottery(){
     const groupSize=Number($('groupSize').value);
 
     if(!Number.isInteger(maxNumber)||maxNumber<1||maxNumber>200) throw new Error('最大出席番号は1〜200で入力してください。');
-    if(lotteryType==='group' && ![2,3,4,5,6].includes(groupSize)) throw new Error('グループ人数は2〜6人から選んでください。');
+    if(lotteryType==='group' && (!Number.isInteger(groupSize)||groupSize<2||groupSize>200)) throw new Error('グループ人数は2〜200人で入力してください。');
 
     const excluded=parseExcluded($('excluded').value,maxNumber);
     const pairs=lotteryType==='group'?parsePairs($('forbidden').value,maxNumber):[];
