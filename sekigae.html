@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#146b66">
+  <title>席替え</title>
+  <style>
+    :root{--ink:#173431;--muted:#617773;--paper:#f6fbfa;--card:#fff;--line:#c9dedb;--teal:#146b66;--teal2:#d9f3ef;--yellow:#ffd56a;--red:#b84545;--shadow:0 12px 36px rgba(24,70,65,.12)}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#dff5f2 0,#f6fbfa 22rem);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;font-size:16px}
+    button,input{font:inherit} button{touch-action:manipulation}.app{max-width:1180px;margin:auto;padding:20px 20px 42px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.brand{display:flex;align-items:center;gap:12px}.brandmark{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:var(--teal);color:white;font-size:25px;box-shadow:var(--shadow)}h1{font-size:clamp(1.55rem,3vw,2.15rem);margin:0}.saved{color:var(--muted);font-size:.88rem}.panel{background:rgba(255,255,255,.94);border:1px solid rgba(255,255,255,.8);border-radius:22px;box-shadow:var(--shadow);padding:18px}.setup{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px;align-items:end}.field label{display:block;font-weight:700;font-size:.9rem;margin:0 0 6px}.field input{width:100%;min-height:46px;border:2px solid var(--line);border-radius:12px;padding:9px 12px;background:#fff;color:var(--ink)}.field input:focus{outline:3px solid #9ddfd6;border-color:var(--teal)}.field.wide{grid-column:span 2}.btn{min-height:46px;border:0;border-radius:13px;padding:10px 17px;font-weight:800;cursor:pointer;background:#e5efed;color:var(--ink)}.btn:active{transform:translateY(1px)}.btn.primary{background:var(--teal);color:#fff}.btn.yellow{background:var(--yellow);color:#533d00}.btn.danger{background:#fae7e7;color:var(--red)}.help{grid-column:1/-1;margin:0;color:var(--muted);font-size:.9rem}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.actions .spacer{flex:1}.message{display:none;margin:12px 0;padding:11px 14px;border-radius:12px;background:#fff1d0;color:#674900;font-weight:700}.message.show{display:block}.history{display:flex;gap:8px;overflow:auto;padding:2px 1px 10px}.tab{white-space:nowrap;min-width:92px;border:2px solid var(--line);background:#fff;border-radius:999px;padding:9px 15px;color:var(--ink);font-weight:800}.tab.active{border-color:var(--teal);background:var(--teal);color:#fff}.tab:disabled{opacity:.4}.board-panel{padding:18px;overflow:hidden}.board-head{position:relative;text-align:center;margin-bottom:16px}.blackboard{max-width:560px;margin:auto;background:#245d4d;border:7px solid #ad8150;border-radius:8px;color:white;padding:10px;font-size:1.1rem;font-weight:800;box-shadow:inset 0 0 0 2px rgba(255,255,255,.14)}.view-label{margin:12px 0 0;font-weight:800;color:var(--teal)}.view-label.past{color:#8b5b00}.board-wrap{overflow:auto;padding:8px 2px 14px}.board{display:grid;gap:10px;margin:auto;min-width:max-content;justify-content:center}.seat{width:clamp(82px,10vw,118px);height:72px;border:2px solid #9fc9c3;border-radius:14px;background:linear-gradient(#fff,#eef9f7);color:var(--ink);display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:1.12rem;font-weight:900;box-shadow:0 4px 0 #b8d7d2;user-select:none}.seat.current{cursor:pointer}.seat.selected{outline:4px solid var(--yellow);border-color:#c39018}.seat.empty{color:#9aadaa;font-weight:600}.seat.off{background:repeating-linear-gradient(135deg,#edf1f0,#edf1f0 8px,#e2e8e7 8px,#e2e8e7 16px);border-style:dashed;color:#84918f;box-shadow:none}.seat small{font-size:.7rem;font-weight:600;color:var(--muted)}.empty-state{text-align:center;padding:50px 12px;color:var(--muted)}.past-actions{display:none;justify-content:center;margin:6px 0 4px}.past-actions.show{display:flex}.footnote{text-align:center;color:var(--muted);font-size:.85rem;margin:10px 0 0}.modal{position:fixed;inset:0;background:rgba(9,35,32,.46);display:none;place-items:center;padding:20px;z-index:5}.modal.show{display:grid}.dialog{width:min(640px,100%);max-height:88vh;overflow:auto;background:white;border-radius:22px;padding:20px;box-shadow:0 24px 80px rgba(0,0,0,.3)}.dialog h2{margin-top:0}.shape{display:grid;gap:7px;justify-content:center;margin:18px auto}.shape button{width:54px;height:43px;border:2px solid #9fc9c3;border-radius:9px;background:#edf9f7;font-weight:800}.shape button.off{background:#dfe4e3;color:#78817f;border-style:dashed}.dialog-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+    @media(max-width:760px){.app{padding:14px 12px 30px}.setup{grid-template-columns:1fr 1fr}.field.wide{grid-column:1/-1}.setup>.btn{grid-column:1/-1}.panel{border-radius:18px;padding:14px}.top{align-items:flex-start}.saved{display:none}.seat{width:76px;height:64px}.actions .spacer{display:none}}
+    @media print{body{background:white}.app{max-width:none;padding:0}.setup,.actions,.history,.past-actions,.footnote,.saved{display:none!important}.panel{box-shadow:none;border:0}.board-panel{padding:0}.seat{width:92px;height:68px}.top{justify-content:center}.brandmark{display:none}}
+    select{font:inherit;width:100%;min-height:46px;border:2px solid var(--line);border-radius:12px;padding:9px 12px;background:#fff;color:var(--ink)}.condition-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.condition-grid .full{grid-column:1/-1}.condition-grid label{display:block;font-weight:800;margin:0 0 6px}.condition-grid input{width:100%;min-height:44px;border:2px solid var(--line);border-radius:11px;padding:8px 11px}.condition-grid p{margin:4px 0;color:var(--muted);font-size:.84rem}.priority{background:#fff6d9;border:2px solid #f0ce64;border-radius:14px;padding:12px}.mode-note{grid-column:1/-1;background:var(--teal2);border-radius:11px;padding:9px 12px;color:#245c57;font-size:.88rem;font-weight:700}@media(max-width:600px){.condition-grid{grid-template-columns:1fr}.condition-grid .full{grid-column:auto}}
+  </style>
+</head>
+<body>
+<main class="app">
+  <header class="top"><div class="brand"><div class="brandmark">▦</div><div><h1>席替え</h1><div class="saved" id="savedText">この端末に自動保存されます</div></div></div></header>
+  <section class="panel setup" aria-label="席替えの設定">
+    <div class="field"><label for="students">児童数</label><input id="students" type="number" min="1" max="60" value="35" inputmode="numeric"></div>
+    <div class="field"><label for="cols">列数</label><input id="cols" type="number" min="1" max="10" value="6" inputmode="numeric"></div>
+    <div class="field"><label for="rows">行数</label><input id="rows" type="number" min="1" max="12" value="6" inputmode="numeric"></div>
+    <button class="btn" id="shapeBtn">使わない席を設定</button>
+    <div class="field wide"><label for="absent">欠席者の番号（例：3, 12）</label><input id="absent" type="text" inputmode="numeric" placeholder="いない場合は空欄"></div>
+    <div class="field"><label for="mode">席替えの方法</label><select id="mode"><option value="conditional">条件付きランダム</option><option value="random">完全ランダム</option></select></div>
+    <button class="btn" id="conditionBtn">条件を設定</button>
+    <button class="btn primary" id="shuffleBtn">席替えを実行</button>
+    <div class="mode-note" id="modeNote">設定した配慮や組み合わせをできるだけ守って席替えします。</div>
+    <p class="help">席をタップして2人を選ぶと、あとから場所を入れ替えられます。</p>
+  </section>
+  <div class="message" id="message" role="alert"></div>
+  <div class="actions"><button class="btn yellow" id="shuffleAgain">もう一度席替え</button><button class="btn" id="printBtn">印刷・PDF</button><span class="spacer"></span><button class="btn danger" id="clearBtn">すべての記録を削除</button></div>
+  <nav class="history" aria-label="座席表の履歴">
+    <button class="tab active" data-index="0">今回</button><button class="tab" data-index="1">前回</button><button class="tab" data-index="2">2回前</button><button class="tab" data-index="3">3回前</button>
+  </nav>
+  <section class="panel board-panel">
+    <div class="board-head"><div class="blackboard">黒　板</div><p class="view-label" id="viewLabel">今回の座席</p></div>
+    <div class="board-wrap"><div class="board" id="board"></div></div>
+    <div class="past-actions" id="pastActions"><button class="btn yellow" id="restoreBtn">この座席を今回の座席に戻す</button></div>
+    <p class="footnote" id="footnote">最初に設定して「席替えを実行」を押してください。</p>
+  </section>
+</main>
+<div class="modal" id="shapeModal" role="dialog" aria-modal="true" aria-labelledby="shapeTitle">
+  <div class="dialog"><h2 id="shapeTitle">使わない席を設定</h2><p>使わない場所をタップしてください。もう一度タップすると戻ります。</p><div class="shape" id="shapeGrid"></div><div class="dialog-actions"><button class="btn" id="shapeCancel">キャンセル</button><button class="btn primary" id="shapeSave">決定</button></div></div>
+</div>
+<div class="modal" id="conditionModal" role="dialog" aria-modal="true" aria-labelledby="conditionTitle">
+  <div class="dialog"><h2 id="conditionTitle">席替えの条件</h2>
+    <div class="condition-grid">
+      <div class="full"><label for="apart">離したい組み合わせ</label><input id="apart" placeholder="例：3-12, 5-8"><p>前後・左右・ななめで隣り合わないようにします。</p></div>
+      <div class="full"><label for="near">近くにしたい組み合わせ</label><input id="near" placeholder="例：2-7, 14-20"><p>周囲1席以内になるようにします。</p></div>
+      <div class="full priority"><label for="eyesight">目が悪い人（最優先で前方）</label><input id="eyesight" inputmode="numeric" placeholder="例：4, 11, 23"><p>黒板に近い席から優先して配置します。</p></div>
+      <div><label for="frontPref">前方にしたい人</label><input id="frontPref" inputmode="numeric" placeholder="例：6, 18"></div>
+      <div><label for="backPref">後方にしたい人</label><input id="backPref" inputmode="numeric" placeholder="例：9, 25"></div>
+      <div><label for="windowPref">窓側にしたい人</label><input id="windowPref" inputmode="numeric" placeholder="例：10"></div>
+      <div><label for="hallPref">廊下側にしたい人</label><input id="hallPref" inputmode="numeric" placeholder="例：16"></div>
+      <div class="full"><label for="windowSide">窓の位置（黒板に向かって）</label><select id="windowSide"><option value="left">左側</option><option value="right">右側</option></select></div>
+    </div>
+    <div class="dialog-actions"><button class="btn" id="conditionCancel">キャンセル</button><button class="btn primary" id="conditionSave">決定</button></div>
+  </div>
+</div>
+<script>
+(()=>{'use strict';
+const KEY='sekigae-app-v1';
+const $=id=>document.getElementById(id);
+const emptyConditions={apart:'',near:'',eyesight:'',front:'',back:'',window:'',hall:'',windowSide:'left'};
+const defaults={settings:{students:35,cols:6,rows:6,absent:'',disabled:[],mode:'conditional',conditions:{...emptyConditions}},history:[]};
+let state=load(), view=0, selected=null, draftDisabled=[], draftConditions={};
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!(x&&x.settings&&Array.isArray(x.history)))return structuredClone(defaults);x.settings.mode=x.settings.mode||'conditional';x.settings.conditions={...emptyConditions,...(x.settings.conditions||{})};return x}catch(e){return structuredClone(defaults)}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));$('savedText').textContent='保存しました';setTimeout(()=>$('savedText').textContent='この端末に自動保存されます',1200)}
+function values(){return{students:+$('students').value,cols:+$('cols').value,rows:+$('rows').value,absent:$('absent').value.trim(),disabled:[...state.settings.disabled],mode:$('mode').value,conditions:{...emptyConditions,...state.settings.conditions}}}
+function applySettings(){const s=state.settings;$('students').value=s.students;$('cols').value=s.cols;$('rows').value=s.rows;$('absent').value=s.absent||'';$('mode').value=s.mode||'conditional';updateModeNote()}
+function parseAbsent(text,max){const nums=(text.match(/\d+/g)||[]).map(Number);return [...new Set(nums)].filter(n=>n>=1&&n<=max)}
+function error(msg){const el=$('message');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4500)}
+function normalizeDisabled(list,total){return [...new Set((list||[]).map(Number).filter(i=>Number.isInteger(i)&&i>=0&&i<total))].sort((a,b)=>a-b)}
+function validate(s){if(!Number.isInteger(s.students)||s.students<1||s.students>60)return'児童数は1〜60人で入力してください。';if(!Number.isInteger(s.cols)||s.cols<1||s.cols>10)return'列数は1〜10列で入力してください。';if(!Number.isInteger(s.rows)||s.rows<1||s.rows>12)return'行数は1〜12行で入力してください。';const count=s.cols*s.rows-s.disabled.length;const present=s.students-parseAbsent(s.absent,s.students).length;if(count<present)return`使える席が${count}席、出席者が${present}人です。席を増やしてください。`;return''}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function parsePairs(text,max){const out=[];for(const m of text.matchAll(/(\d+)\s*[-－ー〜~]\s*(\d+)/g)){const a=+m[1],b=+m[2];if(a>=1&&a<=max&&b>=1&&b<=max&&a!==b)out.push([a,b])}return out}
+function positions(seats,cols){const p={};seats.forEach((n,i)=>{if(n!=null)p[n]={r:Math.floor(i/cols),c:i%cols}});return p}
+function conditionScore(seats,s){const c={...emptyConditions,...s.conditions},p=positions(seats,s.cols);let score=0;const dist=(a,b)=>p[a]&&p[b]?Math.max(Math.abs(p[a].r-p[b].r),Math.abs(p[a].c-p[b].c)):99;
+  parsePairs(c.apart,s.students).forEach(([a,b])=>{if(dist(a,b)<=1)score+=1200});parsePairs(c.near,s.students).forEach(([a,b])=>{const d=dist(a,b);if(d>1)score+=100+d*10});
+  const list=t=>parseAbsent(t,s.students),lastRow=Math.max(0,s.rows-1),windowCol=c.windowSide==='right'?s.cols-1:0,hallCol=c.windowSide==='right'?0:s.cols-1;
+  list(c.eyesight).forEach(n=>{if(p[n])score+=p[n].r*180});list(c.front).forEach(n=>{if(p[n])score+=p[n].r*30});list(c.back).forEach(n=>{if(p[n])score+=(lastRow-p[n].r)*30});list(c.window).forEach(n=>{if(p[n])score+=Math.abs(p[n].c-windowCol)*25});list(c.hall).forEach(n=>{if(p[n])score+=Math.abs(p[n].c-hallCol)*25});return score}
+function makeSeats(people,s){const usable=[];for(let i=0;i<s.cols*s.rows;i++)if(!s.disabled.includes(i))usable.push(i);if(usable.length<people.length)throw new Error('座席数が足りません');const build=order=>{const seats=Array(s.cols*s.rows).fill(null);order.forEach((n,i)=>seats[usable[i]]=n);return seats};if(s.mode==='random')return build(shuffle([...people]));let best=null,bestScore=Infinity;for(let n=0;n<3500;n++){const candidate=build(shuffle([...people])),score=conditionScore(candidate,s);if(score<bestScore){best=candidate;bestScore=score;if(score===0)break}}return best}
+function runShuffle(){const s=values();s.disabled=normalizeDisabled(s.disabled,s.cols*s.rows);const msg=validate(s);if(msg)return error(msg);const absent=parseAbsent(s.absent,s.students);const people=Array.from({length:s.students},(_,i)=>i+1).filter(n=>!absent.includes(n));let seats;try{seats=makeSeats(people,s)}catch(e){return error('全員を配置できませんでした。席数と使わない席を確認してください。')}const placed=seats.filter(Number.isInteger);const missing=people.filter(n=>!placed.includes(n));const duplicated=placed.filter((n,i)=>placed.indexOf(n)!==i);if(missing.length||duplicated.length)return error(`配置を確認できませんでした。入っていない番号：${missing.join('、')||'なし'}`);const result={date:new Date().toISOString(),settings:structuredClone(s),seats};state.settings=structuredClone(s);state.history.unshift(result);state.history=state.history.slice(0,4);view=0;selected=null;save();render()}
+function render(){applySettings();const tabs=[...document.querySelectorAll('.tab')];tabs.forEach((t,i)=>{t.disabled=!state.history[i];t.classList.toggle('active',i===view)});const item=state.history[view];const labels=['今回の座席','前回の座席','2回前の座席','3回前の座席'];$('viewLabel').textContent=labels[view];$('viewLabel').classList.toggle('past',view>0);$('pastActions').classList.toggle('show',view>0&&!!item);const board=$('board');board.innerHTML='';if(!item){board.innerHTML='<div class="empty-state">まだ座席表がありません</div>';$('footnote').textContent='最初に設定して「席替えを実行」を押してください。';return}const s=item.settings;s.disabled=normalizeDisabled(s.disabled,s.cols*s.rows);board.style.gridTemplateColumns=`repeat(${s.cols},auto)`;item.seats.forEach((person,i)=>{const b=document.createElement('button');b.type='button';b.className='seat'+(view===0?' current':'');if(s.disabled.includes(i)){b.className+=' off';b.disabled=true;b.textContent='使わない'}else if(person==null){b.className+=' empty';b.innerHTML='<span>空席</span>'}else{b.innerHTML=`<span>${person}番</span><small>${Math.floor(i/s.cols)+1}列目・${i%s.cols+1}番</small>`;if(view===0)b.addEventListener('click',()=>selectSeat(i,b))}board.appendChild(b)});const d=new Date(item.date),absent=parseAbsent(s.absent,s.students),placed=item.seats.filter(Number.isInteger);$('footnote').textContent=`配置 ${placed.length}人${absent.length?`／欠席：${absent.join('、')}番`:'／欠席なし'}　作成：${d.toLocaleDateString('ja-JP')} ${d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}`}
+function selectSeat(i,el){const item=state.history[0];if(item.seats[i]==null)return;if(selected===null){selected=i;el.classList.add('selected');return}if(selected===i){selected=null;el.classList.remove('selected');return}[item.seats[selected],item.seats[i]]=[item.seats[i],item.seats[selected]];selected=null;save();render()}
+function openShape(){const s=values();if(!Number.isInteger(s.cols)||!Number.isInteger(s.rows)||s.cols<1||s.rows<1||s.cols>10||s.rows>12)return error('列数と行数を先に正しく入力してください。');draftDisabled=state.settings.cols===s.cols&&state.settings.rows===s.rows?[...state.settings.disabled]:[];const grid=$('shapeGrid');grid.innerHTML='';grid.style.gridTemplateColumns=`repeat(${s.cols},54px)`;for(let i=0;i<s.cols*s.rows;i++){const b=document.createElement('button');b.type='button';b.textContent=i+1;b.classList.toggle('off',draftDisabled.includes(i));b.onclick=()=>{const at=draftDisabled.indexOf(i);at>=0?draftDisabled.splice(at,1):draftDisabled.push(i);b.classList.toggle('off')};grid.appendChild(b)}$('shapeModal').classList.add('show')}
+function closeShape(){$('shapeModal').classList.remove('show')}
+$('shapeBtn').onclick=openShape;$('shapeCancel').onclick=closeShape;$('shapeSave').onclick=()=>{state.settings=values();state.settings.disabled=[...draftDisabled];save();closeShape();render()};$('shapeModal').onclick=e=>{if(e.target===$('shapeModal'))closeShape()};
+function openConditions(){draftConditions={...emptyConditions,...state.settings.conditions};const map={apart:'apart',near:'near',eyesight:'eyesight',front:'frontPref',back:'backPref',window:'windowPref',hall:'hallPref',windowSide:'windowSide'};Object.entries(map).forEach(([k,id])=>$(id).value=draftConditions[k]||'');$('windowSide').value=draftConditions.windowSide||'left';$('conditionModal').classList.add('show')}
+function closeConditions(){$('conditionModal').classList.remove('show')}
+function updateModeNote(){const conditional=$('mode').value==='conditional';$('conditionBtn').disabled=!conditional;$('conditionBtn').style.opacity=conditional?'1':'.45';$('modeNote').textContent=conditional?'設定した配慮や組み合わせをできるだけ守って席替えします。':'すべての条件を使わず、完全にランダムで席替えします。'}
+$('conditionBtn').onclick=openConditions;$('conditionCancel').onclick=closeConditions;$('conditionModal').onclick=e=>{if(e.target===$('conditionModal'))closeConditions()};$('conditionSave').onclick=()=>{state.settings=values();state.settings.conditions={apart:$('apart').value.trim(),near:$('near').value.trim(),eyesight:$('eyesight').value.trim(),front:$('frontPref').value.trim(),back:$('backPref').value.trim(),window:$('windowPref').value.trim(),hall:$('hallPref').value.trim(),windowSide:$('windowSide').value};save();closeConditions();render()};
+$('mode').onchange=()=>{state.settings=values();save();updateModeNote()};
+$('shuffleBtn').onclick=runShuffle;$('shuffleAgain').onclick=runShuffle;$('printBtn').onclick=()=>window.print();
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{const i=+t.dataset.index;if(state.history[i]){view=i;selected=null;render()}});
+$('restoreBtn').onclick=()=>{if(view<1||!state.history[view])return;const copy=structuredClone(state.history[view]);copy.date=new Date().toISOString();state.history.unshift(copy);state.history=state.history.slice(0,4);state.settings=structuredClone(copy.settings);view=0;save();render()};
+$('clearBtn').onclick=()=>{if(confirm('今回の座席と3回前までの記録をすべて削除しますか？')){state=structuredClone(defaults);view=0;selected=null;save();render()}};
+['students','cols','rows','absent'].forEach(id=>$(id).addEventListener('change',()=>{const v=values();if(id==='cols'||id==='rows'){if(v.cols!==state.settings.cols||v.rows!==state.settings.rows)v.disabled=[]}state.settings=v;save()}));
+applySettings();render();
+})();
+</script>
+</body>
+</html>
