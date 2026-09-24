@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f7f8fb">
-<title>Goal Flow v2.5</title>
+<title>Goal Flow v2.6</title>
 <style>
 :root{--bg:#f5f6f8;--card:#fff;--ink:#25282d;--muted:#727780;--line:#e5e7eb;--accent:#52667a;--soft:#eef2f5;--danger:#b94a48;--warn:#b57925;--ok:#47765c;--shadow:0 8px 24px rgba(20,28,38,.07)}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink)}
@@ -29,20 +29,16 @@ header{display:flex;gap:12px;align-items:center;justify-content:space-between;ma
 @media(max-width:560px){.importrow{grid-template-columns:28px 128px 1fr}.importrow input{font-size:14px}}
 #photoPickArea,#scheduleMonth,#ocrDebugBox,#pdfImportStatus,#goalPdfInput{display:none!important}
 
-@media (max-width: 700px){
-  .modal{padding:0!important;align-items:stretch!important;}
-  .modal-card,.modalbox,.sheet{
-    width:100vw!important;max-width:none!important;height:100dvh!important;max-height:100dvh!important;
-    margin:0!important;border-radius:0!important;box-sizing:border-box!important;overflow-y:auto!important;
-  }
-  #bulkStep1,#bulkStep2{width:100%!important;box-sizing:border-box!important;}
-  #bulkStep2 .importrow{
-    display:grid!important;grid-template-columns:34px 132px minmax(0,1fr)!important;
-    gap:6px!important;align-items:center!important;width:100%!important;box-sizing:border-box!important;
-  }
-  #bulkStep2 .importrow input[type="date"]{width:132px!important;min-width:0!important;box-sizing:border-box!important;}
-  #bulkStep2 .importrow input[type="text"]{width:100%!important;min-width:0!important;box-sizing:border-box!important;}
-  #bulkStep2 .actions,.modal-actions{position:sticky!important;bottom:0!important;background:#fff!important;z-index:5!important;padding-bottom:max(10px,env(safe-area-inset-bottom))!important;}
+@media(max-width:600px){
+ .bulkback{align-items:stretch!important}
+ .bulkmodal{width:100%!important;max-width:none!important;height:100dvh!important;max-height:100dvh!important;
+   border-radius:0!important;padding:16px 14px calc(18px + env(safe-area-inset-bottom))!important;box-sizing:border-box!important}
+ #bulkStep2{width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+ #bulkStep2 .importrow{display:grid!important;grid-template-columns:30px 1fr!important;gap:6px 8px!important;width:100%!important}
+ #bulkStep2 .impcheck{grid-row:1 / span 2!important;grid-column:1!important}
+ #bulkStep2 .impdate{grid-row:1!important;grid-column:2!important;width:100%!important;box-sizing:border-box!important}
+ #bulkStep2 .imptitle{grid-row:2!important;grid-column:2!important;width:100%!important;box-sizing:border-box!important}
+ #bulkStep2 .actions{position:sticky!important;bottom:0!important;background:#fff!important;z-index:10!important;padding-top:10px!important}
 }
 
 </style>
@@ -116,10 +112,6 @@ header{display:flex;gap:12px;align-items:center;justify-content:space-between;ma
 <details id="ocrDebugBox" style="display:none;margin:10px 0"><summary style="cursor:pointer;font-weight:700">🔎 OCRの読み取り結果を確認</summary><textarea id="ocrDebugText" class="bulktext" style="min-height:120px;margin-top:8px" readonly></textarea></details>
 <div id="bulkStep2" style="display:none">
 <div class="importtools"><button type="button" id="selectAllImport">すべて選択</button><button type="button" id="clearAllImport">すべて解除</button><button type="button" id="backBulk">← 貼り付けに戻る</button></div>
-<div style="display:flex;justify-content:space-between;align-items:center;margin:4px 0 10px">
-<b>登録する予定を確認</b>
-<button type="button" class="secondary" onclick="backToBulkInput()">← 入力に戻る</button>
-</div>
 <div id="importRows"></div>
 <p class="hint">日付や予定名は、この画面で修正してから登録できます。登録後は通常の予定と同じように途中締切を追加できます。</p>
 <div class="actions"><button class="cancel" type="button" id="bulkCancel2">キャンセル</button><button class="save" type="button" id="commitBulkBtn">選択した予定を登録</button></div>
@@ -165,6 +157,11 @@ function defaultScheduleMonth(){
  if(!document.getElementById('scheduleMonth').value)document.getElementById('scheduleMonth').value=v;
 }
 function openBulk(){
+ var p0=document.getElementById('bulkStep1')&&document.getElementById('bulkStep1').closest('details');if(p0)p0.style.display='block';
+ if(document.getElementById('bulkStep1'))document.getElementById('bulkStep1').style.display='block';
+ if(document.getElementById('bulkStep2'))document.getElementById('bulkStep2').style.display='none';
+ var hh=document.querySelector('#bulkBack .bulkmodal > h2');if(hh)hh.textContent='予定表からまとめて登録';
+
  defaultScheduleMonth();
  document.getElementById('bulkText').value='';
  document.getElementById('bulkStep1').style.display='block';
@@ -361,10 +358,12 @@ function showImportedCandidates(out,schoolMode){
      box.insertAdjacentHTML('afterbegin','<div class="hint" style="margin:4px 0 10px"><b>学校予定表モードで '+out.length+' 日分を検出しました。</b><br>同じ日の「児童」「職員」が一つにつながっている場合は、予定名をここで短く直してから登録できます。</div>');
    }
  }
+ var inputPanel=document.getElementById('bulkStep1').closest('details');
+ if(inputPanel)inputPanel.style.display='none';
  document.getElementById('bulkStep1').style.display='none';
  document.getElementById('bulkStep2').style.display='block';
- var modal=document.getElementById('bulkStep2').closest('.modal-card, .modalbox, .sheet, .modal');
- if(modal)modal.scrollTop=0;
+ var heading=document.querySelector('#bulkBack .bulkmodal > h2');
+ if(heading)heading.textContent='登録する予定を確認';
 }
 
 function parseBulkText(){
@@ -411,7 +410,12 @@ document.getElementById('bulkImportBtn').addEventListener('click',openBulk,false
 document.getElementById('bulkCancel1').addEventListener('click',closeBulk,false);
 document.getElementById('bulkCancel2').addEventListener('click',closeBulk,false);
 document.getElementById('parseBulkBtn').addEventListener('click',parseBulkText,false);
-document.getElementById('backBulk').addEventListener('click',function(){document.getElementById('bulkStep1').style.display='block';document.getElementById('bulkStep2').style.display='none'},false);
+document.getElementById('backBulk').addEventListener('click',function(){
+ var p=document.getElementById('bulkStep1').closest('details');if(p)p.style.display='block';
+ document.getElementById('bulkStep1').style.display='block';
+ document.getElementById('bulkStep2').style.display='none';
+ var h=document.querySelector('#bulkBack .bulkmodal > h2');if(h)h.textContent='予定表からまとめて登録';
+},false);
 document.getElementById('selectAllImport').addEventListener('click',function(){document.querySelectorAll('.impcheck').forEach(function(x){x.checked=true})},false);
 document.getElementById('clearAllImport').addEventListener('click',function(){document.querySelectorAll('.impcheck').forEach(function(x){x.checked=false})},false);
 document.getElementById('commitBulkBtn').addEventListener('click',commitBulk,false);
@@ -459,13 +463,6 @@ async function pasteGoalFlowText(){
    document.getElementById('bulkText').focus();
    alert('入力欄を長押しして「ペースト」を選んでください。');
  }
-}
-
-
-function backToBulkInput(){
- document.getElementById('bulkStep2').style.display='none';
- document.getElementById('bulkStep1').style.display='block';
- var el=document.getElementById('bulkText');if(el)el.focus();
 }
 
 </script>
