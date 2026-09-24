@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f7f8fb">
-<title>Goal Flow v1.8</title>
+<title>Goal Flow v2.0</title>
 <style>
 :root{--bg:#f5f6f8;--card:#fff;--ink:#25282d;--muted:#727780;--line:#e5e7eb;--accent:#52667a;--soft:#eef2f5;--danger:#b94a48;--warn:#b57925;--ok:#47765c;--shadow:0 8px 24px rgba(20,28,38,.07)}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink)}
@@ -32,7 +32,7 @@ header{display:flex;gap:12px;align-items:center;justify-content:space-between;ma
 </head>
 <body>
 <div class="app">
-<header><div class="brand"><h1>Goal Flow</h1><p>ゴールと途中の締切を、ひと目で。</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="smallbtn" id="bulkImportBtn" type="button">📷 予定表から登録</button><button class="add" id="quickAddBtn" type="button">＋ かんたん登録</button></div></header>
+<header><div class="brand"><h1>Goal Flow</h1><p>ゴールと途中の締切を、ひと目で。</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="smallbtn" id="bulkImportBtn" type="button">✨ ChatGPTから取り込み</button><button class="add" id="quickAddBtn" type="button">＋ かんたん登録</button></div></header>
 <div class="toolbar">
  <div class="seg" id="statusSeg"><button data-status="active" class="active">進行中</button><button data-status="done">完了済み</button></div>
  <div class="seg" id="viewSeg"><button data-view="list" class="active">縦一覧</button><button data-view="timeline">横タイムライン</button></div>
@@ -71,6 +71,18 @@ header{display:flex;gap:12px;align-items:center;justify-content:space-between;ma
 </div>
 <details style="margin-bottom:12px"><summary style="cursor:pointer;font-weight:700">文字を貼り付けて登録する場合</summary>
 <div id="bulkStep1" style="margin-top:10px">
+<div class="hint" style="margin:8px 0 10px;line-height:1.7">
+<b>使い方</b><br>
+① 予定表の写真をChatGPTに送って「Goal Flow用にして」と伝える<br>
+② ChatGPTが返したデータを全部コピー<br>
+③ 下の欄に貼り付けて「読み取る」を押す<br>
+<span style="font-size:12px">形式：2026/10/01 | 予定名　（同じ日に複数の予定があってもOK）</span>
+</div>
+<details style="margin:8px 0 12px"><summary style="cursor:pointer;font-weight:800">ChatGPTに送る言葉</summary>
+<div style="margin-top:8px;padding:10px;background:#f6f7f9;border-radius:10px;font-size:13px;line-height:1.6">
+予定表の画像を読み取って、Goal Flow取り込み用にしてください。<br>
+1行を「YYYY/MM/DD | 予定名」の形式にして、予定がない日は出さないでください。同じ日に複数ある場合は1予定1行にしてください。
+</div></details>
 <textarea id="bulkText" class="bulktext" placeholder="例：
 10月2日　学年会
 10月8日　研究授業
@@ -203,43 +215,18 @@ function choose31Rows(lines,height){
  }
  return [];
 }
-function cropScheduleCell(src,y0,y1,side){
- // Approximate columns for this school sheet:
- // left 12% = day/weekday, middle = 児童, right = 職員.
- var x0,x1;
- if(side==='student'){x0=Math.floor(src.width*.135);x1=Math.floor(src.width*.655)}
- else {x0=Math.floor(src.width*.665);x1=Math.floor(src.width*.985)}
- var rowH=y1-y0,padY=Math.max(3,Math.floor(rowH*.13)),padX=Math.max(3,Math.floor((x1-x0)*.012));
- var w=Math.max(1,x1-x0-2*padX),h=Math.max(1,rowH-2*padY),scale=3;
- var c=document.createElement('canvas'),ctx=c.getContext('2d',{willReadFrequently:true});
+function cropRowContent(src,y0,y1){
+ // Exclude left date/weekday columns and trim a little inside horizontal borders.
+ var x0=Math.floor(src.width*.12),x1=Math.floor(src.width*.985),pad=Math.max(2,Math.floor((y1-y0)*.08));
+ var w=x1-x0,h=Math.max(1,y1-y0-2*pad);
+ var scale=2.0,c=document.createElement('canvas'),ctx=c.getContext('2d',{willReadFrequently:true});
  c.width=Math.round(w*scale);c.height=Math.round(h*scale);
- ctx.imageSmoothingEnabled=true;
- ctx.drawImage(src,x0+padX,y0+padY,w,h,0,0,c.width,c.height);
- // grayscale, stronger contrast
+ ctx.drawImage(src,x0,y0+pad,w,h,0,0,c.width,c.height);
+ // grayscale + threshold; also erase long vertical/horizontal grid remnants
  var im=ctx.getImageData(0,0,c.width,c.height),d=im.data;
- for(var i=0;i<d.length;i+=4){
-   var g=.299*d[i]+.587*d[i+1]+.114*d[i+2];
-   var v=g<170?0:255;d[i]=d[i+1]=d[i+2]=v;
- }
+ for(var i=0;i<d.length;i+=4){var g=.299*d[i]+.587*d[i+1]+.114*d[i+2];var v=g<180?0:255;d[i]=d[i+1]=d[i+2]=v}
  ctx.putImageData(im,0,0);
- // erase thin border remnants
- ctx.fillStyle='#fff';
- var e=Math.max(4,Math.round(scale*2));
- ctx.fillRect(0,0,c.width,e);ctx.fillRect(0,c.height-e,c.width,e);
- ctx.fillRect(0,0,e,c.height);ctx.fillRect(c.width-e,0,e,c.height);
  return c;
-}
-function cellInkRatio(c){
- var ctx=c.getContext('2d'),d=ctx.getImageData(0,0,c.width,c.height).data,dark=0,total=0;
- // sample every 4 px; ignore edge
- for(var y=8;y<c.height-8;y+=4)for(var x=8;x<c.width-8;x+=4){
-   total++;if(d[(y*c.width+x)*4]<80)dark++;
- }
- return total?dark/total:0;
-}
-function likelyBlankCell(c){
- // Blank cells after grid removal contain almost no dark pixels.
- return cellInkRatio(c)<0.006;
 }
 async function recognizeCanvas(canvas,psm,progressBase,progressSpan){
  var result=await Tesseract.recognize(canvas,'jpn',{
@@ -265,18 +252,10 @@ async function recognizeScheduleImage(file){
    var rawRows=[];
    if(bounds.length===32){
      for(var day=1;day<=31;day++){
-       var sc=cropScheduleCell(canvas,bounds[day-1],bounds[day],'student');
-       var tc=cropScheduleCell(canvas,bounds[day-1],bounds[day],'staff');
-       var st='',tt='';
-       var base=.04+(day-1)*.9/31,span=.9/31;
-       if(!likelyBlankCell(sc))st=cleanRowOCR(await recognizeCanvas(sc,7,base,span*.5));
-       if(!likelyBlankCell(tc))tt=cleanRowOCR(await recognizeCanvas(tc,7,base+span*.5,span*.5));
-       // Reject very short garbage that frequently appears in truly blank cells.
-       if(st.length<=1)st=''; if(tt.length<=1)tt='';
-       var parts=[];
-       if(st)parts.push('児童：'+st);
-       if(tt)parts.push('職員：'+tt);
-       if(parts.length)rawRows.push({day:day,text:parts.join(' / ')});
+       var rc=cropRowContent(canvas,bounds[day-1],bounds[day]);
+       var t=await recognizeCanvas(rc,7,.04+(day-1)*.9/31,.9/31);
+       t=cleanRowOCR(t);
+       if(t && t!=='0' && t!=='〇' && t.length>1)rawRows.push({day:day,text:t});
      }
    }else{
      // Fallback whole-page OCR, but still show diagnostic instead of silently failing.
@@ -289,7 +268,7 @@ async function recognizeScheduleImage(file){
    var synthetic=yy+'年度 '+mm+'月 行事予定表\n';
    rawRows.forEach(function(r){synthetic+=r.day+' '+r.text+'\n'});
    document.getElementById('bulkText').value=synthetic;
-   document.getElementById('ocrDebugText').value='【横罫線】 '+lines.length+'本\n【31日行の分割】成功\n【児童・職員を別々にOCR】ON\n【予定あり】 '+rawRows.length+'日\n\n'+synthetic;
+   document.getElementById('ocrDebugText').value='【横罫線】 '+lines.length+'本\n【31日行の分割】成功\n【予定あり】 '+rawRows.length+'日\n\n'+synthetic;
    document.getElementById('ocrDebugBox').style.display='block';
    setOcrStatus(true,'読み取り完了。予定を整理しています…',1);
    parseBulkText();setTimeout(function(){setOcrStatus(false,'',0)},500);
@@ -361,22 +340,24 @@ function showImportedCandidates(out,schoolMode){
 
 function parseBulkText(){
  var text=document.getElementById('bulkText').value.replace(/\r/g,'')
- .replace(/([0-9０-９])\s+月/g,'$1月').replace(/月\s+([0-9０-９])/g,'月$1')
- .replace(/([0-9０-９])\s+日/g,'$1日')
  .replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)});
- var school=parseSchoolMonthlyTable(text);
- if(/行事予定表|児童|職員/.test(text) && school.items.length){
-   showImportedCandidates(school.items,true); return;
- }
- var lines=text.split('\n').map(function(x){return x.trim()}).filter(Boolean), out=[];
+ var lines=text.split('\n').map(function(x){return x.trim()}).filter(Boolean),out=[];
  lines.forEach(function(line){
-   var m=line.match(/(?:(\d{4})\s*[年\/\-.]\s*)?(\d{1,2})\s*(?:月|[\/\-.])\s*(\d{1,2})\s*(?:日)?\s*[　\s:：\-－]?\s*(.*)/);
-   if(!m)return;
-   var y=m[1]?parseInt(m[1],10):inferYear(parseInt(m[2],10),parseInt(m[3],10));
-   var mo=parseInt(m[2],10),d=parseInt(m[3],10);
+   // Preferred ChatGPT format: YYYY/MM/DD | title
+   var p=line.match(/^(\d{4})\s*[\/\-.年]\s*(\d{1,2})\s*[\/\-.月]\s*(\d{1,2})\s*日?\s*(?:\||｜|\t|：|:)\s*(.+)$/);
+   if(!p){
+     // Also accept ordinary date + title without a pipe.
+     p=line.match(/^(?:(\d{4})\s*[年\/\-.]\s*)?(\d{1,2})\s*(?:月|[\/\-.])\s*(\d{1,2})\s*(?:日)?\s+(.+)$/);
+     if(p && !p[1]){
+       var iy=inferYear(parseInt(p[2],10),parseInt(p[3],10));
+       p=[p[0],String(iy),p[2],p[3],p[4]];
+     }
+   }
+   if(!p)return;
+   var y=parseInt(p[1],10),mo=parseInt(p[2],10),d=parseInt(p[3],10);
    if(mo<1||mo>12||d<1||d>31)return;
-   var title=(m[4]||'').trim().replace(/^[・●○□■◆★\s]+/,'');
-   if(!title)title='予定';
+   var title=(p[4]||'').trim().replace(/^[・●○□■◆★\s]+/,'');
+   if(!title)return;
    out.push({date:y+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0'),title:title});
  });
  showImportedCandidates(out,false);
@@ -387,7 +368,7 @@ function commitBulk(){
   if(!row.querySelector('.impcheck').checked)return;
   var date=row.querySelector('.impdate').value, title=row.querySelector('.imptitle').value.trim();
   if(!date||!title)return;
-  tasks.push({id:'t'+Date.now()+Math.random().toString(16).slice(2),title:title,startDate:today(),finalDate:date,milestones:[],excludeWeekend:true,excludeHolidays:false,memo:'予定表から登録',completed:false,completedAt:'',todayFlag:false});
+  tasks.push({id:'t'+Date.now()+Math.random().toString(16).slice(2),title:title,startDate:today(),finalDate:date,milestones:[],excludeWeekend:true,excludeHolidays:false,memo:'ChatGPTから取り込み',completed:false,completedAt:'',todayFlag:false});
   n++;
  });
  if(!n){alert('登録する予定を選んでください。');return}
