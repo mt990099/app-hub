@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f7f8fb">
-<title>Goal Flow v1.6.1</title>
+<title>Goal Flow v1.7</title>
 <style>
 :root{--bg:#f5f6f8;--card:#fff;--ink:#25282d;--muted:#727780;--line:#e5e7eb;--accent:#52667a;--soft:#eef2f5;--danger:#b94a48;--warn:#b57925;--ok:#47765c;--shadow:0 8px 24px rgba(20,28,38,.07)}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink)}
@@ -55,6 +54,11 @@ header{display:flex;gap:12px;align-items:center;justify-content:space-between;ma
 <div class="bulkback" id="bulkBack"><div class="bulkmodal">
 <h2 style="margin:0 0 5px">予定表からまとめて登録</h2>
 <p class="hint"><b>学校の月間行事予定表を写真で読み取れます。</b> 初回の文字認識では日本語OCRデータを読み込むためネット接続が必要です。画像はこのブラウザ内で処理します。</p>
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 12px">
+<label style="font-weight:800">予定表の年月</label>
+<input type="month" id="scheduleMonth" style="border:1px solid #d8dbe0;border-radius:9px;padding:8px;font-size:16px">
+<span class="hint">OCRで読めない場合もここを使います</span>
+</div>
 <div id="photoPickArea" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px">
 <button class="save" type="button" id="cameraBtn">📷 今、写真を撮る</button>
 <button class="cancel" type="button" id="libraryBtn">🖼 写真から選ぶ</button>
@@ -74,7 +78,7 @@ header{display:flex;gap:12px;align-items:center;justify-content:space-between;ma
 10/28　音楽鑑賞会"></textarea>
 <div class="actions"><button class="cancel" type="button" id="bulkCancel1">キャンセル</button><button class="save" type="button" id="parseBulkBtn">予定を読み取る</button></div>
 </div></details>
-<details id="ocrDebugBox" style="display:none;margin:10px 0"><summary style="cursor:pointer;font-weight:700">🔎 OCRの読み取り結果を確認</summary><p class="hint">ここはOCRが返した生の文字です。認識ミスが含まれることがあります。</p><textarea id="ocrDebugText" class="bulktext" lang="ja" style="min-height:120px;margin-top:8px;font-family:-apple-system,BlinkMacSystemFont,&quot;Hiragino Sans&quot;,&quot;Yu Gothic&quot;,sans-serif" readonly></textarea></details>
+<details id="ocrDebugBox" style="display:none;margin:10px 0"><summary style="cursor:pointer;font-weight:700">🔎 OCRの読み取り結果を確認</summary><textarea id="ocrDebugText" class="bulktext" style="min-height:120px;margin-top:8px" readonly></textarea></details>
 <div id="bulkStep2" style="display:none">
 <div class="importtools"><button type="button" id="selectAllImport">すべて選択</button><button type="button" id="clearAllImport">すべて解除</button><button type="button" id="backBulk">← 貼り付けに戻る</button></div>
 <div id="importRows"></div>
@@ -117,7 +121,12 @@ var qab=document.getElementById('quickAddBtn'); function showQuickAdd(e){if(e&&e
 document.getElementById('searchBox').addEventListener('input',render);
 document.getElementById('statusSeg').onclick=e=>{if(e.target.dataset.status){status=e.target.dataset.status;render()}};document.getElementById('viewSeg').onclick=e=>{if(e.target.dataset.view){view=e.target.dataset.view;render()}};
 
+function defaultScheduleMonth(){
+ var d=new Date(),v=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+ if(!document.getElementById('scheduleMonth').value)document.getElementById('scheduleMonth').value=v;
+}
 function openBulk(){
+ defaultScheduleMonth();
  document.getElementById('bulkText').value='';
  document.getElementById('bulkStep1').style.display='block';
  document.getElementById('bulkStep2').style.display='none';
@@ -146,89 +155,120 @@ async function loadImageFile(file){
  });
 }
 function preprocessScheduleImage(img){
- var maxW=1500, scale=Math.min(1,maxW/img.naturalWidth);
- var c=document.createElement('canvas'), ctx=c.getContext('2d',{willReadFrequently:true});
- c.width=Math.round(img.naturalWidth*scale); c.height=Math.round(img.naturalHeight*scale);
+ var maxW=1800, scale=Math.min(1,maxW/img.naturalWidth);
+ var c=document.createElement('canvas'),ctx=c.getContext('2d',{willReadFrequently:true});
+ c.width=Math.round(img.naturalWidth*scale);c.height=Math.round(img.naturalHeight*scale);
  ctx.drawImage(img,0,0,c.width,c.height);
- var im=ctx.getImageData(0,0,c.width,c.height), d=im.data;
- for(var i=0;i<d.length;i+=4){
-   var g=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
-   var v=g<185?0:255; d[i]=d[i+1]=d[i+2]=v;
- }
- ctx.putImageData(im,0,0); return c;
+ return c;
+}
+function grayBinaryCanvas(src,threshold){
+ var c=document.createElement('canvas'),ctx=c.getContext('2d',{willReadFrequently:true});
+ c.width=src.width;c.height=src.height;ctx.drawImage(src,0,0);
+ var im=ctx.getImageData(0,0,c.width,c.height),d=im.data;
+ for(var i=0;i<d.length;i+=4){var g=.299*d[i]+.587*d[i+1]+.114*d[i+2];var v=g<(threshold||190)?0:255;d[i]=d[i+1]=d[i+2]=v}
+ ctx.putImageData(im,0,0);return c;
 }
 function horizontalLines(canvas){
- var ctx=canvas.getContext('2d'), im=ctx.getImageData(0,0,canvas.width,canvas.height).data, scores=[];
- var x0=Math.floor(canvas.width*.04), x1=Math.floor(canvas.width*.98);
- for(var y=0;y<canvas.height;y++){
-   var dark=0;
-   for(var x=x0;x<x1;x+=3){var k=(y*canvas.width+x)*4;if(im[k]<60)dark++}
-   scores.push(dark/Math.max(1,(x1-x0)/3));
- }
- var ys=[], inRun=false,best=0,bestScore=0;
+ var b=grayBinaryCanvas(canvas,185),ctx=b.getContext('2d'),im=ctx.getImageData(0,0,b.width,b.height).data,scores=[];
+ var x0=Math.floor(b.width*.03),x1=Math.floor(b.width*.98);
+ for(var y=0;y<b.height;y++){var dark=0,total=0;for(var x=x0;x<x1;x+=2){var k=(y*b.width+x)*4;total++;if(im[k]<50)dark++}scores.push(dark/total)}
+ var ys=[],run=[];
  for(var y=0;y<scores.length;y++){
-   if(scores[y]>.42){if(!inRun){inRun=true;best=y;bestScore=scores[y]}else if(scores[y]>bestScore){best=y;bestScore=scores[y]}}
-   else if(inRun){ys.push(best);inRun=false}
+   if(scores[y]>.32)run.push(y);
+   else if(run.length){ys.push(Math.round(run.reduce(function(a,b){return a+b},0)/run.length));run=[]}
  }
+ if(run.length)ys.push(Math.round(run.reduce(function(a,b){return a+b},0)/run.length));
  return ys;
 }
-function cropCanvas(src,y0,y1){
- var c=document.createElement('canvas'), ctx=c.getContext('2d');
- c.width=src.width; c.height=Math.max(1,y1-y0);
- ctx.drawImage(src,0,y0,src.width,c.height,0,0,src.width,c.height); return c;
+function choose31Rows(lines,height){
+ // Search every sequence of 32 boundaries for a reasonably regular monthly grid.
+ var best=null;
+ for(var i=0;i+31<lines.length;i++){
+   var seg=lines.slice(i,i+32),gaps=[];
+   for(var j=0;j<31;j++)gaps.push(seg[j+1]-seg[j]);
+   var avg=gaps.reduce(function(a,b){return a+b},0)/31;
+   if(avg<18||avg>85)continue;
+   var dev=gaps.reduce(function(a,b){return a+Math.abs(b-avg)},0)/31;
+   var score=dev/avg;
+   if(!best||score<best.score)best={bounds:seg,score:score,avg:avg};
+ }
+ if(best&&best.score<.55)return best.bounds;
+ // Fallback: locate the densest long run of horizontal lines, then interpolate 31 rows.
+ if(lines.length>=2){
+   var top=lines[Math.max(0,Math.floor(lines.length*.12))];
+   var bottom=lines[Math.min(lines.length-1,Math.floor(lines.length*.88))];
+   if(bottom-top>height*.45){
+     var arr=[];for(var k=0;k<=31;k++)arr.push(Math.round(top+(bottom-top)*k/31));return arr;
+   }
+ }
+ return [];
+}
+function cropRowContent(src,y0,y1){
+ // Exclude left date/weekday columns and trim a little inside horizontal borders.
+ var x0=Math.floor(src.width*.12),x1=Math.floor(src.width*.985),pad=Math.max(2,Math.floor((y1-y0)*.08));
+ var w=x1-x0,h=Math.max(1,y1-y0-2*pad);
+ var scale=2.0,c=document.createElement('canvas'),ctx=c.getContext('2d',{willReadFrequently:true});
+ c.width=Math.round(w*scale);c.height=Math.round(h*scale);
+ ctx.drawImage(src,x0,y0+pad,w,h,0,0,c.width,c.height);
+ // grayscale + threshold; also erase long vertical/horizontal grid remnants
+ var im=ctx.getImageData(0,0,c.width,c.height),d=im.data;
+ for(var i=0;i<d.length;i+=4){var g=.299*d[i]+.587*d[i+1]+.114*d[i+2];var v=g<180?0:255;d[i]=d[i+1]=d[i+2]=v}
+ ctx.putImageData(im,0,0);
+ return c;
 }
 async function recognizeCanvas(canvas,psm,progressBase,progressSpan){
  var result=await Tesseract.recognize(canvas,'jpn',{
-   preserve_interword_spaces:'1',tessedit_pageseg_mode:String(psm||6),
+   preserve_interword_spaces:'1',tessedit_pageseg_mode:String(psm||7),
    logger:function(m){if(m.status==='recognizing text')setOcrStatus(true,'予定表を読み取っています…',progressBase+(m.progress||0)*progressSpan)}
  });
  return (result&&result.data&&result.data.text)||'';
 }
+function cleanRowOCR(t){
+ return (t||'').replace(/\r?\n/g,' ').replace(/[|｜]/g,' ').replace(/[_—ー]{3,}/g,' ')
+ .replace(/\s+/g,' ').replace(/^\s*[月火水木金土日曜]\s*/,'').trim();
+}
 async function recognizeScheduleImage(file){
  if(!file)return;
  if(!window.Tesseract){alert('文字認識機能を読み込めませんでした。インターネット接続を確認してください。');return}
- setOcrStatus(true,'予定表の罫線を調べています…',0.02);
+ setOcrStatus(true,'予定表の31日分の行を探しています…',.01);
  try{
-   var img=await loadImageFile(file), canvas=preprocessScheduleImage(img), lines=horizontalLines(canvas);
-   var raw='', schoolText='';
-   // First OCR the whole page for title/year/month and as fallback.
-   raw=await recognizeCanvas(canvas,6,.03,.32);
-   var head=raw.match(/(20\d{2})\s*年度?[\s　]*(\d{1,2})\s*月/);
-   var year=head?parseInt(head[1],10):new Date().getFullYear();
-   var month=head?parseInt(head[2],10):(new Date().getMonth()+1);
-   // Identify plausible consecutive row boundaries. School monthly sheets usually have 31 similarly-sized rows.
-   var gaps=[];
-   for(var i=0;i<lines.length-1;i++){var h=lines[i+1]-lines[i];if(h>18&&h<100)gaps.push({a:lines[i],b:lines[i+1],h:h})}
-   var groups=[], cur=[];
-   gaps.forEach(function(g){if(!cur.length||Math.abs(g.h-cur[cur.length-1].h)<22){cur.push(g)}else{if(cur.length>groups.length)groups=cur.slice();cur=[g]}});
-   if(cur.length>groups.length)groups=cur.slice();
-   var rows=groups.length>=20?groups.slice(0,31):[];
-   if(rows.length>=20){
-     // OCR in chunks of rows to keep context while reducing table confusion.
-     var chunk=5, rowTexts=[];
-     for(var st=0;st<rows.length;st+=chunk){
-       var en=Math.min(rows.length,st+chunk);
-       var cc=cropCanvas(canvas,rows[st].a,rows[en-1].b);
-       var t=await recognizeCanvas(cc,6,.38+(st/rows.length)*.52,(chunk/rows.length)*.52);
-       rowTexts.push(t);
+   var img=await loadImageFile(file),canvas=preprocessScheduleImage(img),lines=horizontalLines(canvas),bounds=choose31Rows(lines,canvas.height);
+   var monthValue=document.getElementById('scheduleMonth').value;
+   var yy,mm;
+   if(monthValue){yy=parseInt(monthValue.slice(0,4),10);mm=parseInt(monthValue.slice(5,7),10)}
+   else {var now=new Date();yy=now.getFullYear();mm=now.getMonth()+1}
+   var rawRows=[];
+   if(bounds.length===32){
+     for(var day=1;day<=31;day++){
+       var rc=cropRowContent(canvas,bounds[day-1],bounds[day]);
+       var t=await recognizeCanvas(rc,7,.04+(day-1)*.9/31,.9/31);
+       t=cleanRowOCR(t);
+       if(t && t!=='0' && t!=='〇' && t.length>1)rawRows.push({day:day,text:t});
      }
-     schoolText=year+'年度 '+month+'月 行事予定表\n'+rowTexts.join('\n');
-   }else schoolText=raw;
-   document.getElementById('bulkText').value=schoolText;
-   document.getElementById('ocrDebugText').value='【検出した横罫線】 '+lines.length+'本\n【予定行候補】 '+rows.length+'行\n\n'+schoolText;
+   }else{
+     // Fallback whole-page OCR, but still show diagnostic instead of silently failing.
+     var whole=await recognizeCanvas(canvas,6,.05,.88);
+     document.getElementById('bulkText').value=whole;
+     document.getElementById('ocrDebugText').value='【横罫線】 '+lines.length+'本\n【31日行の分割】失敗\n\n'+whole;
+     document.getElementById('ocrDebugBox').style.display='block';
+     parseBulkText();return;
+   }
+   var synthetic=yy+'年度 '+mm+'月 行事予定表\n';
+   rawRows.forEach(function(r){synthetic+=r.day+' '+r.text+'\n'});
+   document.getElementById('bulkText').value=synthetic;
+   document.getElementById('ocrDebugText').value='【横罫線】 '+lines.length+'本\n【31日行の分割】成功\n【予定あり】 '+rawRows.length+'日\n\n'+synthetic;
    document.getElementById('ocrDebugBox').style.display='block';
    setOcrStatus(true,'読み取り完了。予定を整理しています…',1);
-   parseBulkText();
-   setTimeout(function(){setOcrStatus(false,'',0)},600);
+   parseBulkText();setTimeout(function(){setOcrStatus(false,'',0)},500);
  }catch(e){
-   console.error(e); setOcrStatus(false,'',0);
+   console.error(e);setOcrStatus(false,'',0);
    document.getElementById('ocrDebugBox').style.display='block';
    document.getElementById('ocrDebugText').value='読み取りエラー: '+String(e);
-   alert('写真の読み取りに失敗しました。「OCRの読み取り結果を確認」を開くと診断内容を確認できます。');
+   alert('写真の読み取りに失敗しました。診断欄の内容を確認できます。');
  }
 }
 function parseSchoolMonthlyTable(raw){
- var txt=(raw||'').replace(/\uFFFD/g,'').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'').replace(/\r/g,'').replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)});
+ var txt=(raw||'').replace(/\r/g,'').replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)});
  var head=txt.match(/(20\d{2})\s*年度?[\s　]*(\d{1,2})\s*月/);
  var year=head?parseInt(head[1],10):new Date().getFullYear();
  var month=head?parseInt(head[2],10):(new Date().getMonth()+1);
