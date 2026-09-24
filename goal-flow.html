@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f7f8fb">
-<title>Goal Flow v1.3</title>
+<title>Goal Flow v1.4</title>
 <style>
 :root{--bg:#f5f6f8;--card:#fff;--ink:#25282d;--muted:#727780;--line:#e5e7eb;--accent:#52667a;--soft:#eef2f5;--danger:#b94a48;--warn:#b57925;--ok:#47765c;--shadow:0 8px 24px rgba(20,28,38,.07)}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink)}
@@ -28,10 +28,11 @@ header{display:flex;gap:12px;align-items:center;justify-content:space-between;ma
 .importtools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.importtools button{border:1px solid #d8dbe0;background:#fff;border-radius:9px;padding:8px 10px}
 @media(max-width:560px){.importrow{grid-template-columns:28px 128px 1fr}.importrow input{font-size:14px}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
 <div class="app">
-<header><div class="brand"><h1>Goal Flow</h1><p>ゴールと途中の締切を、ひと目で。</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="smallbtn" id="bulkImportBtn" type="button">📋 予定表から登録</button><button class="add" id="quickAddBtn" type="button">＋ かんたん登録</button></div></header>
+<header><div class="brand"><h1>Goal Flow</h1><p>ゴールと途中の締切を、ひと目で。</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="smallbtn" id="bulkImportBtn" type="button">📷 予定表から登録</button><button class="add" id="quickAddBtn" type="button">＋ かんたん登録</button></div></header>
 <div class="toolbar">
  <div class="seg" id="statusSeg"><button data-status="active" class="active">進行中</button><button data-status="done">完了済み</button></div>
  <div class="seg" id="viewSeg"><button data-view="list" class="active">縦一覧</button><button data-view="timeline">横タイムライン</button></div>
@@ -52,15 +53,26 @@ header{display:flex;gap:12px;align-items:center;justify-content:space-between;ma
 
 <div class="bulkback" id="bulkBack"><div class="bulkmodal">
 <h2 style="margin:0 0 5px">予定表からまとめて登録</h2>
-<p class="hint">iPhoneの写真やPDFで文字を選択してコピーし、ここへ貼り付けてください。「10/8 研究授業」「10月8日　研究授業」などを読み取れます。</p>
-<div id="bulkStep1">
+<p class="hint"><b>写真を撮る／選ぶだけで予定表を読み取れます。</b> 初回の文字認識では日本語OCRデータを読み込むためネット接続が必要です。画像はこのブラウザ内で処理します。</p>
+<div id="photoPickArea" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px">
+<button class="save" type="button" id="cameraBtn">📷 今、写真を撮る</button>
+<button class="cancel" type="button" id="libraryBtn">🖼 写真から選ぶ</button>
+<input id="cameraInput" type="file" accept="image/*" capture="environment" style="display:none">
+<input id="libraryInput" type="file" accept="image/*" style="display:none">
+</div>
+<div id="ocrStatus" style="display:none;background:#f5f7fa;border-radius:12px;padding:12px;margin-bottom:12px">
+<div style="font-weight:800" id="ocrStatusText">予定表を読み取っています…</div>
+<div style="height:8px;background:#e2e6eb;border-radius:99px;margin-top:8px;overflow:hidden"><div id="ocrBar" style="height:100%;width:0;background:#222;border-radius:99px"></div></div>
+</div>
+<details style="margin-bottom:12px"><summary style="cursor:pointer;font-weight:700">文字を貼り付けて登録する場合</summary>
+<div id="bulkStep1" style="margin-top:10px">
 <textarea id="bulkText" class="bulktext" placeholder="例：
 10月2日　学年会
 10月8日　研究授業
 10/16　校内研修
 10/28　音楽鑑賞会"></textarea>
 <div class="actions"><button class="cancel" type="button" id="bulkCancel1">キャンセル</button><button class="save" type="button" id="parseBulkBtn">予定を読み取る</button></div>
-</div>
+</div></details>
 <div id="bulkStep2" style="display:none">
 <div class="importtools"><button type="button" id="selectAllImport">すべて選択</button><button type="button" id="clearAllImport">すべて解除</button><button type="button" id="backBulk">← 貼り付けに戻る</button></div>
 <div id="importRows"></div>
@@ -107,6 +119,7 @@ function openBulk(){
  document.getElementById('bulkText').value='';
  document.getElementById('bulkStep1').style.display='block';
  document.getElementById('bulkStep2').style.display='none';
+ setOcrStatus(false,'',0);
  document.getElementById('bulkBack').classList.add('show');
 }
 function closeBulk(){document.getElementById('bulkBack').classList.remove('show')}
@@ -116,8 +129,38 @@ function inferYear(m,d){
  if(candidate<past) y++;
  return y;
 }
+
+function setOcrStatus(show,msg,pct){
+ var box=document.getElementById('ocrStatus'), bar=document.getElementById('ocrBar'), txt=document.getElementById('ocrStatusText');
+ box.style.display=show?'block':'none'; if(msg)txt.textContent=msg; if(typeof pct==='number')bar.style.width=Math.round(pct*100)+'%';
+}
+async function recognizeScheduleImage(file){
+ if(!file)return;
+ if(!window.Tesseract){alert('文字認識機能を読み込めませんでした。インターネット接続を確認してください。');return}
+ setOcrStatus(true,'日本語の文字認識を準備しています…',0.03);
+ try{
+   var result=await Tesseract.recognize(file,'jpn',{
+     logger:function(m){
+       if(m.status==='recognizing text')setOcrStatus(true,'予定表を読み取っています…',m.progress||0);
+       else if(m.status)setOcrStatus(true,'文字認識を準備しています…',m.progress||0);
+     }
+   });
+   var text=(result&&result.data&&result.data.text)||'';
+   document.getElementById('bulkText').value=text;
+   setOcrStatus(true,'読み取り完了。予定を探しています…',1);
+   parseBulkText();
+   setTimeout(function(){setOcrStatus(false,'',0)},500);
+ }catch(e){
+   console.error(e); setOcrStatus(false,'',0);
+   alert('写真の読み取りに失敗しました。写真を明るく、予定表を正面から撮ってもう一度お試しください。');
+ }
+}
+
 function parseBulkText(){
- var text=document.getElementById('bulkText').value.replace(/\r/g,'');
+ var text=document.getElementById('bulkText').value.replace(/\r/g,'')
+ .replace(/([0-9０-９])\s+月/g,'$1月').replace(/月\s+([0-9０-９])/g,'月$1')
+ .replace(/([0-9０-９])\s+日/g,'$1日')
+ .replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)});
  var lines=text.split('\n').map(function(x){return x.trim()}).filter(Boolean), out=[];
  lines.forEach(function(line){
    var m=line.match(/(?:(\d{4})\s*[年\/\-.]\s*)?(\d{1,2})\s*(?:月|[\/\-.])\s*(\d{1,2})\s*(?:日)?\s*[　\s:：\-－]?\s*(.*)/);
@@ -147,6 +190,10 @@ function commitBulk(){
  if(!n){alert('登録する予定を選んでください。');return}
  closeBulk(); save(); if(typeof toast==='function')toast(n+'件の予定を登録しました');
 }
+document.getElementById('cameraBtn').addEventListener('click',function(){document.getElementById('cameraInput').click()},false);
+document.getElementById('libraryBtn').addEventListener('click',function(){document.getElementById('libraryInput').click()},false);
+document.getElementById('cameraInput').addEventListener('change',function(e){recognizeScheduleImage(e.target.files&&e.target.files[0]);this.value=''},false);
+document.getElementById('libraryInput').addEventListener('change',function(e){recognizeScheduleImage(e.target.files&&e.target.files[0]);this.value=''},false);
 document.getElementById('bulkImportBtn').addEventListener('click',openBulk,false);
 document.getElementById('bulkCancel1').addEventListener('click',closeBulk,false);
 document.getElementById('bulkCancel2').addEventListener('click',closeBulk,false);
