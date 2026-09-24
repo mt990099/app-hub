@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f7f8fb">
-<title>Goal Flow v1.2</title>
+<title>Goal Flow v1.3</title>
 <style>
 :root{--bg:#f5f6f8;--card:#fff;--ink:#25282d;--muted:#727780;--line:#e5e7eb;--accent:#52667a;--soft:#eef2f5;--danger:#b94a48;--warn:#b57925;--ok:#47765c;--shadow:0 8px 24px rgba(20,28,38,.07)}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink)}
@@ -19,11 +19,19 @@ header{display:flex;gap:12px;align-items:center;justify-content:space-between;ma
 .timeline{overflow:auto;background:white;border:1px solid var(--line);border-radius:17px;padding:14px}.tlrow{display:grid;grid-template-columns:190px minmax(680px,1fr);gap:12px;align-items:center;min-height:60px;border-bottom:1px solid #f0f1f3}.tlrow:last-child{border-bottom:0}.tlname{font-size:13px;font-weight:700}.track{height:38px;position:relative;background:repeating-linear-gradient(to right,#f7f8fa 0,#f7f8fa calc(7.14% - 1px),#e9ebee calc(7.14% - 1px),#e9ebee 7.14%);border-radius:8px}.dot{position:absolute;top:8px;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;border:2px solid white;background:#71879b;box-shadow:0 1px 5px rgba(0,0,0,.18);font-size:10px;color:white;display:grid;place-items:center}.dot.final{background:#333}.dot.done{background:#9ca3aa}.todayline{position:absolute;top:0;bottom:0;width:2px;background:#c26565;opacity:.7}
 .modalback{position:fixed;inset:0;background:rgba(22,25,30,.35);display:none;align-items:flex-end;justify-content:center;z-index:20}.modalback.show{display:flex}.modal{background:white;width:min(680px,100%);max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.14)}.modal h2{margin:0 0 5px;font-size:21px}.hint{font-size:12px;color:#777;margin:0 0 16px}.field{margin:13px 0}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid #d8dbe0;border-radius:11px;padding:11px;background:white}.field textarea{min-height:90px;resize:vertical}.mileedit{display:grid;grid-template-columns:1fr 150px 42px;gap:7px;margin:7px 0}.mileedit input{min-width:0}.mileedit button{border:0;background:#f4eaea;color:#9a3f3d;border-radius:10px;font-size:18px}.addmile{border:1px dashed #bcc3ca;background:#f8f9fa;border-radius:11px;padding:9px 12px;width:100%;color:#4f5f6e}.search{border:1px solid var(--line);background:white;border-radius:10px;padding:8px 10px;min-width:170px}.todaystar{border:0;background:transparent;font-size:20px;padding:0 5px}.todaystar.on{color:#c58a18}.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.checks{display:flex;gap:16px;flex-wrap:wrap;font-size:13px}.actions{display:flex;gap:9px;justify-content:flex-end;margin-top:18px}.actions button{border:0;border-radius:11px;padding:10px 14px}.cancel{background:#eceef1}.save{background:#25282d;color:white;font-weight:700}.danger{background:#f9eaea!important;color:#a23d3b!important}.sheet{position:fixed;z-index:30;display:none;background:white;border:1px solid var(--line);border-radius:13px;box-shadow:0 12px 35px rgba(0,0,0,.16);padding:6px;min-width:155px}.sheet.show{display:block}.sheet button{display:block;width:100%;text-align:left;border:0;background:white;padding:9px 10px;border-radius:8px}.sheet button:hover{background:#f4f5f6}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#25282d;color:white;border-radius:12px;padding:10px 13px;display:none;z-index:50;font-size:13px}.toast.show{display:block}.toast button{border:0;background:transparent;color:#d9e6ff;font-weight:700;margin-left:10px}
 @media(max-width:650px){.app{padding:14px 12px 90px}.brand h1{font-size:22px}.brand p{display:none}.summary{grid-template-columns:repeat(3,1fr)}.sum{padding:10px}.sum b{font-size:18px}.toolbar .spacer{display:none}.row2{grid-template-columns:1fr}.card{padding:13px}.tlrow{grid-template-columns:135px 680px}.timeline{padding:10px}.add{padding:10px 12px}}
+
+.bulkback{position:fixed;inset:0;background:rgba(22,25,30,.35);display:none;align-items:flex-end;justify-content:center;z-index:25}.bulkback.show{display:flex}
+.bulkmodal{background:white;width:min(760px,100%);max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom))}
+.bulktext{width:100%;min-height:170px;border:1px solid #d8dbe0;border-radius:12px;padding:12px;font-size:16px}
+.importrow{display:grid;grid-template-columns:32px 150px 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #eceef1}
+.importrow input[type=date],.importrow input[type=text]{width:100%;border:1px solid #d8dbe0;border-radius:9px;padding:9px}
+.importtools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.importtools button{border:1px solid #d8dbe0;background:#fff;border-radius:9px;padding:8px 10px}
+@media(max-width:560px){.importrow{grid-template-columns:28px 128px 1fr}.importrow input{font-size:14px}}
 </style>
 </head>
 <body>
 <div class="app">
-<header><div class="brand"><h1>Goal Flow</h1><p>ゴールと途中の締切を、ひと目で。</p></div><button class="add" id="quickAddBtn" type="button">＋ かんたん登録</button></header>
+<header><div class="brand"><h1>Goal Flow</h1><p>ゴールと途中の締切を、ひと目で。</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="smallbtn" id="bulkImportBtn" type="button">📋 予定表から登録</button><button class="add" id="quickAddBtn" type="button">＋ かんたん登録</button></div></header>
 <div class="toolbar">
  <div class="seg" id="statusSeg"><button data-status="active" class="active">進行中</button><button data-status="done">完了済み</button></div>
  <div class="seg" id="viewSeg"><button data-view="list" class="active">縦一覧</button><button data-view="timeline">横タイムライン</button></div>
@@ -40,6 +48,25 @@ header{display:flex;gap:12px;align-items:center;justify-content:space-between;ma
 <div class="field"><label>日数の数え方</label><div class="checks"><label><input type="checkbox" id="excludeWeekend" checked> 土日を数えない</label><label><input type="checkbox" id="excludeHolidays"> 祝日も数えない（簡易）</label></div></div>
 <div class="field"><label>メモ（任意）</label><input id="memo" placeholder="資料の場所、リンクのメモなど"></div>
 <div class="actions"><button class="cancel" onclick="closeModal()">キャンセル</button><button class="save" onclick="saveTask()">登録する</button></div>
+</div></div>
+
+<div class="bulkback" id="bulkBack"><div class="bulkmodal">
+<h2 style="margin:0 0 5px">予定表からまとめて登録</h2>
+<p class="hint">iPhoneの写真やPDFで文字を選択してコピーし、ここへ貼り付けてください。「10/8 研究授業」「10月8日　研究授業」などを読み取れます。</p>
+<div id="bulkStep1">
+<textarea id="bulkText" class="bulktext" placeholder="例：
+10月2日　学年会
+10月8日　研究授業
+10/16　校内研修
+10/28　音楽鑑賞会"></textarea>
+<div class="actions"><button class="cancel" type="button" id="bulkCancel1">キャンセル</button><button class="save" type="button" id="parseBulkBtn">予定を読み取る</button></div>
+</div>
+<div id="bulkStep2" style="display:none">
+<div class="importtools"><button type="button" id="selectAllImport">すべて選択</button><button type="button" id="clearAllImport">すべて解除</button><button type="button" id="backBulk">← 貼り付けに戻る</button></div>
+<div id="importRows"></div>
+<p class="hint">日付や予定名は、この画面で修正してから登録できます。登録後は通常の予定と同じように途中締切を追加できます。</p>
+<div class="actions"><button class="cancel" type="button" id="bulkCancel2">キャンセル</button><button class="save" type="button" id="commitBulkBtn">選択した予定を登録</button></div>
+</div>
 </div></div>
 <div class="sheet" id="sheet"></div><div class="toast" id="toast"></div>
 <script>
@@ -75,6 +102,60 @@ function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt
 var qab=document.getElementById('quickAddBtn'); function showQuickAdd(e){if(e&&e.preventDefault)e.preventDefault();openModal();} qab.addEventListener('click',showQuickAdd,false);
 document.getElementById('searchBox').addEventListener('input',render);
 document.getElementById('statusSeg').onclick=e=>{if(e.target.dataset.status){status=e.target.dataset.status;render()}};document.getElementById('viewSeg').onclick=e=>{if(e.target.dataset.view){view=e.target.dataset.view;render()}};
+
+function openBulk(){
+ document.getElementById('bulkText').value='';
+ document.getElementById('bulkStep1').style.display='block';
+ document.getElementById('bulkStep2').style.display='none';
+ document.getElementById('bulkBack').classList.add('show');
+}
+function closeBulk(){document.getElementById('bulkBack').classList.remove('show')}
+function inferYear(m,d){
+ var now=new Date(), y=now.getFullYear();
+ var candidate=new Date(y,m-1,d), past=new Date(now); past.setMonth(past.getMonth()-4);
+ if(candidate<past) y++;
+ return y;
+}
+function parseBulkText(){
+ var text=document.getElementById('bulkText').value.replace(/\r/g,'');
+ var lines=text.split('\n').map(function(x){return x.trim()}).filter(Boolean), out=[];
+ lines.forEach(function(line){
+   var m=line.match(/(?:(\d{4})\s*[年\/\-.]\s*)?(\d{1,2})\s*(?:月|[\/\-.])\s*(\d{1,2})\s*(?:日)?\s*[　\s:：\-－]?\s*(.*)/);
+   if(!m) return;
+   var y=m[1]?parseInt(m[1],10):inferYear(parseInt(m[2],10),parseInt(m[3],10));
+   var mo=parseInt(m[2],10), d=parseInt(m[3],10);
+   if(mo<1||mo>12||d<1||d>31) return;
+   var title=(m[4]||'').trim().replace(/^[・●○□■◆★\s]+/,'');
+   if(!title) title='予定';
+   out.push({date:y+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0'),title:title});
+ });
+ var box=document.getElementById('importRows');
+ if(!out.length){box.innerHTML='<div class="empty"><b>日付のある予定を見つけられませんでした</b>「10/8 研究授業」のように、1行に1件ずつ貼り付けてみてください。</div>'}
+ else box.innerHTML=out.map(function(x,i){return '<div class="importrow"><input type="checkbox" class="impcheck" checked><input type="date" class="impdate" value="'+x.date+'"><input type="text" class="imptitle" value="'+esc(x.title)+'"></div>'}).join('');
+ document.getElementById('bulkStep1').style.display='none';
+ document.getElementById('bulkStep2').style.display='block';
+}
+function commitBulk(){
+ var rows=[].slice.call(document.querySelectorAll('#importRows .importrow')), n=0;
+ rows.forEach(function(row){
+  if(!row.querySelector('.impcheck').checked)return;
+  var date=row.querySelector('.impdate').value, title=row.querySelector('.imptitle').value.trim();
+  if(!date||!title)return;
+  tasks.push({id:'t'+Date.now()+Math.random().toString(16).slice(2),title:title,startDate:today(),finalDate:date,milestones:[],excludeWeekend:true,excludeHolidays:false,memo:'予定表から登録',completed:false,completedAt:'',todayFlag:false});
+  n++;
+ });
+ if(!n){alert('登録する予定を選んでください。');return}
+ closeBulk(); save(); if(typeof toast==='function')toast(n+'件の予定を登録しました');
+}
+document.getElementById('bulkImportBtn').addEventListener('click',openBulk,false);
+document.getElementById('bulkCancel1').addEventListener('click',closeBulk,false);
+document.getElementById('bulkCancel2').addEventListener('click',closeBulk,false);
+document.getElementById('parseBulkBtn').addEventListener('click',parseBulkText,false);
+document.getElementById('backBulk').addEventListener('click',function(){document.getElementById('bulkStep1').style.display='block';document.getElementById('bulkStep2').style.display='none'},false);
+document.getElementById('selectAllImport').addEventListener('click',function(){document.querySelectorAll('.impcheck').forEach(function(x){x.checked=true})},false);
+document.getElementById('clearAllImport').addEventListener('click',function(){document.querySelectorAll('.impcheck').forEach(function(x){x.checked=false})},false);
+document.getElementById('commitBulkBtn').addEventListener('click',commitBulk,false);
+
 render();
 </script>
 </body></html>
