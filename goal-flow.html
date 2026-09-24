@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f7f8fb">
-<title>Goal Flow v2.2</title>
+<title>Goal Flow v2.3</title>
 <style>
 :root{--bg:#f5f6f8;--card:#fff;--ink:#25282d;--muted:#727780;--line:#e5e7eb;--accent:#52667a;--soft:#eef2f5;--danger:#b94a48;--warn:#b57925;--ok:#47765c;--shadow:0 8px 24px rgba(20,28,38,.07)}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink)}
@@ -405,27 +405,14 @@ async function importGoalFlowPdf(file){
    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
    var buf=await file.arrayBuffer();
    var pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
-   var all=[];
-   for(var i=1;i<=pdf.numPages;i++){
-     var page=await pdf.getPage(i);
-     var tc=await page.getTextContent();
-     var items=tc.items.map(function(x){return (x.str||'').trim()}).filter(Boolean);
-     all=all.concat(items);
-   }
-   // The special PDF contains machine-readable rows as individual text objects.
-   var rows=[];
-   for(var j=0;j<all.length;j++){
-     var x=all[j];
-     var m=x.match(/^(20\d{2}\/\d{1,2}\/\d{1,2})\s*\|\s*(?:児童|職員|個人)\s*\|\s*(.+)$/);
-     if(m)rows.push(m[1]+' | '+m[2].trim());
-   }
-   // Fallback for PDFs where extraction split the row into several objects.
-   if(!rows.length){
-     var joined=all.join('\n');
-     var rx=/(20\d{2}\/\d{1,2}\/\d{1,2})\s*\|\s*(?:児童|職員|個人)\s*\|\s*([^\n]+)/g,m;
-     while((m=rx.exec(joined))!==null)rows.push(m[1]+' | '+m[2].trim());
-   }
-   if(!rows.length)throw new Error('Goal Flow用データが見つかりませんでした');
+   var md=await pdf.getMetadata();
+   var subject=(md&&md.info&&md.info.Subject)||'';
+   if(subject.indexOf('GOALFLOW1:')!==0)throw new Error('新しいGoal Flow用PDFではありません');
+   var b64=subject.slice('GOALFLOW1:'.length);
+   var bytes=Uint8Array.from(atob(b64),function(c){return c.charCodeAt(0)});
+   var payload=JSON.parse(new TextDecoder('utf-8').decode(bytes));
+   if(!payload||payload.format!=='goalflow-pdf-v1'||!Array.isArray(payload.events))throw new Error('PDF内のデータ形式が正しくありません');
+   var rows=payload.events.map(function(e){return e.date+' | '+e.title});
    document.getElementById('bulkText').value=rows.join('\n');
    st.textContent='✓ '+rows.length+'件を読み取りました。';
    parseBulkText();
