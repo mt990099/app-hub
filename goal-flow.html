@@ -93,10 +93,46 @@ async function googleLogin(){
 }
 async function googleLogout(){if(confirm('ログアウトしますか？\n端末内の予定は残ります。'))await signOut(auth)}
 window.googleLogin=googleLogin;window.googleLogout=googleLogout;
-async function cloudRef(){return cloudUser?doc(db,'users',cloudUser.uid):null}
+async function cloudRef(){return cloudUser?doc(db,'users',cloudUser.uid,'goalflow','state'):null}
+function mergeById(local,remote){let m=new Map();local.forEach(x=>m.set(x.id,x));remote.forEach(x=>m.set(x.id,x));return [...m.values()]}
+function sameData(a,b){try{return JSON.stringify(a)===JSON.stringify(b)}catch(e){return false}}
 async function uploadCloud(){if(!cloudUser||cloudLoading)return;try{cloudStatus('クラウドへ保存中…');let r=await cloudRef();await setDoc(r,{tasks:tasks,tags:tags,updatedAt:serverTimestamp(),updatedAtClient:new Date().toISOString()},{merge:true});cloudStatus('クラウド保存済み','ok')}catch(e){console.error(e);cloudStatus('クラウド保存に失敗','warn')}}
 function queueCloud(){if(!cloudUser||cloudLoading)return;clearTimeout(cloudTimer);cloudTimer=setTimeout(uploadCloud,450)}
-async function syncFromCloud(user){cloudLoading=true;try{cloudStatus('クラウドと同期中…');let r=await cloudRef(),snap=await getDoc(r);if(snap.exists()){let d=snap.data(),remote=Array.isArray(d.tasks)?d.tasks.map(normalize):[],rtags=Array.isArray(d.tags)?d.tags:[];if(remote.length||rtags.length){snapshot();tasks=remote;tags=rtags;localStorage.setItem(KEY,JSON.stringify(tasks));if(tasks.length)localStorage.setItem(SAFEKEY,JSON.stringify(tasks));localStorage.setItem(TAGKEY,JSON.stringify(tags));render();cloudStatus('クラウドから同期しました','ok')}else if(tasks.length||tags.length){await setDoc(r,{tasks,tags,updatedAt:serverTimestamp(),updatedAtClient:new Date().toISOString()},{merge:true});cloudStatus('端末の予定をクラウドへ保存しました','ok')}else cloudStatus('クラウド保存済み','ok')}else{await setDoc(r,{tasks,tags,updatedAt:serverTimestamp(),updatedAtClient:new Date().toISOString()});cloudStatus(tasks.length?'端末の予定をクラウドへ移行しました':'クラウド保存を開始しました','ok')}}catch(e){console.error(e);cloudStatus('同期できませんでした','warn')}finally{cloudLoading=false;render()}}
+async function syncFromCloud(user){
+ cloudLoading=true;
+ try{
+  cloudStatus('クラウドと同期中…');
+  let r=await cloudRef(),snap=await getDoc(r);
+  if(snap.exists()){
+   let d=snap.data(),remote=Array.isArray(d.tasks)?d.tasks.map(normalize):[],rtags=Array.isArray(d.tags)?d.tags:[];
+   if(!tasks.length&&!tags.length){
+    tasks=remote;tags=rtags;
+    localStorage.setItem(KEY,JSON.stringify(tasks));
+    if(tasks.length)localStorage.setItem(SAFEKEY,JSON.stringify(tasks));
+    localStorage.setItem(TAGKEY,JSON.stringify(tags));
+    cloudStatus('クラウドから同期しました','ok');
+   }else if(!remote.length&&!rtags.length){
+    await setDoc(r,{tasks,tags,updatedAt:serverTimestamp(),updatedAtClient:new Date().toISOString()},{merge:true});
+    cloudStatus('端末の予定をクラウドへ保存しました','ok');
+   }else{
+    let mergedTasks=mergeById(tasks,remote).map(normalize);
+    let mergedTags=mergeById(tags,rtags);
+    let changed=!sameData(mergedTasks,remote)||!sameData(mergedTags,rtags);
+    if(changed)snapshot();
+    tasks=mergedTasks;tags=mergedTags;
+    localStorage.setItem(KEY,JSON.stringify(tasks));
+    if(tasks.length)localStorage.setItem(SAFEKEY,JSON.stringify(tasks));
+    localStorage.setItem(TAGKEY,JSON.stringify(tags));
+    await setDoc(r,{tasks,tags,updatedAt:serverTimestamp(),updatedAtClient:new Date().toISOString()},{merge:true});
+    cloudStatus(changed?'端末とクラウドの予定を統合しました':'クラウド同期済み','ok');
+   }
+  }else{
+   await setDoc(r,{tasks,tags,updatedAt:serverTimestamp(),updatedAtClient:new Date().toISOString()});
+   cloudStatus(tasks.length?'端末の予定をクラウドへ移行しました':'クラウド保存を開始しました','ok');
+  }
+ }catch(e){console.error(e);cloudStatus('同期できませんでした','warn')}
+ finally{cloudLoading=false;render()}
+}
 onAuthStateChanged(auth,async user=>{cloudUser=user;document.getElementById('loginBtn').style.display=user?'none':'';document.getElementById('logoutBtn').style.display=user?'':'none';if(user)await syncFromCloud(user);else cloudStatus('端末内に保存中')});
 
 const KEY='goalflow_v1_tasks'; // 永久固定
