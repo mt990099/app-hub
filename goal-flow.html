@@ -31,6 +31,26 @@ label.lab{display:block;font-weight:700;font-size:13px;margin:13px 0 5px}.field{
 @media(max-width:650px){.wrap{padding:14px 12px 85px}header{align-items:flex-start;flex-direction:column}.actions{width:100%}.actions .btn{flex:1}.stats{margin:13px 0}.toolbar{gap:7px}.panel{border:0;border-radius:0;padding:0}.grid2{grid-template-columns:1fr}.mileedit{grid-template-columns:1fr}.mileedit .del{justify-self:end}.candidate{grid-template-columns:28px 1fr;grid-template-rows:auto auto}.candidate .ck{grid-row:1/3}.candidate .datein{grid-column:2}.candidate .titlein{grid-column:2}.screen{background:#fff}.sticky{background:#fff}.tlrow{grid-template-columns:110px minmax(460px,1fr)}}
 .cloudbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}.cloudstate{font-size:12px;color:var(--muted);padding:7px 10px;background:#fff;border:1px solid var(--line);border-radius:999px}.cloudstate.ok{color:#27613e;background:#edf8f1}.cloudstate.warn{color:#8a5b18;background:#fff7e6}
 .calnav{display:flex;justify-content:center;gap:18px;align-items:center;margin:14px 0}.weekhead,.calgrid{display:grid;grid-template-columns:repeat(7,1fr)}.weekhead b{text-align:center;font-size:12px;padding:6px}.calcell{min-height:100px;border:1px solid var(--line);padding:6px;background:#fff;overflow:hidden}.calcell.blank{background:#f7f7f7}.calev,.yearev{font-size:11px;line-height:1.35;margin-top:4px;padding:3px 4px;border-radius:5px;background:#f3f6fb;overflow-wrap:anywhere}.yeargrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.monthbox{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px;min-height:130px}.monthbox h3{margin:0 0 6px}@media(max-width:700px){.calcell{min-height:74px;padding:3px}.calev{font-size:9px;padding:2px}.yeargrid{grid-template-columns:1fr 1fr}.yearev{font-size:10px}}
+
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  body{background:#fff!important}
+  .wrap{max-width:none!important;padding:0!important}
+  header .actions,.cloudbar,.stats,.toolbar,.tagbar,.cardbuttons,.star,.overlay,.toast{display:none!important}
+  header{margin:0 0 8px!important}
+  header h1{font-size:20px!important}
+  .sub{font-size:11px!important}
+  #content{display:block!important}
+  .card,.timeline,.monthbox,.calcell{break-inside:avoid;box-shadow:none!important}
+  .list{gap:6px!important}
+  .card{padding:8px!important}
+  .calnav button{display:none!important}
+  .calnav{margin:4px 0 8px!important}
+  .calcell{min-height:72px!important}
+  .yeargrid{grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
+  .monthbox{min-height:100px!important;padding:6px!important}
+  .calev,.yearev{font-size:9px!important}
+}
 </style>
 </head>
 <body>
@@ -39,7 +59,7 @@ label.lab{display:block;font-weight:700;font-size:13px;margin:13px 0 5px}.field{
 <div class="actions"><button class="btn" onclick="openBulk()">✨ ChatGPTから取り込み</button><button class="btn primary" onclick="openEditor()">＋ かんたん登録</button></div></header>
 <div class="cloudbar"><button id="loginBtn" class="btn" onclick="googleLogin()">Googleでログイン</button><button id="logoutBtn" class="btn" style="display:none" onclick="googleLogout()">ログアウト</button><span id="cloudState" class="cloudstate">端末内に保存中</span></div>
 <div class="stats"><div class="stat"><b id="stActive">0</b><span>進行中</span></div><div class="stat"><b id="stSoon">0</b><span>7稼働日以内</span></div><div class="stat"><b id="stOver">0</b><span>期限超過</span></div></div>
-<div class="toolbar"><div class="seg" id="statusSeg"><button class="on" data-v="active">進行中</button><button data-v="done">完了済み</button></div><div class="seg" id="viewSeg"><button class="on" data-v="list">一覧</button><button data-v="timeline">タイムライン</button><button data-v="month">月</button><button data-v="year">年</button></div><input id="search" class="search" placeholder="検索"><button class="btn" onclick="exportData()">バックアップ</button><label class="btn">復元<input type="file" accept=".json,application/json" hidden onchange="importData(event)"></label><button class="btn" onclick="recoverLocal()">端末内から復元</button></div>
+<div class="toolbar"><div class="seg" id="statusSeg"><button class="on" data-v="active">進行中</button><button data-v="done">完了済み</button></div><div class="seg" id="viewSeg"><button class="on" data-v="list">一覧</button><button data-v="timeline">タイムライン</button><button data-v="month">月</button><button data-v="year">年</button></div><input id="search" class="search" placeholder="検索"><button class="btn" onclick="printCurrent()">🖨 印刷</button><button class="btn" onclick="exportData()">バックアップ</button><label class="btn">復元<input type="file" accept=".json,application/json" hidden onchange="importData(event)"></label><button class="btn" onclick="recoverLocal()">端末内から復元</button></div>
 <div id="tagBar" class="tagbar"></div><div id="content"></div>
 </div>
 
@@ -211,6 +231,7 @@ function openBulk(){el('bulkInput').style.display='block';el('bulkConfirm').styl
 async function pasteText(){let box=el('bulkText');try{if(!navigator.clipboard||!navigator.clipboard.readText)throw 0;box.value=await navigator.clipboard.readText()}catch(e){box.focus();alert('iPhoneでは入力欄を長押しして「ペースト」を選んでください。')}}
 function parseBulk(){let lines=el('bulkText').value.replace(/\r/g,'').split('\n').map(x=>x.trim()).filter(Boolean);bulkRows=[];for(let l of lines){let m=l.match(/^(\d{4})[\/.-](\d{1,2})[\/.-](\d{1,2})\s*(?:\||｜|:|：|\t)\s*(.+)$/);if(m)bulkRows.push({date:m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0'),title:m[4].trim(),use:true})}if(!bulkRows.length){alert('予定を読み取れませんでした。「2026/10/01 | 予定名」の形式を確認してください。');return}el('candidates').innerHTML=bulkRows.map((r,i)=>`<div class="candidate"><input class="ck" type="checkbox" checked onchange="bulkRows[${i}].use=this.checked"><input class="datein" type="date" value="${r.date}" onchange="bulkRows[${i}].date=this.value"><input class="titlein" value="${esc(r.title)}" onchange="bulkRows[${i}].title=this.value"></div>`).join('');el('bulkInput').style.display='none';el('bulkConfirm').style.display='block';el('bulk').querySelector('.screen').scrollTop=0}
 function commitBulk(){let a=bulkRows.filter(r=>r.use&&r.date&&r.title.trim());a.forEach(r=>tasks.push(autoTag(normalize({title:r.title.trim(),startDate:today(),finalDate:r.date,memo:'ChatGPTから取り込み'}))));closeBulk();save();toastMsg(a.length+'件登録しました')}
+function printCurrent(){window.print()}
 function exportData(){let b=new Blob([JSON.stringify(tasks,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='goalflow-backup-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;if(confirm('現在のデータをこのバックアップで置き換えますか？')){snapshot();tasks=d.map(normalize).map(autoTag);save()}}catch{alert('バックアップを読み込めませんでした。')}};r.readAsText(f);e.target.value=''}
 function recoverLocal(){let c=[];for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(!(k===KEY||k===SAFEKEY||k.startsWith(SNAP)))continue;let v=load(k);if(taskArray(v)&&v.length)c.push({k,v})}c.sort((a,b)=>{if(a.k===SAFEKEY)return-1;if(b.k===SAFEKEY)return 1;return b.k.localeCompare(a.k)});if(!c.length){alert('このURLの端末内に復元できる予定データはありません。');return}let msg=c.slice(0,10).map((x,i)=>(i+1)+'：'+x.v.length+'件　'+(x.k===SAFEKEY?'保護コピー':x.k===KEY?'現在のデータ':'自動バックアップ')).join('\n'),n=prompt('復元候補の番号を入力してください。\n\n'+msg,'1'),x=c[+n-1];if(x&&confirm(x.v.length+'件を復元しますか？')){snapshot();tasks=x.v.map(normalize);localStorage.setItem(KEY,JSON.stringify(tasks));localStorage.setItem(SAFEKEY,JSON.stringify(tasks));render();toastMsg('予定を復元しました')}}
@@ -223,7 +244,7 @@ Object.assign(window,{
   openEditor,closeEditor,addMile,saveTask,toggleToday,toggleMile,
   completeTask,duplicateTask,deleteTask,
   openBulk,closeBulk,backBulk,pasteText,parseBulk,commitBulk,
-  exportData,importData,recoverLocal
+  printCurrent,exportData,importData,recoverLocal
 });
 snapshot();render();
 </script>
