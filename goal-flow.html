@@ -65,7 +65,14 @@ label.lab{display:block;font-weight:700;font-size:13px;margin:13px 0 5px}.field{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyBKeQdnLWjDFtY4nfFiFMTgh_HgMGTdVOU",authDomain:"goal-flow-dc2b1.firebaseapp.com",projectId:"goal-flow-dc2b1",storageBucket:"goal-flow-dc2b1.firebasestorage.app",messagingSenderId:"209981716989",appId:"1:209981716989:web:9fc23f481a1f4fd34d0194"};
+const firebaseConfig = {
+  apiKey: "AIzaSyBkeQdnLWjDFtY4nfFiEMTgh_HgMGTdVOU",
+  authDomain: "goal-flow-dc2b1.firebaseapp.com",
+  projectId: "goal-flow-dc2b1",
+  storageBucket: "goal-flow-dc2b1.firebasestorage.app",
+  messagingSenderId: "209981716989",
+  appId: "1:209981716989:web:9fc23f481a1f4fd34d0194"
+};
 const fbApp=initializeApp(firebaseConfig),auth=getAuth(fbApp),db=getFirestore(fbApp),provider=new GoogleAuthProvider();
 let cloudUser=null,cloudLoading=false,cloudTimer=null;
 function cloudEl(){return document.getElementById('cloudState')}
