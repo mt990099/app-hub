@@ -59,7 +59,7 @@ label.lab{display:block;font-weight:700;font-size:13px;margin:13px 0 5px}.field{
 <div class="actions"><button class="btn" onclick="openBulk()">✨ ChatGPTから取り込み</button><button class="btn primary" onclick="openEditor()">＋ かんたん登録</button></div></header>
 <div class="cloudbar"><button id="loginBtn" class="btn" onclick="googleLogin()">Googleでログイン</button><button id="logoutBtn" class="btn" style="display:none" onclick="googleLogout()">ログアウト</button><span id="cloudState" class="cloudstate">端末内に保存中</span></div>
 <div class="stats"><div class="stat"><b id="stActive">0</b><span>進行中</span></div><div class="stat"><b id="stSoon">0</b><span>7稼働日以内</span></div><div class="stat"><b id="stOver">0</b><span>期限超過</span></div></div>
-<div class="toolbar"><div class="seg" id="statusSeg"><button class="on" data-v="active">進行中</button><button data-v="done">完了済み</button></div><div class="seg" id="viewSeg"><button class="on" data-v="list">一覧</button><button data-v="timeline">タイムライン</button><button data-v="month">月</button><button data-v="year">年</button></div><input id="search" class="search" placeholder="検索"><button class="btn" onclick="printCurrent()">🖨 印刷</button><button class="btn" onclick="exportData()">バックアップ</button><label class="btn">復元<input type="file" accept=".json,application/json" hidden onchange="importData(event)"></label><button class="btn" onclick="recoverLocal()">端末内から復元</button></div>
+<div class="toolbar"><div class="seg" id="statusSeg"><button class="on" data-v="active">進行中</button><button data-v="done">完了済み</button></div><div class="seg" id="viewSeg"><button class="on" data-v="list">一覧</button><button data-v="timeline">タイムライン</button><button data-v="month">月</button><button data-v="year">年</button></div><button class="btn" id="todayBtn" onclick="goToday()" style="display:none">今日</button><input id="search" class="search" placeholder="検索"><button class="btn" onclick="printCurrent()">🖨 印刷</button><button class="btn" onclick="exportData()">バックアップ</button><label class="btn">復元<input type="file" accept=".json,application/json" hidden onchange="importData(event)"></label><button class="btn" onclick="recoverLocal()">端末内から復元</button></div>
 <div id="tagBar" class="tagbar"></div><div id="content"></div>
 </div>
 
@@ -98,7 +98,7 @@ const firebaseConfig = {
 const fbApp=initializeApp(firebaseConfig),auth=getAuth(fbApp),db=getFirestore(fbApp),provider=new GoogleAuthProvider();
 let cloudUser=null,cloudLoading=false,cloudTimer=null;
 function cloudEl(){return document.getElementById('cloudState')}
-function cloudStatus(s,kind=''){let x=cloudEl();if(!x)return;x.textContent=s;x.className='cloudstate '+kind}
+function cloudStatus(s,kind=''){let x=cloudEl();if(!x)return;if(kind==='ok'&&(s.includes('保存')||s.includes('同期')||s.includes('移行')||s.includes('統合')))s+='　'+new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});x.textContent=s;x.className='cloudstate '+kind}
 async function googleLogin(){
  try{
   cloudStatus('Googleログイン中…');
@@ -211,10 +211,11 @@ function workdays(a,b,t){let x=parse(a),y=parse(b),sg=x<=y?1:-1;if(sg<0)[x,y]=[y
 function next(t){let m=t.milestones.filter(x=>!x.done).slice().sort((a,b)=>a.date.localeCompare(b.date));return m[0]||{date:t.finalDate,text:'最終ゴール'}}
 function remain(t,d){return workdays(today(),d,t)}
 function el(x){return document.getElementById(x)}
-function render(){renderTagBar();let active=tasks.filter(t=>!t.completed);el('stActive').textContent=active.length;el('stSoon').textContent=active.filter(t=>{let r=remain(t,next(t).date);return r>=0&&r<=7}).length;el('stOver').textContent=active.filter(t=>remain(t,next(t).date)<0).length;
+function render(){renderTagBar();let tb=el('todayBtn');if(tb)tb.style.display=(view==='month'||view==='year')?'':'none';let active=tasks.filter(t=>!t.completed);el('stActive').textContent=active.length;el('stSoon').textContent=active.filter(t=>{let r=remain(t,next(t).date);return r>=0&&r<=7}).length;el('stOver').textContent=active.filter(t=>remain(t,next(t).date)<0).length;
 let q=el('search').value.trim().toLowerCase();let arr=tasks.filter(t=>status==='done'?t.completed:!t.completed).filter(t=>tagFilter==='all'||(tagFilter==='today'?t.todayFlag:t.tags.includes(tagFilter))).filter(t=>!q||(t.title+' '+t.memo+' '+t.milestones.map(m=>m.text).join(' ')).toLowerCase().includes(q));arr.sort((a,b)=>status==='done'?(b.completedAt||'').localeCompare(a.completedAt||''):((b.todayFlag?1:0)-(a.todayFlag?1:0)||next(a).date.localeCompare(next(b).date)));
 el('content').innerHTML=!arr.length?'<div class="empty"><b>'+(status==='done'?'完了済みはまだありません':'進行中の予定はありません')+'</b></div>':view==='list'?'<div class="list">'+arr.map(card).join(''):view==='timeline'?timeline(arr):view==='month'?monthView(arr):yearView(arr)}
 function calMove(n){if(view==='month')calendarDate=new Date(calendarDate.getFullYear(),calendarDate.getMonth()+n,1);else calendarDate=new Date(calendarDate.getFullYear()+n,calendarDate.getMonth(),1);render()}
+function goToday(){calendarDate=new Date();render()}
 function monthView(arr){let y=calendarDate.getFullYear(),m=calendarDate.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0),cells='',lead=first.getDay();for(let i=0;i<lead;i++)cells+='<div class="calcell blank"></div>';for(let d=1;d<=last.getDate();d++){let ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),ev=[];arr.forEach(t=>{t.milestones.forEach(x=>{if(x.date===ds)ev.push('◆ '+x.text)});if(t.finalDate===ds)ev.push('★ '+t.title)});cells+='<div class="calcell"><b>'+d+'</b>'+ev.map(x=>'<div class="calev">'+esc(x)+'</div>').join('')+'</div>'}return '<div class="calnav"><button class="mini" onclick="calMove(-1)">‹ 前月</button><strong>'+y+'年 '+(m+1)+'月</strong><button class="mini" onclick="calMove(1)">次月 ›</button></div><div class="weekhead">'+['日','月','火','水','木','金','土'].map(x=>'<b>'+x+'</b>').join('')+'</div><div class="calgrid">'+cells+'</div>'}
 function yearView(arr){let y=calendarDate.getFullYear();return '<div class="calnav"><button class="mini" onclick="calMove(-1)">‹ 前年</button><strong>'+y+'年</strong><button class="mini" onclick="calMove(1)">翌年 ›</button></div><div class="yeargrid">'+Array.from({length:12},(_,m)=>{let ev=[];arr.forEach(t=>{t.milestones.forEach(x=>{if(x.date.startsWith(y+'-'+String(m+1).padStart(2,'0')))ev.push(short(x.date)+' ◆ '+x.text)});if(t.finalDate.startsWith(y+'-'+String(m+1).padStart(2,'0')))ev.push(short(t.finalDate)+' ★ '+t.title)});return '<div class="monthbox"><h3>'+(m+1)+'月</h3>'+ev.map(x=>'<div class="yearev">'+esc(x)+'</div>').join('')+'</div>'}).join('')+'</div>'}
 function card(t){let n=next(t),r=remain(t,n.date),all=t.milestones.length+1,done=t.milestones.filter(m=>m.done).length+(t.completed?1:0),pct=Math.round(done/all*100),ct=t.completed?'✓ 完了':r<0?'期限超過 '+Math.abs(r)+'日':r===0?'今日':'あと'+r+'稼働日';
@@ -240,7 +241,7 @@ el('statusSeg').onclick=e=>{if(e.target.dataset.v){status=e.target.dataset.v;[..
 
 // module内の関数をHTMLボタンから呼べるように公開
 Object.assign(window,{
-  setTag,calMove,openTags,closeTags,newTag,editTag,deleteTag,removeTag,toggleTaskTag,
+  setTag,calMove,goToday,openTags,closeTags,newTag,editTag,deleteTag,removeTag,toggleTaskTag,
   openEditor,closeEditor,addMile,saveTask,toggleToday,toggleMile,
   completeTask,duplicateTask,deleteTask,
   openBulk,closeBulk,backBulk,pasteText,parseBulk,commitBulk,
