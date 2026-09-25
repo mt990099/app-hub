@@ -1,575 +1,90 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#f7f8fb">
-<title>Goal Flow v2.8</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f3ee">
+<title>Goal Flow 3.0</title>
 <style>
-:root{--bg:#f5f6f8;--card:#fff;--ink:#25282d;--muted:#727780;--line:#e5e7eb;--accent:#52667a;--soft:#eef2f5;--danger:#b94a48;--warn:#b57925;--ok:#47765c;--shadow:0 8px 24px rgba(20,28,38,.07)}
-*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink)}
-button,input,textarea,select{font:inherit} button{cursor:pointer}
-.app{max-width:1180px;margin:auto;min-height:100vh;padding:18px 16px 100px}
-header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}.brand h1{font-size:25px;margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:13px}.add{border:0;background:var(--ink);color:white;border-radius:14px;padding:11px 15px;font-weight:700}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.seg{display:flex;background:#e9ebee;border-radius:12px;padding:3px}.seg button{border:0;background:transparent;padding:8px 12px;border-radius:9px;color:#5d626a}.seg button.active{background:white;color:var(--ink);box-shadow:0 1px 5px rgba(0,0,0,.08);font-weight:700}.spacer{flex:1}.smallbtn{border:1px solid var(--line);background:white;padding:8px 11px;border-radius:10px;color:#555}
-.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:15px}.sum{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:13px}.sum b{font-size:22px}.sum span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
-.list{display:flex;flex-direction:column;gap:11px}.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:15px;box-shadow:var(--shadow)}.card.overdue{border-left:5px solid var(--danger)}.card.urgent{border-left:5px solid var(--warn)}.cardhead{display:flex;gap:10px;align-items:flex-start}.title{font-weight:800;font-size:17px;line-height:1.35}.meta{font-size:12px;color:var(--muted);margin-top:4px}.grow{flex:1}.count{font-weight:800;white-space:nowrap;font-size:13px;padding:6px 9px;border-radius:999px;background:var(--soft)}.count.red{color:var(--danger);background:#fbeeee}.count.orange{color:#98651e;background:#fff4df}.count.green{color:var(--ok);background:#edf7f0}.menu{border:0;background:transparent;font-size:22px;line-height:1;padding:2px 4px;color:#777}
-.next{margin-top:12px;padding:10px 11px;background:#f7f8fa;border-radius:12px;font-size:14px}.next b{margin-right:6px}.milestones{margin-top:10px;display:flex;flex-direction:column;gap:7px}.mile{display:flex;gap:9px;align-items:center;font-size:13px}.mile input{width:18px;height:18px}.mile.done .mtxt{text-decoration:line-through;color:#999}.date{width:62px;color:#666;font-variant-numeric:tabular-nums}.mtxt{flex:1}.badge{font-size:11px;color:#777}.progress{height:7px;background:#eceef1;border-radius:99px;overflow:hidden;margin-top:12px}.progress i{display:block;height:100%;background:#6e8294}.foot{display:flex;justify-content:space-between;align-items:center;margin-top:7px;color:#777;font-size:12px}
-.empty{text-align:center;padding:55px 15px;color:#777;background:white;border:1px dashed #d7d9dd;border-radius:18px}.empty b{display:block;color:#444;font-size:18px;margin-bottom:6px}
-.timeline{overflow:auto;background:white;border:1px solid var(--line);border-radius:17px;padding:14px}.tlrow{display:grid;grid-template-columns:190px minmax(680px,1fr);gap:12px;align-items:center;min-height:60px;border-bottom:1px solid #f0f1f3}.tlrow:last-child{border-bottom:0}.tlname{font-size:13px;font-weight:700}.track{height:38px;position:relative;background:repeating-linear-gradient(to right,#f7f8fa 0,#f7f8fa calc(7.14% - 1px),#e9ebee calc(7.14% - 1px),#e9ebee 7.14%);border-radius:8px}.dot{position:absolute;top:8px;transform:translateX(-50%);width:22px;height:22px;border-radius:50%;border:2px solid white;background:#71879b;box-shadow:0 1px 5px rgba(0,0,0,.18);font-size:10px;color:white;display:grid;place-items:center}.dot.final{background:#333}.dot.done{background:#9ca3aa}.todayline{position:absolute;top:0;bottom:0;width:2px;background:#c26565;opacity:.7}
-.modalback{position:fixed;inset:0;background:rgba(22,25,30,.35);display:none;align-items:flex-end;justify-content:center;z-index:20}.modalback.show{display:flex}.modal{background:white;width:min(680px,100%);max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.14)}.modal h2{margin:0 0 5px;font-size:21px}.hint{font-size:12px;color:#777;margin:0 0 16px}.field{margin:13px 0}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid #d8dbe0;border-radius:11px;padding:11px;background:white}.field textarea{min-height:90px;resize:vertical}.mileedit{display:grid;grid-template-columns:1fr 150px 42px;gap:7px;margin:7px 0}.mileedit input{min-width:0}.mileedit button{border:0;background:#f4eaea;color:#9a3f3d;border-radius:10px;font-size:18px}.addmile{border:1px dashed #bcc3ca;background:#f8f9fa;border-radius:11px;padding:9px 12px;width:100%;color:#4f5f6e}.search{border:1px solid var(--line);background:white;border-radius:10px;padding:8px 10px;min-width:170px}.todaystar{border:0;background:transparent;font-size:20px;padding:0 5px}.todaystar.on{color:#c58a18}.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.checks{display:flex;gap:16px;flex-wrap:wrap;font-size:13px}.actions{display:flex;gap:9px;justify-content:flex-end;margin-top:18px}.actions button{border:0;border-radius:11px;padding:10px 14px}.cancel{background:#eceef1}.save{background:#25282d;color:white;font-weight:700}.danger{background:#f9eaea!important;color:#a23d3b!important}.sheet{position:fixed;z-index:30;display:none;background:white;border:1px solid var(--line);border-radius:13px;box-shadow:0 12px 35px rgba(0,0,0,.16);padding:6px;min-width:155px}.sheet.show{display:block}.sheet button{display:block;width:100%;text-align:left;border:0;background:white;padding:9px 10px;border-radius:8px}.sheet button:hover{background:#f4f5f6}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#25282d;color:white;border-radius:12px;padding:10px 13px;display:none;z-index:50;font-size:13px}.toast.show{display:block}.toast button{border:0;background:transparent;color:#d9e6ff;font-weight:700;margin-left:10px}
-@media(max-width:650px){.app{padding:14px 12px 90px}.brand h1{font-size:22px}.brand p{display:none}.summary{grid-template-columns:repeat(3,1fr)}.sum{padding:10px}.sum b{font-size:18px}.toolbar .spacer{display:none}.row2{grid-template-columns:1fr}.card{padding:13px}.tlrow{grid-template-columns:135px 680px}.timeline{padding:10px}.add{padding:10px 12px}}
-
-.bulkback{position:fixed;inset:0;background:rgba(22,25,30,.35);display:none;align-items:flex-end;justify-content:center;z-index:25}.bulkback.show{display:flex}
-.bulkmodal{background:white;width:min(760px,100%);max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px 18px calc(22px + env(safe-area-inset-bottom))}
-.bulktext{width:100%;min-height:170px;border:1px solid #d8dbe0;border-radius:12px;padding:12px;font-size:16px}
-.importrow{display:grid;grid-template-columns:32px 150px 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #eceef1}
-.importrow input[type=date],.importrow input[type=text]{width:100%;border:1px solid #d8dbe0;border-radius:9px;padding:9px}
-.importtools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.importtools button{border:1px solid #d8dbe0;background:#fff;border-radius:9px;padding:8px 10px}
-@media(max-width:560px){.importrow{grid-template-columns:28px 128px 1fr}.importrow input{font-size:14px}}
-#photoPickArea,#scheduleMonth,#ocrDebugBox,#pdfImportStatus,#goalPdfInput{display:none!important}
-
-@media(max-width:600px){
- .bulkback{align-items:stretch!important}
- .bulkmodal{width:100%!important;max-width:none!important;height:100dvh!important;max-height:100dvh!important;
-   border-radius:0!important;padding:16px 14px calc(18px + env(safe-area-inset-bottom))!important;box-sizing:border-box!important}
- #bulkStep2{width:100%!important;max-width:100%!important;box-sizing:border-box!important}
- #bulkStep2 .importrow{display:grid!important;grid-template-columns:30px 1fr!important;gap:6px 8px!important;width:100%!important}
- #bulkStep2 .impcheck{grid-row:1 / span 2!important;grid-column:1!important}
- #bulkStep2 .impdate{grid-row:1!important;grid-column:2!important;width:100%!important;box-sizing:border-box!important}
- #bulkStep2 .imptitle{grid-row:2!important;grid-column:2!important;width:100%!important;box-sizing:border-box!important}
- #bulkStep2 .actions{position:sticky!important;bottom:0!important;background:#fff!important;z-index:10!important;padding-top:10px!important}
-}
-
-
-@media (max-width:700px){
- #bulkBack{
-   position:fixed!important;inset:0!important;
-   width:100vw!important;height:100dvh!important;
-   margin:0!important;padding:0!important;
-   transform:none!important;
-   z-index:99999!important;
-   overflow:hidden!important;
-   background:rgba(0,0,0,.34)!important;
- }
- #bulkBack .bulkmodal{
-   position:absolute!important;inset:0!important;
-   left:0!important;right:0!important;top:0!important;bottom:0!important;
-   transform:none!important;
-   width:100vw!important;max-width:100vw!important;
-   height:100dvh!important;max-height:100dvh!important;
-   margin:0!important;
-   padding:calc(18px + env(safe-area-inset-top)) 14px calc(110px + env(safe-area-inset-bottom))!important;
-   border-radius:0!important;
-   box-sizing:border-box!important;
-   overflow-x:hidden!important;overflow-y:auto!important;
-   -webkit-overflow-scrolling:touch!important;
-   background:#fff!important;
- }
- #bulkStep1,#bulkStep2{width:100%!important;max-width:none!important;margin:0!important;transform:none!important}
- #bulkStep2 .importrow{
-   display:grid!important;
-   grid-template-columns:34px minmax(0,1fr)!important;
-   grid-template-rows:auto auto!important;
-   column-gap:8px!important;row-gap:6px!important;
-   width:100%!important;max-width:100%!important;
-   padding:10px 0!important;box-sizing:border-box!important;
- }
- #bulkStep2 .impcheck{grid-column:1!important;grid-row:1 / 3!important;align-self:center!important}
- #bulkStep2 .impdate{grid-column:2!important;grid-row:1!important;width:100%!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
- #bulkStep2 .imptitle{grid-column:2!important;grid-row:2!important;width:100%!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
- #bulkStep2 .actions{
-   position:fixed!important;
-   left:0!important;right:0!important;bottom:0!important;
-   width:100%!important;box-sizing:border-box!important;
-   margin:0!important;padding:10px 14px calc(10px + env(safe-area-inset-bottom))!important;
-   background:#fff!important;z-index:100001!important;
-   border-top:1px solid #e5e7eb!important;
- }
- body:has(#bulkBack.show){overflow:hidden!important}
-}
-
+*{box-sizing:border-box} :root{--bg:#f5f3ee;--card:#fff;--ink:#20252b;--muted:#747b83;--line:#dedbd3;--accent:#334b5e;--soft:#edf1f3;--danger:#b34848}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer}.wrap{max-width:1040px;margin:auto;padding:18px 16px 90px}
+header{display:flex;gap:12px;justify-content:space-between;align-items:center}h1{font-size:26px;margin:0}.sub{font-size:13px;color:var(--muted);margin-top:3px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 13px;font-weight:700;color:var(--ink)}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.stat b{display:block;font-size:22px}.stat span{font-size:12px;color:var(--muted)}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}.seg{display:flex;background:#e8e6df;border-radius:10px;padding:3px}.seg button{border:0;background:transparent;padding:7px 10px;border-radius:8px}.seg button.on{background:#fff;font-weight:700}.search{flex:1;min-width:180px;border:1px solid var(--line);border-radius:11px;padding:9px 11px;background:#fff}
+.list{display:grid;gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px}.head{display:flex;gap:9px;align-items:flex-start}.star{border:0;background:none;font-size:21px;color:#c6c6c6;padding:0}.star.on{color:#c39125}.grow{flex:1;min-width:0}.title{font-weight:800;font-size:17px}.meta,.foot{font-size:12px;color:var(--muted);margin-top:4px}.count{font-size:12px;font-weight:800;padding:5px 8px;border-radius:999px;background:var(--soft);white-space:nowrap}.count.bad{background:#fae8e8;color:#9e3333}.next{margin-top:10px;background:#f5f7f8;border-radius:10px;padding:9px;font-size:13px}.miles{margin-top:9px;display:grid;gap:6px}.mile{display:grid;grid-template-columns:22px 58px 1fr;gap:7px;align-items:center;font-size:13px}.mile.done{text-decoration:line-through;color:#999}.mile input{width:17px;height:17px}.progress{height:6px;background:#ecebe7;border-radius:99px;overflow:hidden;margin-top:11px}.progress i{display:block;height:100%;background:#6f8494}.cardbuttons{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}.mini{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 9px;font-size:12px}.empty{text-align:center;padding:50px 15px;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:16px}
+.timeline{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;min-height:120px}.tlrow{display:grid;grid-template-columns:150px minmax(500px,1fr);gap:12px;align-items:center;margin:12px 0}.track{height:24px;position:relative;border-bottom:2px solid #d8d8d4}.dot{position:absolute;bottom:-7px}.tlname{font-size:13px;font-weight:700}
+.overlay{position:fixed;inset:0;background:rgba(20,24,28,.4);z-index:1000;display:none}.overlay.show{display:block}.screen{position:absolute;inset:0;background:var(--bg);overflow:auto;padding:max(18px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}.panel{max-width:720px;margin:auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}.screenhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.screenhead h2{font-size:20px;margin:0}.close{border:0;background:transparent;font-size:24px}
+label.lab{display:block;font-weight:700;font-size:13px;margin:13px 0 5px}.field{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mileedit{display:grid;grid-template-columns:145px 1fr 38px;gap:7px;margin:7px 0}.bottom{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.bulktext{width:100%;min-height:210px;border:1px solid var(--line);border-radius:12px;padding:12px;resize:vertical}.hint{font-size:12px;color:var(--muted);line-height:1.6}.candidate{display:grid;grid-template-columns:28px 145px 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #eee}.candidate input[type=date],.candidate input[type=text]{width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;padding:9px}.sticky{position:sticky;bottom:0;background:var(--bg);padding:10px 0 max(8px,env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:8px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 13px;border-radius:10px;display:none;z-index:3000;font-size:13px}
+@media(max-width:650px){.wrap{padding:14px 12px 85px}header{align-items:flex-start;flex-direction:column}.actions{width:100%}.actions .btn{flex:1}.stats{margin:13px 0}.toolbar{gap:7px}.panel{border:0;border-radius:0;padding:0}.grid2{grid-template-columns:1fr}.mileedit{grid-template-columns:1fr}.mileedit .del{justify-self:end}.candidate{grid-template-columns:28px 1fr;grid-template-rows:auto auto}.candidate .ck{grid-row:1/3}.candidate .datein{grid-column:2}.candidate .titlein{grid-column:2}.screen{background:#fff}.sticky{background:#fff}.tlrow{grid-template-columns:110px minmax(460px,1fr)}}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
-<div class="app">
-<header><div class="brand"><h1>Goal Flow</h1><p>ゴールと途中の締切を、ひと目で。</p></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button class="smallbtn" id="bulkImportBtn" type="button">✨ ChatGPTから取り込み</button><button class="add" id="quickAddBtn" type="button">＋ かんたん登録</button></div></header>
-<div class="toolbar">
- <div class="seg" id="statusSeg"><button data-status="active" class="active">進行中</button><button data-status="done">完了済み</button></div>
- <div class="seg" id="viewSeg"><button data-view="list" class="active">縦一覧</button><button data-view="timeline">横タイムライン</button></div>
- <div class="spacer"></div><input id="searchBox" class="search" placeholder="予定を検索"><button class="smallbtn" onclick="exportData()">バックアップ</button><button class="smallbtn" onclick="recoverLocalData()">端末内から復元</button><label class="smallbtn" style="cursor:pointer">復元<input type="file" accept="application/json" onchange="importData(event)" hidden></label>
-</div>
-<div class="summary"><div class="sum"><b id="s1">0</b><span>進行中</span></div><div class="sum"><b id="s2">0</b><span>7日以内の締切</span></div><div class="sum"><b id="s3">0</b><span>期限超過</span></div></div>
+<div class="wrap">
+<header><div><h1>Goal Flow</h1><div class="sub">ゴールと途中の締切を、ひと目で。</div></div>
+<div class="actions"><button class="btn" onclick="openBulk()">✨ ChatGPTから取り込み</button><button class="btn primary" onclick="openEditor()">＋ かんたん登録</button></div></header>
+<div class="stats"><div class="stat"><b id="stActive">0</b><span>進行中</span></div><div class="stat"><b id="stSoon">0</b><span>7稼働日以内</span></div><div class="stat"><b id="stOver">0</b><span>期限超過</span></div></div>
+<div class="toolbar"><div class="seg" id="statusSeg"><button class="on" data-v="active">進行中</button><button data-v="done">完了済み</button></div><div class="seg" id="viewSeg"><button class="on" data-v="list">一覧</button><button data-v="timeline">タイムライン</button></div><input id="search" class="search" placeholder="検索"><button class="btn" onclick="exportData()">バックアップ</button><label class="btn">復元<input type="file" accept=".json,application/json" hidden onchange="importData(event)"></label><button class="btn" onclick="recoverLocal()">端末内から復元</button></div>
 <div id="content"></div>
 </div>
-<div class="modalback" id="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal">
-<h2 id="modalTitle">かんたん登録</h2><p class="hint">途中の締切は、内容と日付をカレンダーから選ぶだけです。</p>
-<div class="field"><label>何をする？</label><input id="taskTitle" placeholder="例：6年 家庭科の授業準備"></div>
-<div class="row2"><div class="field"><label>開始日</label><input id="startDate" type="date"></div><div class="field"><label>最終締切</label><input id="finalDate" type="date"></div></div>
-<div class="field"><label>途中の締切</label><div id="milestoneEditor"></div><button type="button" class="addmile" onclick="addMilestoneRow()">＋ 途中の締切を追加</button></div>
-<div class="field"><label>日数の数え方</label><div class="checks"><label><input type="checkbox" id="excludeWeekend" checked> 土日を数えない</label><label><input type="checkbox" id="excludeHolidays"> 祝日も数えない（簡易）</label></div></div>
-<div class="field"><label>メモ（任意）</label><input id="memo" placeholder="資料の場所、リンクのメモなど"></div>
-<div class="actions"><button class="cancel" onclick="closeModal()">キャンセル</button><button class="save" onclick="saveTask()">登録する</button></div>
-</div></div>
 
-<div class="bulkback" id="bulkBack"><div class="bulkmodal">
-<h2 style="margin:0 0 5px">予定表からまとめて登録</h2>
-<p class="hint"><b>学校の月間行事予定表を写真で読み取れます。</b> 初回の文字認識では日本語OCRデータを読み込むためネット接続が必要です。画像はこのブラウザ内で処理します。</p>
-<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0 12px">
-<label style="font-weight:800">予定表の年月</label>
-<input type="month" id="scheduleMonth" style="border:1px solid #d8dbe0;border-radius:9px;padding:8px;font-size:16px">
-<span class="hint">OCRで読めない場合もここを使います</span>
-</div>
-<div id="photoPickArea" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px">
-<button class="save" type="button" id="cameraBtn">📷 今、写真を撮る</button>
-<button class="cancel" type="button" id="libraryBtn">🖼 写真から選ぶ</button>
-<input id="cameraInput" type="file" accept="image/*" capture="environment" style="display:none">
-<input id="libraryInput" type="file" accept="image/*" style="display:none">
-</div>
-<div id="ocrStatus" style="display:none;background:#f5f7fa;border-radius:12px;padding:12px;margin-bottom:12px">
-<div style="font-weight:800" id="ocrStatusText">予定表を読み取っています…</div>
-<div style="height:8px;background:#e2e6eb;border-radius:99px;margin-top:8px;overflow:hidden"><div id="ocrBar" style="height:100%;width:0;background:#222;border-radius:99px"></div></div>
-</div>
-<details style="margin-bottom:12px"><summary style="cursor:pointer;font-weight:700">文字を貼り付けて登録する場合</summary>
-<div id="bulkStep1" style="margin-top:10px">
-<div class="hint" style="margin:8px 0 10px;line-height:1.7">
-<b>使い方</b><br>
-① 予定表の写真をChatGPTに送って「Goal Flow用にして」と伝える<br>
-② ChatGPTが返した文字列を<b>全部コピー</b><br>
-③ 下の欄に貼り付けて「読み取る」を押す<br>
-<span style="font-size:12px">形式：<b>2026/10/01 | 予定名</b>　（同じ日に複数の予定があってもOK）</span>
-</div>
-<details style="margin:8px 0 12px"><summary style="cursor:pointer;font-weight:800">ChatGPTに送る言葉</summary>
-<div style="margin-top:8px;padding:10px;background:#f6f7f9;border-radius:10px;font-size:13px;line-height:1.6">
-予定表の画像を読み取って、Goal Flow取り込み用にしてください。<br>
-1行を「YYYY/MM/DD | 予定名」の形式にして、予定がない日は出さないでください。同じ日に複数ある場合は1予定1行にしてください。
-</div></details>
+<div class="overlay" id="editor"><div class="screen"><div class="panel"><div class="screenhead"><h2 id="editorTitle">かんたん登録</h2><button class="close" onclick="closeEditor()">×</button></div>
+<label class="lab">何をする？</label><input id="title" class="field" placeholder="例：研究授業の準備">
+<div class="grid2"><div><label class="lab">開始日</label><input id="start" type="date" class="field"></div><div><label class="lab">最終締切</label><input id="final" type="date" class="field"></div></div>
+<label class="lab">途中の締切</label><div id="mileEditor"></div><button class="mini" onclick="addMile()">＋ 中間締切を追加</button>
+<label class="lab"><input id="weekend" type="checkbox" checked> 残り日数から土日を除外</label>
+<label class="lab">メモ</label><textarea id="memo" class="field" rows="3"></textarea>
+<div class="bottom"><button class="btn" onclick="closeEditor()">キャンセル</button><button class="btn primary" onclick="saveTask()">保存</button></div></div></div></div>
 
-</div>
-<textarea id="bulkText" class="bulktext" placeholder="例：
-10月2日　学年会
-10月8日　研究授業
-10/16　校内研修
-10/28　音楽鑑賞会"></textarea><div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
-<button type="button" class="secondary" onclick="pasteGoalFlowText()">📋 クリップボードから貼り付け</button>
-<button type="button" class="secondary" onclick="document.getElementById('bulkText').value=''">クリア</button>
-</div>
-<div class="actions"><button class="cancel" type="button" id="bulkCancel1">キャンセル</button><button class="save" type="button" id="parseBulkBtn">予定を読み取る</button></div>
-</div></details>
-<details id="ocrDebugBox" style="display:none;margin:10px 0"><summary style="cursor:pointer;font-weight:700">🔎 OCRの読み取り結果を確認</summary><textarea id="ocrDebugText" class="bulktext" style="min-height:120px;margin-top:8px" readonly></textarea></details>
-<div id="bulkStep2" style="display:none">
-<div class="importtools"><button type="button" id="selectAllImport">すべて選択</button><button type="button" id="clearAllImport">すべて解除</button><button type="button" id="backBulk">← 貼り付けに戻る</button></div>
-<div id="importRows"></div>
-<p class="hint">日付や予定名は、この画面で修正してから登録できます。登録後は通常の予定と同じように途中締切を追加できます。</p>
-<div class="actions"><button class="cancel" type="button" id="bulkCancel2">キャンセル</button><button class="save" type="button" id="commitBulkBtn">選択した予定を登録</button></div>
-</div>
-</div></div>
-<div class="sheet" id="sheet"></div><div class="toast" id="toast"></div>
+<div class="overlay" id="bulk"><div class="screen"><div class="panel">
+<div id="bulkInput"><div class="screenhead"><h2>ChatGPTから取り込み</h2><button class="close" onclick="closeBulk()">×</button></div>
+<div class="hint">予定表の写真をChatGPTに送り「Goal Flow用にして」と伝えます。返ってきた文字列をそのまま貼り付けます。<br><b>形式：2026/10/01 | 予定名</b></div>
+<textarea id="bulkText" class="bulktext" placeholder="2026/10/01 | 人権（3・4年）&#10;2026/10/01 | あゆみ提出"></textarea>
+<div class="bottom"><button class="btn" onclick="pasteText()">📋 貼り付け</button><button class="btn" onclick="closeBulk()">キャンセル</button><button class="btn primary" onclick="parseBulk()">予定を読み取る</button></div></div>
+<div id="bulkConfirm" style="display:none"><div class="screenhead"><h2>登録する予定を確認</h2><button class="close" onclick="closeBulk()">×</button></div><div id="candidates"></div><div class="sticky"><button class="btn" onclick="backBulk()">← 入力に戻る</button><button class="btn primary" onclick="commitBulk()">選択した予定を登録</button></div></div>
+</div></div></div>
+<div class="toast" id="toast"></div>
 <script>
-const KEY='goalflow_v1_tasks'; // このキーは今後変更しない
-const SNAP_PREFIX='goalflow_snapshot_';
-function isTaskArray(v){return Array.isArray(v)&&v.every(function(t){return t&&typeof t==='object'&&typeof t.title==='string'})}
-function readArray(key){try{var r=localStorage.getItem(key);if(!r)return null;var v=JSON.parse(r);return isTaskArray(v)?v:null}catch(e){return null}}
-function findLegacyData(){
- var found=[];
- for(var i=0;i<localStorage.length;i++){
-   var k=localStorage.key(i);
-   if(!k||k===KEY||k.indexOf(SNAP_PREFIX)===0)continue;
-   var v=readArray(k);
-   if(v&&v.length)found.push({key:k,data:v});
- }
- found.sort(function(a,b){return b.data.length-a.data.length});
- return found;
-}
-let tasks=readArray(KEY)||[];
-if(!tasks.length){
- var legacy=findLegacyData();
- if(legacy.length){
-   tasks=legacy[0].data;
-   try{localStorage.setItem(KEY,JSON.stringify(tasks));localStorage.setItem('goalflow_migrated_from',legacy[0].key)}catch(e){}
- }
-}
-let status='active', view='list', editing=null, deleted=null;
-const jpHolidays=['2026-01-01','2026-01-12','2026-02-11','2026-02-23','2026-03-20','2026-04-29','2026-05-03','2026-05-04','2026-05-05','2026-05-06','2026-07-20','2026-08-11','2026-09-21','2026-09-22','2026-09-23','2026-10-12','2026-11-03','2026-11-23'];
-function today(){let d=new Date(); return fmt(d)} function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')} function parse(s){let [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)} function short(s){let d=parse(s);return (d.getMonth()+1)+'/'+d.getDate()}
-function workdays(from,to,t){let a=parse(from),b=parse(to),sign=a<=b?1:-1,n=0; if(sign<0){[a,b]=[b,a]} let d=new Date(a); while(d<b){d.setDate(d.getDate()+1);let ds=fmt(d),day=d.getDay(); if(!(t.excludeWeekend&&(day===0||day===6)) && !(t.excludeHolidays&&jpHolidays.includes(ds)))n++} return n*sign}
-function nextMilestone(t){let pending=t.milestones.filter(m=>!m.done).sort((a,b)=>a.date.localeCompare(b.date)); if(pending.length)return {...pending[0],final:false}; return {date:t.finalDate,text:'最終ゴール',done:false,final:true}}
-function remaining(t,date){return workdays(today(),date,t)}
-function makeSnapshot(){
- try{
-   var current=localStorage.getItem(KEY);
-   if(current){
-     var stamp=new Date().toISOString().replace(/[:.]/g,'-');
-     localStorage.setItem(SNAP_PREFIX+stamp,current);
-     var keys=[];
-     for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf(SNAP_PREFIX)===0)keys.push(k)}
-     keys.sort().reverse();
-     keys.slice(12).forEach(function(k){localStorage.removeItem(k)});
-   }
- }catch(e){}
-}
-function save(){
- makeSnapshot();
- try{localStorage.setItem(KEY,JSON.stringify(tasks))}catch(e){alert('予定を端末に保存できませんでした。ブラウザの保存領域を確認してください。')}
- render()
-}
-function recoverLocalData(){
- var candidates=[];
- var main=readArray(KEY);if(main)candidates.push({key:KEY,data:main,label:'現在の保存データ'});
- for(var i=0;i<localStorage.length;i++){
-   var k=localStorage.key(i);if(!k||k===KEY)continue;
-   var v=readArray(k);if(v&&v.length)candidates.push({key:k,data:v,label:k.indexOf(SNAP_PREFIX)===0?'自動バックアップ':'旧バージョンのデータ'});
- }
- if(!candidates.length){alert('このURLのブラウザ内には復元できるGoal Flowデータが見つかりませんでした。');return}
- candidates.sort(function(a,b){if(a.key.indexOf(SNAP_PREFIX)===0&&b.key.indexOf(SNAP_PREFIX)===0)return b.key.localeCompare(a.key);return b.data.length-a.data.length});
- var lines=candidates.slice(0,12).map(function(c,i){return (i+1)+'：'+c.label+'（'+c.data.length+'件）'+(c.key.indexOf(SNAP_PREFIX)===0?' '+c.key.replace(SNAP_PREFIX,'').slice(0,19):'')});
- var n=prompt('復元するデータの番号を入力してください。\n\n'+lines.join('\n'),'1');
- if(!n)return;var c=candidates[Number(n)-1];if(!c){alert('番号が正しくありません。');return}
- if(confirm(c.data.length+'件の予定を復元しますか？\n現在のデータは復元前に自動バックアップします。')){
-   makeSnapshot();tasks=JSON.parse(JSON.stringify(c.data));
-   localStorage.setItem(KEY,JSON.stringify(tasks));render();toast('端末内データを復元しました');
- }
-}
-function render(){document.querySelectorAll('#statusSeg button').forEach(b=>b.classList.toggle('active',b.dataset.status===status));document.querySelectorAll('#viewSeg button').forEach(b=>b.classList.toggle('active',b.dataset.view===view)); let active=tasks.filter(t=>!t.completed);document.getElementById('s1').textContent=active.length;document.getElementById('s2').textContent=active.filter(t=>{let r=remaining(t,nextMilestone(t).date);return r>=0&&r<=7}).length;document.getElementById('s3').textContent=active.filter(t=>remaining(t,nextMilestone(t).date)<0).length;
- let q=(document.getElementById('searchBox').value||'').trim().toLowerCase(); let arr=tasks.filter(t=>status==='done'?t.completed:!t.completed).filter(t=>!q||(t.title+' '+(t.memo||'')+' '+t.milestones.map(m=>m.text).join(' ')).toLowerCase().includes(q)); arr.sort((a,b)=>status==='done'?(b.completedAt||'').localeCompare(a.completedAt||''):((b.todayFlag?1:0)-(a.todayFlag?1:0)||nextMilestone(a).date.localeCompare(nextMilestone(b).date))); let c=document.getElementById('content'); if(!arr.length){c.innerHTML='<div class="empty"><b>'+(status==='done'?'完了済みはまだありません':'進行中の予定はありません')+'</b>'+(status==='done'?'完了した予定はここに残ります。':'「＋ かんたん登録」から始められます。')+'</div>';return} c.innerHTML=view==='list'?'<div class="list">'+arr.map(cardHTML).join('')+'</div>':timelineHTML(arr)}
-function cardHTML(t){let n=nextMilestone(t),r=remaining(t,n.date),cls=r<0?'red':r<=3?'orange':'green',txt=r<0?'期限超過 '+Math.abs(r)+'日':r===0?'今日':`あと${r}稼働日`; let all=t.milestones.length+1,done=t.milestones.filter(m=>m.done).length+(t.completed?1:0),pct=Math.round(done/all*100);return `<div class="card ${r<0?'overdue':r<=3?'urgent':''}"><div class="cardhead"><button class="todaystar ${t.todayFlag?'on':''}" title="今日やる" onclick="toggleToday('${t.id}')">★</button><div class="grow"><div class="title">${esc(t.title)}</div><div class="meta">開始 ${short(t.startDate)} ・ 最終 ${short(t.finalDate)}${t.excludeWeekend?' ・ 土日除外':''}</div></div><div class="count ${cls}">${t.completed?'✓ 完了':txt}</div><button class="menu" onclick="openMenu(event,'${t.id}')">⋯</button></div>${!t.completed?`<div class="next"><b>次 →</b>${short(n.date)}　${esc(n.text)}</div>`:''}<div class="milestones">${t.milestones.sort((a,b)=>a.date.localeCompare(b.date)).map((m,i)=>`<label class="mile ${m.done?'done':''}"><input type="checkbox" ${m.done?'checked':''} onchange="toggleMile('${t.id}',${i})"><span class="date">${short(m.date)}</span><span class="mtxt">${esc(m.text)}</span><span class="badge">${m.done?'完了':mileCount(t,m.date)}</span></label>`).join('')}<div class="mile ${t.completed?'done':''}"><span style="width:18px;text-align:center">★</span><span class="date">${short(t.finalDate)}</span><span class="mtxt">最終ゴール</span></div></div><div class="progress"><i style="width:${pct}%"></i></div><div class="foot"><span>進捗 ${pct}%</span><span>${t.memo?esc(t.memo):''}</span></div></div>`}
-function mileCount(t,d){let r=remaining(t,d);return r<0?`超過${Math.abs(r)}日`:r===0?'今日':`あと${r}日`}
-function timelineHTML(arr){let dates=[];arr.forEach(t=>{dates.push(t.startDate,t.finalDate,...t.milestones.map(m=>m.date))});let min=parse(dates.sort()[0]),max=parse(dates.sort()[dates.length-1]);let span=Math.max(1,(max-min)/86400000);function pos(ds){return Math.max(0,Math.min(100,(parse(ds)-min)/86400000/span*100))}let tp=pos(today());return `<div class="timeline"><div style="font-size:12px;color:#777;margin:0 0 8px 202px">${short(fmt(min))} ───────────────────────── ${short(fmt(max))}</div>${arr.map(t=>`<div class="tlrow"><div class="tlname">${esc(t.title)}<div style="font-weight:400;color:#888;margin-top:3px">次 ${short(nextMilestone(t).date)}</div></div><div class="track">${tp>=0&&tp<=100?`<i class="todayline" style="left:${tp}%"></i>`:''}${t.milestones.map(m=>`<i class="dot ${m.done?'done':''}" title="${esc(m.text)} ${m.date}" style="left:${pos(m.date)}%">◆</i>`).join('')}<i class="dot final" title="最終ゴール ${t.finalDate}" style="left:${pos(t.finalDate)}%">★</i></div></div>`).join('')}</div>`}
-function addMilestoneRow(data){var box=document.getElementById('milestoneEditor'),row=document.createElement('div');row.className='mileedit';row.innerHTML='<input class="mileText" placeholder="例：ワークシート完成"><input class="mileDate" type="date"><button type="button" title="削除">×</button>'; if(data){row.querySelector('.mileText').value=data.text||'';row.querySelector('.mileDate').value=data.date||'';row.dataset.done=data.done?'1':'0'} row.querySelector('button').onclick=function(){row.remove()};box.appendChild(row)}
-function openModal(id){editing=id||null;var t=tasks.find(function(x){return x.id===editing;});document.getElementById('modalTitle').textContent=t?'予定を編集':'かんたん登録';document.getElementById('taskTitle').value=t?t.title:'';document.getElementById('startDate').value=t?t.startDate:today();document.getElementById('finalDate').value=t?t.finalDate:'';var ed=document.getElementById('milestoneEditor');ed.innerHTML='';if(t&&t.milestones.length){t.milestones.slice().sort(function(a,b){return a.date.localeCompare(b.date)}).forEach(addMilestoneRow)}else addMilestoneRow();document.getElementById('excludeWeekend').checked=t?!!t.excludeWeekend:true;document.getElementById('excludeHolidays').checked=t?!!t.excludeHolidays:false;document.getElementById('memo').value=t?(t.memo||''):'';document.getElementById('modalBack').classList.add('show')}
-function closeModal(){document.getElementById('modalBack').classList.remove('show');editing=null}
-function collectMilestones(){var rows=[].slice.call(document.querySelectorAll('#milestoneEditor .mileedit')),out=[];rows.forEach(function(r){var text=r.querySelector('.mileText').value.trim(),date=r.querySelector('.mileDate').value;if(text&&date)out.push({text:text,date:date,done:r.dataset.done==='1'})});return out.sort(function(a,b){return a.date.localeCompare(b.date)})}
-function saveTask(){var title=document.getElementById('taskTitle').value.trim(),startDate=document.getElementById('startDate').value,finalDate=document.getElementById('finalDate').value;if(!title||!startDate||!finalDate){alert('「何をする？」「開始日」「最終締切」を入力してください。');return}var old=tasks.find(function(t){return t.id===editing}),ms=collectMilestones();if(ms.some(function(m){return m.date>finalDate})){alert('途中の締切は最終締切以前の日付にしてください。');return}if(old){ms.forEach(function(m){var prev=old.milestones.find(function(p){return p.date===m.date&&p.text===m.text});if(prev)m.done=prev.done});Object.assign(old,{title:title,startDate:startDate,finalDate:finalDate,milestones:ms,excludeWeekend:document.getElementById('excludeWeekend').checked,excludeHolidays:document.getElementById('excludeHolidays').checked,memo:document.getElementById('memo').value.trim()})}else tasks.push({id:makeId(),title:title,startDate:startDate,finalDate:finalDate,milestones:ms,excludeWeekend:document.getElementById('excludeWeekend').checked,excludeHolidays:document.getElementById('excludeHolidays').checked,memo:document.getElementById('memo').value.trim(),todayFlag:false,completed:false,createdAt:new Date().toISOString()});closeModal();save()}
-function toggleMile(id,index){let t=tasks.find(x=>x.id===id);t.milestones.sort((a,b)=>a.date.localeCompare(b.date));t.milestones[index].done=!t.milestones[index].done;save()}
-function toggleToday(id){var t=tasks.find(function(x){return x.id===id});t.todayFlag=!t.todayFlag;save()}
-function openMenu(e,id){e.stopPropagation();let t=tasks.find(x=>x.id===id),s=document.getElementById('sheet');s.innerHTML=`<button onclick="completeTask('${id}')">${t.completed?'↩ 進行中に戻す':'✓ 完了にする'}</button><button onclick="openModal('${id}');closeMenu()">編集</button><button onclick="duplicateTask('${id}')">複製</button><button style="color:#a23d3b" onclick="deleteTask('${id}')">削除</button>`;let r=e.currentTarget.getBoundingClientRect();s.style.top=Math.min(innerHeight-190,r.bottom+5)+'px';s.style.left=Math.max(8,Math.min(innerWidth-165,r.right-155))+'px';s.classList.add('show')}
-function closeMenu(){document.getElementById('sheet').classList.remove('show')} document.addEventListener('click',closeMenu)
-function completeTask(id){let t=tasks.find(x=>x.id===id);t.completed=!t.completed;t.completedAt=t.completed?new Date().toISOString():null;closeMenu();save()}
-function duplicateTask(id){let t=tasks.find(x=>x.id===id),c=JSON.parse(JSON.stringify(t));c.id=makeId();c.title+='（コピー）';c.completed=false;c.completedAt=null;c.milestones.forEach(m=>m.done=false);tasks.push(c);closeMenu();save();toast('複製しました')}
-function deleteTask(id){let i=tasks.findIndex(x=>x.id===id);deleted={task:tasks[i],index:i};tasks.splice(i,1);closeMenu();save();toast('削除しました',true)}
-function toast(msg,undo=false){let el=document.getElementById('toast');el.innerHTML=msg+(undo?'<button onclick="undoDelete()">元に戻す</button>':'');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4500)} function undoDelete(){if(deleted){tasks.splice(deleted.index,0,deleted.task);deleted=null;save();document.getElementById('toast').classList.remove('show')}}
-function exportData(){let blob=new Blob([JSON.stringify(tasks,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='goalflow-backup-'+today()+'.json';a.click();URL.revokeObjectURL(a.href)}
-function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;if(confirm('現在のデータをバックアップ内容で置き換えますか？')){tasks=d;save();toast('復元しました')}}catch{alert('バックアップファイルを読み込めませんでした。')}};r.readAsText(f);e.target.value=''}
-function makeId(){try{if(window.crypto&&crypto.randomUUID)return crypto.randomUUID()}catch(e){} return 't_'+Date.now()+'_'+Math.random().toString(36).slice(2)}
-function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-var qab=document.getElementById('quickAddBtn'); function showQuickAdd(e){if(e&&e.preventDefault)e.preventDefault();openModal();} qab.addEventListener('click',showQuickAdd,false);
-document.getElementById('searchBox').addEventListener('input',render);
-document.getElementById('statusSeg').onclick=e=>{if(e.target.dataset.status){status=e.target.dataset.status;render()}};document.getElementById('viewSeg').onclick=e=>{if(e.target.dataset.view){view=e.target.dataset.view;render()}};
-
-function defaultScheduleMonth(){
- var d=new Date(),v=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
- if(!document.getElementById('scheduleMonth').value)document.getElementById('scheduleMonth').value=v;
-}
-function openBulk(){
- var p0=document.getElementById('bulkStep1')&&document.getElementById('bulkStep1').closest('details');if(p0)p0.style.display='block';
- if(document.getElementById('bulkStep1'))document.getElementById('bulkStep1').style.display='block';
- if(document.getElementById('bulkStep2'))document.getElementById('bulkStep2').style.display='none';
- var hh=document.querySelector('#bulkBack .bulkmodal > h2');if(hh)hh.textContent='予定表からまとめて登録';
-
- defaultScheduleMonth();
- document.getElementById('bulkText').value='';
- document.getElementById('bulkStep1').style.display='block';
- document.getElementById('bulkStep2').style.display='none';
- setOcrStatus(false,'',0);
- document.getElementById('ocrDebugBox').style.display='none';
- document.getElementById('bulkBack').classList.add('show');
-}
-function closeBulk(){document.getElementById('bulkBack').classList.remove('show')}
-function inferYear(m,d){
- var now=new Date(), y=now.getFullYear();
- var candidate=new Date(y,m-1,d), past=new Date(now); past.setMonth(past.getMonth()-4);
- if(candidate<past) y++;
- return y;
-}
-
-function setOcrStatus(show,msg,pct){
- var box=document.getElementById('ocrStatus'), bar=document.getElementById('ocrBar'), txt=document.getElementById('ocrStatusText');
- box.style.display=show?'block':'none'; if(msg)txt.textContent=msg; if(typeof pct==='number')bar.style.width=Math.round(pct*100)+'%';
-}
-async function loadImageFile(file){
- return new Promise(function(resolve,reject){
-   var img=new Image(), url=URL.createObjectURL(file);
-   img.onload=function(){URL.revokeObjectURL(url);resolve(img)};
-   img.onerror=function(){URL.revokeObjectURL(url);reject(new Error('image load'))};
-   img.src=url;
- });
-}
-function preprocessScheduleImage(img){
- var maxW=1800, scale=Math.min(1,maxW/img.naturalWidth);
- var c=document.createElement('canvas'),ctx=c.getContext('2d',{willReadFrequently:true});
- c.width=Math.round(img.naturalWidth*scale);c.height=Math.round(img.naturalHeight*scale);
- ctx.drawImage(img,0,0,c.width,c.height);
- return c;
-}
-function grayBinaryCanvas(src,threshold){
- var c=document.createElement('canvas'),ctx=c.getContext('2d',{willReadFrequently:true});
- c.width=src.width;c.height=src.height;ctx.drawImage(src,0,0);
- var im=ctx.getImageData(0,0,c.width,c.height),d=im.data;
- for(var i=0;i<d.length;i+=4){var g=.299*d[i]+.587*d[i+1]+.114*d[i+2];var v=g<(threshold||190)?0:255;d[i]=d[i+1]=d[i+2]=v}
- ctx.putImageData(im,0,0);return c;
-}
-function horizontalLines(canvas){
- var b=grayBinaryCanvas(canvas,185),ctx=b.getContext('2d'),im=ctx.getImageData(0,0,b.width,b.height).data,scores=[];
- var x0=Math.floor(b.width*.03),x1=Math.floor(b.width*.98);
- for(var y=0;y<b.height;y++){var dark=0,total=0;for(var x=x0;x<x1;x+=2){var k=(y*b.width+x)*4;total++;if(im[k]<50)dark++}scores.push(dark/total)}
- var ys=[],run=[];
- for(var y=0;y<scores.length;y++){
-   if(scores[y]>.32)run.push(y);
-   else if(run.length){ys.push(Math.round(run.reduce(function(a,b){return a+b},0)/run.length));run=[]}
- }
- if(run.length)ys.push(Math.round(run.reduce(function(a,b){return a+b},0)/run.length));
- return ys;
-}
-function choose31Rows(lines,height){
- // Search every sequence of 32 boundaries for a reasonably regular monthly grid.
- var best=null;
- for(var i=0;i+31<lines.length;i++){
-   var seg=lines.slice(i,i+32),gaps=[];
-   for(var j=0;j<31;j++)gaps.push(seg[j+1]-seg[j]);
-   var avg=gaps.reduce(function(a,b){return a+b},0)/31;
-   if(avg<18||avg>85)continue;
-   var dev=gaps.reduce(function(a,b){return a+Math.abs(b-avg)},0)/31;
-   var score=dev/avg;
-   if(!best||score<best.score)best={bounds:seg,score:score,avg:avg};
- }
- if(best&&best.score<.55)return best.bounds;
- // Fallback: locate the densest long run of horizontal lines, then interpolate 31 rows.
- if(lines.length>=2){
-   var top=lines[Math.max(0,Math.floor(lines.length*.12))];
-   var bottom=lines[Math.min(lines.length-1,Math.floor(lines.length*.88))];
-   if(bottom-top>height*.45){
-     var arr=[];for(var k=0;k<=31;k++)arr.push(Math.round(top+(bottom-top)*k/31));return arr;
-   }
- }
- return [];
-}
-function cropRowContent(src,y0,y1){
- // Exclude left date/weekday columns and trim a little inside horizontal borders.
- var x0=Math.floor(src.width*.12),x1=Math.floor(src.width*.985),pad=Math.max(2,Math.floor((y1-y0)*.08));
- var w=x1-x0,h=Math.max(1,y1-y0-2*pad);
- var scale=2.0,c=document.createElement('canvas'),ctx=c.getContext('2d',{willReadFrequently:true});
- c.width=Math.round(w*scale);c.height=Math.round(h*scale);
- ctx.drawImage(src,x0,y0+pad,w,h,0,0,c.width,c.height);
- // grayscale + threshold; also erase long vertical/horizontal grid remnants
- var im=ctx.getImageData(0,0,c.width,c.height),d=im.data;
- for(var i=0;i<d.length;i+=4){var g=.299*d[i]+.587*d[i+1]+.114*d[i+2];var v=g<180?0:255;d[i]=d[i+1]=d[i+2]=v}
- ctx.putImageData(im,0,0);
- return c;
-}
-async function recognizeCanvas(canvas,psm,progressBase,progressSpan){
- var result=await Tesseract.recognize(canvas,'jpn',{
-   preserve_interword_spaces:'1',tessedit_pageseg_mode:String(psm||7),
-   logger:function(m){if(m.status==='recognizing text')setOcrStatus(true,'予定表を読み取っています…',progressBase+(m.progress||0)*progressSpan)}
- });
- return (result&&result.data&&result.data.text)||'';
-}
-function cleanRowOCR(t){
- return (t||'').replace(/\r?\n/g,' ').replace(/[|｜]/g,' ').replace(/[_—ー]{3,}/g,' ')
- .replace(/\s+/g,' ').replace(/^\s*[月火水木金土日曜]\s*/,'').trim();
-}
-async function recognizeScheduleImage(file){
- if(!file)return;
- if(!window.Tesseract){alert('文字認識機能を読み込めませんでした。インターネット接続を確認してください。');return}
- setOcrStatus(true,'予定表の31日分の行を探しています…',.01);
- try{
-   var img=await loadImageFile(file),canvas=preprocessScheduleImage(img),lines=horizontalLines(canvas),bounds=choose31Rows(lines,canvas.height);
-   var monthValue=document.getElementById('scheduleMonth').value;
-   var yy,mm;
-   if(monthValue){yy=parseInt(monthValue.slice(0,4),10);mm=parseInt(monthValue.slice(5,7),10)}
-   else {var now=new Date();yy=now.getFullYear();mm=now.getMonth()+1}
-   var rawRows=[];
-   if(bounds.length===32){
-     for(var day=1;day<=31;day++){
-       var rc=cropRowContent(canvas,bounds[day-1],bounds[day]);
-       var t=await recognizeCanvas(rc,7,.04+(day-1)*.9/31,.9/31);
-       t=cleanRowOCR(t);
-       if(t && t!=='0' && t!=='〇' && t.length>1)rawRows.push({day:day,text:t});
-     }
-   }else{
-     // Fallback whole-page OCR, but still show diagnostic instead of silently failing.
-     var whole=await recognizeCanvas(canvas,6,.05,.88);
-     document.getElementById('bulkText').value=whole;
-     document.getElementById('ocrDebugText').value='【横罫線】 '+lines.length+'本\n【31日行の分割】失敗\n\n'+whole;
-     document.getElementById('ocrDebugBox').style.display='block';
-     parseBulkText();return;
-   }
-   var synthetic=yy+'年度 '+mm+'月 行事予定表\n';
-   rawRows.forEach(function(r){synthetic+=r.day+' '+r.text+'\n'});
-   document.getElementById('bulkText').value=synthetic;
-   document.getElementById('ocrDebugText').value='【横罫線】 '+lines.length+'本\n【31日行の分割】成功\n【予定あり】 '+rawRows.length+'日\n\n'+synthetic;
-   document.getElementById('ocrDebugBox').style.display='block';
-   setOcrStatus(true,'読み取り完了。予定を整理しています…',1);
-   parseBulkText();setTimeout(function(){setOcrStatus(false,'',0)},500);
- }catch(e){
-   console.error(e);setOcrStatus(false,'',0);
-   document.getElementById('ocrDebugBox').style.display='block';
-   document.getElementById('ocrDebugText').value='読み取りエラー: '+String(e);
-   alert('写真の読み取りに失敗しました。診断欄の内容を確認できます。');
- }
-}
-function parseSchoolMonthlyTable(raw){
- var txt=(raw||'').replace(/\r/g,'').replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)});
- var head=txt.match(/(20\d{2})\s*年度?[\s　]*(\d{1,2})\s*月/);
- var year=head?parseInt(head[1],10):new Date().getFullYear();
- var month=head?parseInt(head[2],10):(new Date().getMonth()+1);
- var lines=txt.split('\n').map(function(x){return x.replace(/\s+/g,' ').trim()}).filter(Boolean);
- var rows=[], current=null;
- var weekday=/^[月火水木金土日]$/;
- for(var i=0;i<lines.length;i++){
-   var line=lines[i];
-   if(/行事予定表|月末締|月間総時数|月間行事時数/.test(line))continue;
-   var m=line.match(/^(3[01]|[12]?\d)\s*(?:[月火水木金土日曜])?\s+(.+)$/);
-   if(!m){
-     // OCR sometimes puts weekday immediately after day, e.g. 13火
-     m=line.match(/^(3[01]|[12]?\d)[\s　]*([月火水木金土日])[\s　]*(.*)$/);
-     if(m){ m=[m[0],m[1],(m[3]||'')]; }
-   }
-   if(m){
-     var day=parseInt(m[1],10);
-     if(day>=1&&day<=31){
-       current={day:day,text:(m[2]||'').trim()}; rows.push(current); continue;
-     }
-   }
-   // Separate OCR line containing just a day number
-   var only=line.match(/^(3[01]|[12]?\d)$/);
-   if(only){current={day:parseInt(only[1],10),text:''};rows.push(current);continue}
-   if(current && !/^(日|曜|児童|職員)$/.test(line)) current.text+=(current.text?' ':'')+line;
- }
- var out=[];
- rows.forEach(function(r){
-   var t=(r.text||'')
-    .replace(/^[月火水木金土日曜]\s*/,'')
-    .replace(/\b0\b/g,' ')
-    .replace(/\s+/g,' ').trim();
-   if(!t)return;
-   // Ignore obvious header fragments
-   if(/^(児童|職員)$/.test(t))return;
-   // Preserve a row as one candidate; user can split/edit before registration.
-   var date=year+'-'+String(month).padStart(2,'0')+'-'+String(r.day).padStart(2,'0');
-   out.push({date:date,title:t});
- });
- return {year:year,month:month,items:out};
-}
-function showImportedCandidates(out,schoolMode){
- var box=document.getElementById('importRows');
- if(!out.length){
-   box.innerHTML='<div class="empty"><b>予定を見つけられませんでした</b>写真を予定表だけにトリミングし、なるべく正面から撮って再度お試しください。</div>';
- }else{
-   box.innerHTML=out.map(function(x){
-     return '<div class="importrow"><input type="checkbox" class="impcheck" checked><input type="date" class="impdate" value="'+x.date+'"><input type="text" class="imptitle" value="'+esc(x.title)+'"></div>';
-   }).join('');
-   if(schoolMode){
-     box.insertAdjacentHTML('afterbegin','<div class="hint" style="margin:4px 0 10px"><b>学校予定表モードで '+out.length+' 日分を検出しました。</b><br>同じ日の「児童」「職員」が一つにつながっている場合は、予定名をここで短く直してから登録できます。</div>');
-   }
- }
- var inputPanel=document.getElementById('bulkStep1').closest('details');
- if(inputPanel)inputPanel.style.display='none';
- document.getElementById('bulkStep1').style.display='none';
- document.getElementById('bulkStep2').style.display='block';
- var heading=document.querySelector('#bulkBack .bulkmodal > h2');
- if(heading)heading.textContent='登録する予定を確認';
-}
-
-function parseBulkText(){
- var text=document.getElementById('bulkText').value.replace(/\r/g,'')
- .replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0)});
- var lines=text.split('\n').map(function(x){return x.trim()}).filter(Boolean),out=[];
- lines.forEach(function(line){
-   // Preferred ChatGPT format: YYYY/MM/DD | title
-   var p=line.match(/^(\d{4})\s*[\/\-.年]\s*(\d{1,2})\s*[\/\-.月]\s*(\d{1,2})\s*日?\s*(?:\||｜|\t|：|:)\s*(.+)$/);
-   if(!p){
-     // Also accept ordinary date + title without a pipe.
-     p=line.match(/^(?:(\d{4})\s*[年\/\-.]\s*)?(\d{1,2})\s*(?:月|[\/\-.])\s*(\d{1,2})\s*(?:日)?\s+(.+)$/);
-     if(p && !p[1]){
-       var iy=inferYear(parseInt(p[2],10),parseInt(p[3],10));
-       p=[p[0],String(iy),p[2],p[3],p[4]];
-     }
-   }
-   if(!p)return;
-   var y=parseInt(p[1],10),mo=parseInt(p[2],10),d=parseInt(p[3],10);
-   if(mo<1||mo>12||d<1||d>31)return;
-   var title=(p[4]||'').trim().replace(/^[・●○□■◆★\s]+/,'');
-   if(!title)return;
-   out.push({date:y+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0'),title:title});
- });
- showImportedCandidates(out,false);
-}
-function commitBulk(){
- var rows=[].slice.call(document.querySelectorAll('#importRows .importrow')), n=0;
- rows.forEach(function(row){
-  if(!row.querySelector('.impcheck').checked)return;
-  var date=row.querySelector('.impdate').value, title=row.querySelector('.imptitle').value.trim();
-  if(!date||!title)return;
-  tasks.push({id:'t'+Date.now()+Math.random().toString(16).slice(2),title:title,startDate:today(),finalDate:date,milestones:[],excludeWeekend:true,excludeHolidays:false,memo:'ChatGPTから取り込み',completed:false,completedAt:'',todayFlag:false});
-  n++;
- });
- if(!n){alert('登録する予定を選んでください。');return}
- closeBulk(); save(); if(typeof toast==='function')toast(n+'件の予定を登録しました');
-}
-document.getElementById('cameraBtn').addEventListener('click',function(){document.getElementById('cameraInput').click()},false);
-document.getElementById('libraryBtn').addEventListener('click',function(){document.getElementById('libraryInput').click()},false);
-document.getElementById('cameraInput').addEventListener('change',function(e){recognizeScheduleImage(e.target.files&&e.target.files[0]);this.value=''},false);
-document.getElementById('libraryInput').addEventListener('change',function(e){recognizeScheduleImage(e.target.files&&e.target.files[0]);this.value=''},false);
-document.getElementById('bulkImportBtn').addEventListener('click',openBulk,false);
-document.getElementById('bulkCancel1').addEventListener('click',closeBulk,false);
-document.getElementById('bulkCancel2').addEventListener('click',closeBulk,false);
-document.getElementById('parseBulkBtn').addEventListener('click',parseBulkText,false);
-document.getElementById('backBulk').addEventListener('click',function(){
- var p=document.getElementById('bulkStep1').closest('details');if(p)p.style.display='block';
- document.getElementById('bulkStep1').style.display='block';
- document.getElementById('bulkStep2').style.display='none';
- var h=document.querySelector('#bulkBack .bulkmodal > h2');if(h)h.textContent='予定表からまとめて登録';
-},false);
-document.getElementById('selectAllImport').addEventListener('click',function(){document.querySelectorAll('.impcheck').forEach(function(x){x.checked=true})},false);
-document.getElementById('clearAllImport').addEventListener('click',function(){document.querySelectorAll('.impcheck').forEach(function(x){x.checked=false})},false);
-document.getElementById('commitBulkBtn').addEventListener('click',commitBulk,false);
-
-makeSnapshot();
-render();
-
-async function importGoalFlowPdf(file){
- if(!file)return;
- var st=document.getElementById('pdfImportStatus');
- st.textContent='PDFを読み取っています…';
- try{
-   if(!window.pdfjsLib)throw new Error('PDF読み取り機能を読み込めませんでした');
-   pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-   var buf=await file.arrayBuffer();
-   var pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;
-   var md=await pdf.getMetadata();
-   var subject=(md&&md.info&&md.info.Subject)||'';
-   if(subject.indexOf('GOALFLOW1:')!==0)throw new Error('新しいGoal Flow用PDFではありません');
-   var b64=subject.slice('GOALFLOW1:'.length);
-   var bytes=Uint8Array.from(atob(b64),function(c){return c.charCodeAt(0)});
-   var payload=JSON.parse(new TextDecoder('utf-8').decode(bytes));
-   if(!payload||payload.format!=='goalflow-pdf-v1'||!Array.isArray(payload.events))throw new Error('PDF内のデータ形式が正しくありません');
-   var rows=payload.events.map(function(e){return e.date+' | '+e.title});
-   document.getElementById('bulkText').value=rows.join('\n');
-   st.textContent='✓ '+rows.length+'件を読み取りました。';
-   parseBulkText();
- }catch(e){
-   console.error(e);
-   st.textContent='読み取り失敗：'+(e&&e.message?e.message:String(e));
- }
-}
-
-
-async function pasteGoalFlowText(){
- try{
-   if(navigator.clipboard&&navigator.clipboard.readText){
-     var t=await navigator.clipboard.readText();
-     document.getElementById('bulkText').value=t;
-     if(t.trim())parseBulkText();
-   }else{
-     document.getElementById('bulkText').focus();
-     alert('入力欄を長押しして「ペースト」を選んでください。');
-   }
- }catch(e){
-   document.getElementById('bulkText').focus();
-   alert('入力欄を長押しして「ペースト」を選んでください。');
- }
-}
-
+const KEY='goalflow_v1_tasks'; // 永久固定
+const SNAP='goalflow_snapshot_';
+let tasks=load(KEY)||[], status='active', view='list', editing=null, bulkRows=[];
+function load(k){try{let v=JSON.parse(localStorage.getItem(k)||'null');return Array.isArray(v)?v:null}catch(e){return null}}
+function today(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function parse(d){return new Date(d+'T00:00:00')} function short(d){if(!d)return'';let a=d.split('-');return (+a[1])+'/'+(+a[2])}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function id(){return 'g'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function normalize(t){return {id:t.id||id(),title:t.title||'',startDate:t.startDate||today(),finalDate:t.finalDate||t.startDate||today(),milestones:Array.isArray(t.milestones)?t.milestones.map(m=>({date:m.date||today(),text:m.text||'',done:!!m.done})):[],excludeWeekend:t.excludeWeekend!==false,excludeHolidays:!!t.excludeHolidays,memo:t.memo||'',todayFlag:!!t.todayFlag,completed:!!t.completed,completedAt:t.completedAt||'',createdAt:t.createdAt||new Date().toISOString()}}
+tasks=tasks.map(normalize);
+function snapshot(){try{let raw=localStorage.getItem(KEY);if(!raw)return;let k=SNAP+new Date().toISOString().replace(/[:.]/g,'-');localStorage.setItem(k,raw);let ks=[];for(let i=0;i<localStorage.length;i++){let x=localStorage.key(i);if(x&&x.startsWith(SNAP))ks.push(x)}ks.sort().reverse().slice(12).forEach(x=>localStorage.removeItem(x))}catch(e){}}
+function save(){snapshot();localStorage.setItem(KEY,JSON.stringify(tasks));render()}
+function workdays(a,b,t){let x=parse(a),y=parse(b),sg=x<=y?1:-1;if(sg<0)[x,y]=[y,x];let n=0,d=new Date(x);while(d<y){d.setDate(d.getDate()+1);let w=d.getDay();if(!(t.excludeWeekend&&(w===0||w===6)))n++}return n*sg}
+function next(t){let m=t.milestones.filter(x=>!x.done).slice().sort((a,b)=>a.date.localeCompare(b.date));return m[0]||{date:t.finalDate,text:'最終ゴール'}}
+function remain(t,d){return workdays(today(),d,t)}
+function render(){let active=tasks.filter(t=>!t.completed);stActive.textContent=active.length;stSoon.textContent=active.filter(t=>{let r=remain(t,next(t).date);return r>=0&&r<=7}).length;stOver.textContent=active.filter(t=>remain(t,next(t).date)<0).length;
+let q=search.value.trim().toLowerCase();let arr=tasks.filter(t=>status==='done'?t.completed:!t.completed).filter(t=>!q||(t.title+' '+t.memo+' '+t.milestones.map(m=>m.text).join(' ')).toLowerCase().includes(q));arr.sort((a,b)=>status==='done'?(b.completedAt||'').localeCompare(a.completedAt||''):((b.todayFlag?1:0)-(a.todayFlag?1:0)||next(a).date.localeCompare(next(b).date)));
+content.innerHTML=!arr.length?'<div class="empty"><b>'+(status==='done'?'完了済みはまだありません':'進行中の予定はありません')+'</b></div>':view==='list'?'<div class="list">'+arr.map(card).join('')+'</div>':timeline(arr)}
+function card(t){let n=next(t),r=remain(t,n.date),all=t.milestones.length+1,done=t.milestones.filter(m=>m.done).length+(t.completed?1:0),pct=Math.round(done/all*100),ct=t.completed?'✓ 完了':r<0?'期限超過 '+Math.abs(r)+'日':r===0?'今日':'あと'+r+'稼働日';
+return `<div class="card"><div class="head"><button class="star ${t.todayFlag?'on':''}" onclick="toggleToday('${t.id}')">★</button><div class="grow"><div class="title">${esc(t.title)}</div><div class="meta">開始 ${short(t.startDate)} ・ 最終 ${short(t.finalDate)}</div></div><div class="count ${r<0?'bad':''}">${ct}</div></div>${!t.completed?`<div class="next"><b>次 →</b> ${short(n.date)}　${esc(n.text)}</div>`:''}<div class="miles">${t.milestones.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(m=>`<label class="mile ${m.done?'done':''}"><input type="checkbox" ${m.done?'checked':''} onchange="toggleMile('${t.id}','${m.date}',${JSON.stringify(m.text).replace(/"/g,'&quot;')})"><span>${short(m.date)}</span><span>${esc(m.text)}</span></label>`).join('')}</div><div class="progress"><i style="width:${pct}%"></i></div><div class="foot">進捗 ${pct}% ${t.memo?'・ '+esc(t.memo):''}</div><div class="cardbuttons"><button class="mini" onclick="openEditor('${t.id}')">編集</button><button class="mini" onclick="completeTask('${t.id}')">${t.completed?'進行中に戻す':'完了'}</button><button class="mini" onclick="duplicateTask('${t.id}')">複製</button><button class="mini" onclick="deleteTask('${t.id}')">削除</button></div></div>`}
+function timeline(arr){let ds=[];arr.forEach(t=>ds.push(t.startDate,t.finalDate,...t.milestones.map(m=>m.date)));ds.sort();let min=parse(ds[0]),max=parse(ds.at(-1)),span=Math.max(1,(max-min)/86400000),pos=d=>Math.max(0,Math.min(100,(parse(d)-min)/86400000/span*100));return '<div class="timeline">'+arr.map(t=>`<div class="tlrow"><div class="tlname">${esc(t.title)}<div class="meta">次 ${short(next(t).date)}</div></div><div class="track">${t.milestones.map(m=>`<i class="dot" style="left:${pos(m.date)}%">◆</i>`).join('')}<i class="dot" style="left:${pos(t.finalDate)}%">★</i></div></div>`).join('')+'</div>'}
+function openEditor(x){editing=x||null;let t=tasks.find(a=>a.id===x);editorTitle.textContent=t?'予定を編集':'かんたん登録';title.value=t?t.title:'';start.value=t?t.startDate:today();final.value=t?t.finalDate:'';weekend.checked=t?t.excludeWeekend:true;memo.value=t?t.memo:'';mileEditor.innerHTML='';(t&&t.milestones.length?t.milestones:[null]).forEach(addMile);editor.classList.add('show')}
+function closeEditor(){editor.classList.remove('show')}
+function addMile(m){let d=document.createElement('div');d.className='mileedit';d.innerHTML=`<input class="field md" type="date" value="${m?m.date:''}"><input class="field mt" placeholder="例：資料完成" value="${m?esc(m.text):''}"><button class="mini del" onclick="this.parentElement.remove()">×</button>`;mileEditor.appendChild(d)}
+function saveTask(){if(!title.value.trim()||!start.value||!final.value){alert('タイトル・開始日・最終締切を入力してください。');return}let ms=[...mileEditor.querySelectorAll('.mileedit')].map(r=>({date:r.querySelector('.md').value,text:r.querySelector('.mt').value.trim(),done:false})).filter(m=>m.date&&m.text);let old=tasks.find(t=>t.id===editing);if(old){ms.forEach(m=>{let p=old.milestones.find(x=>x.date===m.date&&x.text===m.text);if(p)m.done=p.done});Object.assign(old,{title:title.value.trim(),startDate:start.value,finalDate:final.value,milestones:ms,excludeWeekend:weekend.checked,memo:memo.value.trim()})}else tasks.push(normalize({title:title.value.trim(),startDate:start.value,finalDate:final.value,milestones:ms,excludeWeekend:weekend.checked,memo:memo.value.trim()}));closeEditor();save()}
+function toggleToday(x){let t=tasks.find(a=>a.id===x);t.todayFlag=!t.todayFlag;save()} function toggleMile(x,d,tx){let t=tasks.find(a=>a.id===x),m=t.milestones.find(a=>a.date===d&&a.text===tx);if(m)m.done=!m.done;save()}
+function completeTask(x){let t=tasks.find(a=>a.id===x);t.completed=!t.completed;t.completedAt=t.completed?new Date().toISOString():'';save()} function duplicateTask(x){let t=JSON.parse(JSON.stringify(tasks.find(a=>a.id===x)));t.id=id();t.title+='（コピー）';t.completed=false;t.completedAt='';t.milestones.forEach(m=>m.done=false);tasks.push(t);save()}
+function deleteTask(x){if(confirm('この予定を削除しますか？')){tasks=tasks.filter(a=>a.id!==x);save()}}
+function openBulk(){bulkInput.style.display='block';bulkConfirm.style.display='none';bulkText.value='';bulk.classList.add('show')} function closeBulk(){bulk.classList.remove('show')} function backBulk(){bulkInput.style.display='block';bulkConfirm.style.display='none'}
+async function pasteText(){try{bulkText.value=await navigator.clipboard.readText()}catch(e){bulkText.focus();alert('入力欄を長押しして「ペースト」を選んでください。')}}
+function parseBulk(){let lines=bulkText.value.replace(/\r/g,'').split('\n').map(x=>x.trim()).filter(Boolean);bulkRows=[];for(let l of lines){let m=l.match(/^(\d{4})[\/.-](\d{1,2})[\/.-](\d{1,2})\s*(?:\||｜|:|：|\t)\s*(.+)$/);if(m)bulkRows.push({date:m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0'),title:m[4].trim(),use:true})}if(!bulkRows.length){alert('予定を読み取れませんでした。「2026/10/01 | 予定名」の形式を確認してください。');return}candidates.innerHTML=bulkRows.map((r,i)=>`<div class="candidate"><input class="ck" type="checkbox" checked onchange="bulkRows[${i}].use=this.checked"><input class="datein" type="date" value="${r.date}" onchange="bulkRows[${i}].date=this.value"><input class="titlein" value="${esc(r.title)}" onchange="bulkRows[${i}].title=this.value"></div>`).join('');bulkInput.style.display='none';bulkConfirm.style.display='block';bulk.querySelector('.screen').scrollTop=0}
+function commitBulk(){let a=bulkRows.filter(r=>r.use&&r.date&&r.title.trim());a.forEach(r=>tasks.push(normalize({title:r.title.trim(),startDate:today(),finalDate:r.date,memo:'ChatGPTから取り込み'})));closeBulk();save();toastMsg(a.length+'件登録しました')}
+function exportData(){let b=new Blob([JSON.stringify(tasks,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='goalflow-backup-'+today()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d))throw 0;if(confirm('現在のデータをこのバックアップで置き換えますか？')){snapshot();tasks=d.map(normalize);save()}}catch{alert('バックアップを読み込めませんでした。')}};r.readAsText(f);e.target.value=''}
+function recoverLocal(){let c=[];for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i),v=load(k);if(v&&v.length)c.push({k,v})}c.sort((a,b)=>b.v.length-a.v.length);if(!c.length){alert('このURLの端末内に復元候補はありません。');return}let msg=c.slice(0,10).map((x,i)=>(i+1)+'：'+x.v.length+'件　'+x.k).join('\n'),n=prompt('復元候補の番号を入力してください。\n\n'+msg,'1'),x=c[+n-1];if(x&&confirm(x.v.length+'件を復元しますか？')){snapshot();tasks=x.v.map(normalize);localStorage.setItem(KEY,JSON.stringify(tasks));render()}}
+function toastMsg(s){toast.textContent=s;toast.style.display='block';setTimeout(()=>toast.style.display='none',1800)}
+statusSeg.onclick=e=>{if(e.target.dataset.v){status=e.target.dataset.v;[...statusSeg.children].forEach(b=>b.classList.toggle('on',b.dataset.v===status));render()}};viewSeg.onclick=e=>{if(e.target.dataset.v){view=e.target.dataset.v;[...viewSeg.children].forEach(b=>b.classList.toggle('on',b.dataset.v===view));render()}};search.oninput=render;
+snapshot();render();
 </script>
 </body></html>
