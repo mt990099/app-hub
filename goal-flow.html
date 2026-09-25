@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f5f3ee">
-<title>Goal Flow 3.2.2</title>
+<title>Goal Flow 4.0</title>
 <style>
 *{box-sizing:border-box} :root{--bg:#f5f3ee;--card:#fff;--ink:#20252b;--muted:#747b83;--line:#dedbd3;--accent:#334b5e;--soft:#edf1f3;--danger:#b34848}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}
@@ -28,13 +28,14 @@ label.lab{display:block;font-weight:700;font-size:13px;margin:13px 0 5px}.field{
 .tagrow{border:1px solid var(--line);border-radius:12px;padding:11px;margin:8px 0}.tagrowtop{display:flex;gap:8px;align-items:center}.tagrowtop input{flex:1}.tagkeys{font-size:12px;color:var(--muted);margin-top:6px}
 .checktags{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}.checktag{border:1px solid var(--line);border-radius:999px;padding:6px 9px;font-size:12px}
 @media(max-width:650px){.wrap{padding:14px 12px 85px}header{align-items:flex-start;flex-direction:column}.actions{width:100%}.actions .btn{flex:1}.stats{margin:13px 0}.toolbar{gap:7px}.panel{border:0;border-radius:0;padding:0}.grid2{grid-template-columns:1fr}.mileedit{grid-template-columns:1fr}.mileedit .del{justify-self:end}.candidate{grid-template-columns:28px 1fr;grid-template-rows:auto auto}.candidate .ck{grid-row:1/3}.candidate .datein{grid-column:2}.candidate .titlein{grid-column:2}.screen{background:#fff}.sticky{background:#fff}.tlrow{grid-template-columns:110px minmax(460px,1fr)}}
+.cloudbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}.cloudstate{font-size:12px;color:var(--muted);padding:7px 10px;background:#fff;border:1px solid var(--line);border-radius:999px}.cloudstate.ok{color:#27613e;background:#edf8f1}.cloudstate.warn{color:#8a5b18;background:#fff7e6}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header><div><h1>Goal Flow</h1><div class="sub">ゴールと途中の締切を、ひと目で。</div></div>
 <div class="actions"><button class="btn" onclick="openBulk()">✨ ChatGPTから取り込み</button><button class="btn primary" onclick="openEditor()">＋ かんたん登録</button></div></header>
-<div class="stats"><div class="stat"><b id="stActive">0</b><span>進行中</span></div><div class="stat"><b id="stSoon">0</b><span>7稼働日以内</span></div><div class="stat"><b id="stOver">0</b><span>期限超過</span></div></div>
+<div class="cloudbar"><button id="loginBtn" class="btn" onclick="googleLogin()">Googleでログイン</button><button id="logoutBtn" class="btn" style="display:none" onclick="googleLogout()">ログアウト</button><span id="cloudState" class="cloudstate">端末内に保存中</span></div>\n<div class="stats"><div class="stat"><b id="stActive">0</b><span>進行中</span></div><div class="stat"><b id="stSoon">0</b><span>7稼働日以内</span></div><div class="stat"><b id="stOver">0</b><span>期限超過</span></div></div>
 <div class="toolbar"><div class="seg" id="statusSeg"><button class="on" data-v="active">進行中</button><button data-v="done">完了済み</button></div><div class="seg" id="viewSeg"><button class="on" data-v="list">一覧</button><button data-v="timeline">タイムライン</button></div><input id="search" class="search" placeholder="検索"><button class="btn" onclick="exportData()">バックアップ</button><label class="btn">復元<input type="file" accept=".json,application/json" hidden onchange="importData(event)"></label><button class="btn" onclick="recoverLocal()">端末内から復元</button></div>
 <div id="tagBar" class="tagbar"></div><div id="content"></div>
 </div>
@@ -59,7 +60,25 @@ label.lab{display:block;font-weight:700;font-size:13px;margin:13px 0 5px}.field{
 <div id="tagRows"></div><button class="mini" onclick="newTag()">＋ タグを追加</button>
 <div class="bottom"><button class="btn" onclick="closeTags()">閉じる</button></div></div></div></div>
 <div class="toast" id="toast"></div>
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyBKcQdnLWjDFtY4nfFiFMTgh_HgMGTdVOU",authDomain:"goal-flow-dc2b1.firebaseapp.com",projectId:"goal-flow-dc2b1",storageBucket:"goal-flow-dc2b1.firebasestorage.app",messagingSenderId:"209981716989",appId:"1:209981716989:web:9fc23f481a1f4fd34d0194"};
+const fbApp=initializeApp(firebaseConfig),auth=getAuth(fbApp),db=getFirestore(fbApp),provider=new GoogleAuthProvider();
+let cloudUser=null,cloudLoading=false,cloudTimer=null;
+function cloudEl(){return document.getElementById('cloudState')}
+function cloudStatus(s,kind=''){let x=cloudEl();if(!x)return;x.textContent=s;x.className='cloudstate '+kind}
+async function googleLogin(){try{cloudStatus('Googleログイン中…');if(/iPhone|iPad|iPod/i.test(navigator.userAgent))await signInWithRedirect(auth,provider);else await signInWithPopup(auth,provider)}catch(e){console.error(e);cloudStatus('ログインできませんでした','warn');alert('Googleログインに失敗しました。もう一度お試しください。')}}
+async function googleLogout(){if(confirm('ログアウトしますか？\n端末内の予定は残ります。'))await signOut(auth)}
+window.googleLogin=googleLogin;window.googleLogout=googleLogout;
+async function cloudRef(){return cloudUser?doc(db,'users',cloudUser.uid):null}
+async function uploadCloud(){if(!cloudUser||cloudLoading)return;try{cloudStatus('クラウドへ保存中…');let r=await cloudRef();await setDoc(r,{tasks:tasks,tags:tags,updatedAt:serverTimestamp(),updatedAtClient:new Date().toISOString()},{merge:true});cloudStatus('クラウド保存済み','ok')}catch(e){console.error(e);cloudStatus('クラウド保存に失敗','warn')}}
+function queueCloud(){if(!cloudUser||cloudLoading)return;clearTimeout(cloudTimer);cloudTimer=setTimeout(uploadCloud,450)}
+async function syncFromCloud(user){cloudLoading=true;try{cloudStatus('クラウドと同期中…');let r=await cloudRef(),snap=await getDoc(r);if(snap.exists()){let d=snap.data(),remote=Array.isArray(d.tasks)?d.tasks.map(normalize):[],rtags=Array.isArray(d.tags)?d.tags:[];if(remote.length||rtags.length){snapshot();tasks=remote;tags=rtags;localStorage.setItem(KEY,JSON.stringify(tasks));if(tasks.length)localStorage.setItem(SAFEKEY,JSON.stringify(tasks));localStorage.setItem(TAGKEY,JSON.stringify(tags));render();cloudStatus('クラウドから同期しました','ok')}else if(tasks.length||tags.length){await setDoc(r,{tasks,tags,updatedAt:serverTimestamp(),updatedAtClient:new Date().toISOString()},{merge:true});cloudStatus('端末の予定をクラウドへ保存しました','ok')}else cloudStatus('クラウド保存済み','ok')}else{await setDoc(r,{tasks,tags,updatedAt:serverTimestamp(),updatedAtClient:new Date().toISOString()});cloudStatus(tasks.length?'端末の予定をクラウドへ移行しました':'クラウド保存を開始しました','ok')}}catch(e){console.error(e);cloudStatus('同期できませんでした','warn')}finally{cloudLoading=false;render()}}
+getRedirectResult(auth).catch(e=>{console.error(e);cloudStatus('ログイン処理に失敗','warn')});
+onAuthStateChanged(auth,async user=>{cloudUser=user;document.getElementById('loginBtn').style.display=user?'none':'';document.getElementById('logoutBtn').style.display=user?'':'none';if(user)await syncFromCloud(user);else cloudStatus('端末内に保存中')});
+
 const KEY='goalflow_v1_tasks'; // 永久固定
 const SNAP='goalflow_snapshot_';
 const TAGKEY='goalflow_tags_v1'; // タグ設定も固定
@@ -90,7 +109,7 @@ function id(){return 'g'+Date.now().toString(36)+Math.random().toString(36).slic
 function normalize(t){return {id:t.id||id(),title:t.title||'',startDate:t.startDate||today(),finalDate:t.finalDate||t.startDate||today(),milestones:Array.isArray(t.milestones)?t.milestones.map(m=>({date:m.date||today(),text:m.text||'',done:!!m.done})):[],excludeWeekend:t.excludeWeekend!==false,excludeHolidays:!!t.excludeHolidays,memo:t.memo||'',todayFlag:!!t.todayFlag,completed:!!t.completed,completedAt:t.completedAt||'',createdAt:t.createdAt||new Date().toISOString(),tags:Array.isArray(t.tags)?t.tags:[],excludedTags:Array.isArray(t.excludedTags)?t.excludedTags:[]}}
 tasks=tasks.map(normalize);
 function snapshot(){try{let v=load(KEY);if(!taskArray(v)||!v.length)return;let raw=JSON.stringify(v);let k=SNAP+new Date().toISOString().replace(/[:.]/g,'-');localStorage.setItem(k,raw);localStorage.setItem(SAFEKEY,raw);let ks=[];for(let i=0;i<localStorage.length;i++){let x=localStorage.key(i);if(x&&x.startsWith(SNAP))ks.push(x)}ks.sort().reverse().slice(20).forEach(x=>localStorage.removeItem(x))}catch(e){}}
-function save(){snapshot();localStorage.setItem(KEY,JSON.stringify(tasks));if(tasks.length)localStorage.setItem(SAFEKEY,JSON.stringify(tasks));localStorage.setItem(TAGKEY,JSON.stringify(tags));render()}
+function save(){snapshot();localStorage.setItem(KEY,JSON.stringify(tasks));if(tasks.length)localStorage.setItem(SAFEKEY,JSON.stringify(tasks));localStorage.setItem(TAGKEY,JSON.stringify(tags));render();queueCloud()}
 function autoTag(t){
  tags.forEach(g=>{
    if(t.excludedTags.includes(g.id))return;
