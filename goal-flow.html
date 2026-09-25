@@ -211,6 +211,15 @@ function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader
 function recoverLocal(){let c=[];for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i);if(!(k===KEY||k===SAFEKEY||k.startsWith(SNAP)))continue;let v=load(k);if(taskArray(v)&&v.length)c.push({k,v})}c.sort((a,b)=>{if(a.k===SAFEKEY)return-1;if(b.k===SAFEKEY)return 1;return b.k.localeCompare(a.k)});if(!c.length){alert('このURLの端末内に復元できる予定データはありません。');return}let msg=c.slice(0,10).map((x,i)=>(i+1)+'：'+x.v.length+'件　'+(x.k===SAFEKEY?'保護コピー':x.k===KEY?'現在のデータ':'自動バックアップ')).join('\n'),n=prompt('復元候補の番号を入力してください。\n\n'+msg,'1'),x=c[+n-1];if(x&&confirm(x.v.length+'件を復元しますか？')){snapshot();tasks=x.v.map(normalize);localStorage.setItem(KEY,JSON.stringify(tasks));localStorage.setItem(SAFEKEY,JSON.stringify(tasks));render();toastMsg('予定を復元しました')}}
 function toastMsg(s){toast.textContent=s;toast.style.display='block';setTimeout(()=>toast.style.display='none',1800)}
 el('statusSeg').onclick=e=>{if(e.target.dataset.v){status=e.target.dataset.v;[...statusSeg.children].forEach(b=>b.classList.toggle('on',b.dataset.v===status));render()}};el('viewSeg').onclick=e=>{if(e.target.dataset.v){view=e.target.dataset.v;[...viewSeg.children].forEach(b=>b.classList.toggle('on',b.dataset.v===view));render()}};el('search').oninput=render;
+
+// module内の関数をHTMLボタンから呼べるように公開
+Object.assign(window,{
+  setTag,openTags,closeTags,newTag,editTag,deleteTag,removeTag,toggleTaskTag,
+  openEditor,closeEditor,addMile,saveTask,toggleToday,toggleMile,
+  completeTask,duplicateTask,deleteTask,
+  openBulk,closeBulk,backBulk,pasteText,parseBulk,commitBulk,
+  exportData,importData,recoverLocal
+});
 snapshot();render();
 </script>
 </body></html>
