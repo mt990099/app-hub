@@ -35,7 +35,8 @@ label.lab{display:block;font-weight:700;font-size:13px;margin:13px 0 5px}.field{
 <div class="wrap">
 <header><div><h1>Goal Flow</h1><div class="sub">ゴールと途中の締切を、ひと目で。</div></div>
 <div class="actions"><button class="btn" onclick="openBulk()">✨ ChatGPTから取り込み</button><button class="btn primary" onclick="openEditor()">＋ かんたん登録</button></div></header>
-<div class="cloudbar"><button id="loginBtn" class="btn" onclick="googleLogin()">Googleでログイン</button><button id="logoutBtn" class="btn" style="display:none" onclick="googleLogout()">ログアウト</button><span id="cloudState" class="cloudstate">端末内に保存中</span></div>\n<div class="stats"><div class="stat"><b id="stActive">0</b><span>進行中</span></div><div class="stat"><b id="stSoon">0</b><span>7稼働日以内</span></div><div class="stat"><b id="stOver">0</b><span>期限超過</span></div></div>
+<div class="cloudbar"><button id="loginBtn" class="btn" onclick="googleLogin()">Googleでログイン</button><button id="logoutBtn" class="btn" style="display:none" onclick="googleLogout()">ログアウト</button><span id="cloudState" class="cloudstate">端末内に保存中</span></div>
+<div class="stats"><div class="stat"><b id="stActive">0</b><span>進行中</span></div><div class="stat"><b id="stSoon">0</b><span>7稼働日以内</span></div><div class="stat"><b id="stOver">0</b><span>期限超過</span></div></div>
 <div class="toolbar"><div class="seg" id="statusSeg"><button class="on" data-v="active">進行中</button><button data-v="done">完了済み</button></div><div class="seg" id="viewSeg"><button class="on" data-v="list">一覧</button><button data-v="timeline">タイムライン</button></div><input id="search" class="search" placeholder="検索"><button class="btn" onclick="exportData()">バックアップ</button><label class="btn">復元<input type="file" accept=".json,application/json" hidden onchange="importData(event)"></label><button class="btn" onclick="recoverLocal()">端末内から復元</button></div>
 <div id="tagBar" class="tagbar"></div><div id="content"></div>
 </div>
@@ -62,21 +63,33 @@ label.lab{display:block;font-weight:700;font-size:13px;margin:13px 0 5px}.field{
 <div class="toast" id="toast"></div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 const firebaseConfig={apiKey:"AIzaSyBKcQdnLWjDFtY4nfFiFMTgh_HgMGTdVOU",authDomain:"goal-flow-dc2b1.firebaseapp.com",projectId:"goal-flow-dc2b1",storageBucket:"goal-flow-dc2b1.firebasestorage.app",messagingSenderId:"209981716989",appId:"1:209981716989:web:9fc23f481a1f4fd34d0194"};
 const fbApp=initializeApp(firebaseConfig),auth=getAuth(fbApp),db=getFirestore(fbApp),provider=new GoogleAuthProvider();
 let cloudUser=null,cloudLoading=false,cloudTimer=null;
 function cloudEl(){return document.getElementById('cloudState')}
 function cloudStatus(s,kind=''){let x=cloudEl();if(!x)return;x.textContent=s;x.className='cloudstate '+kind}
-async function googleLogin(){try{cloudStatus('Googleログイン中…');if(/iPhone|iPad|iPod/i.test(navigator.userAgent))await signInWithRedirect(auth,provider);else await signInWithPopup(auth,provider)}catch(e){console.error(e);cloudStatus('ログインできませんでした','warn');alert('Googleログインに失敗しました。もう一度お試しください。')}}
+async function googleLogin(){
+ try{
+  cloudStatus('Googleログイン中…');
+  provider.setCustomParameters({prompt:'select_account'});
+  await setPersistence(auth,browserLocalPersistence);
+  await signInWithPopup(auth,provider);
+ }catch(e){
+  console.error('Firebase Google login error',e);
+  cloudStatus('ログインできませんでした','warn');
+  const code=e&&e.code?e.code:'unknown';
+  const msg=e&&e.message?e.message:'';
+  alert('Googleログインに失敗しました。\n\nエラー：'+code+'\n'+msg);
+ }
+}
 async function googleLogout(){if(confirm('ログアウトしますか？\n端末内の予定は残ります。'))await signOut(auth)}
 window.googleLogin=googleLogin;window.googleLogout=googleLogout;
 async function cloudRef(){return cloudUser?doc(db,'users',cloudUser.uid):null}
 async function uploadCloud(){if(!cloudUser||cloudLoading)return;try{cloudStatus('クラウドへ保存中…');let r=await cloudRef();await setDoc(r,{tasks:tasks,tags:tags,updatedAt:serverTimestamp(),updatedAtClient:new Date().toISOString()},{merge:true});cloudStatus('クラウド保存済み','ok')}catch(e){console.error(e);cloudStatus('クラウド保存に失敗','warn')}}
 function queueCloud(){if(!cloudUser||cloudLoading)return;clearTimeout(cloudTimer);cloudTimer=setTimeout(uploadCloud,450)}
 async function syncFromCloud(user){cloudLoading=true;try{cloudStatus('クラウドと同期中…');let r=await cloudRef(),snap=await getDoc(r);if(snap.exists()){let d=snap.data(),remote=Array.isArray(d.tasks)?d.tasks.map(normalize):[],rtags=Array.isArray(d.tags)?d.tags:[];if(remote.length||rtags.length){snapshot();tasks=remote;tags=rtags;localStorage.setItem(KEY,JSON.stringify(tasks));if(tasks.length)localStorage.setItem(SAFEKEY,JSON.stringify(tasks));localStorage.setItem(TAGKEY,JSON.stringify(tags));render();cloudStatus('クラウドから同期しました','ok')}else if(tasks.length||tags.length){await setDoc(r,{tasks,tags,updatedAt:serverTimestamp(),updatedAtClient:new Date().toISOString()},{merge:true});cloudStatus('端末の予定をクラウドへ保存しました','ok')}else cloudStatus('クラウド保存済み','ok')}else{await setDoc(r,{tasks,tags,updatedAt:serverTimestamp(),updatedAtClient:new Date().toISOString()});cloudStatus(tasks.length?'端末の予定をクラウドへ移行しました':'クラウド保存を開始しました','ok')}}catch(e){console.error(e);cloudStatus('同期できませんでした','warn')}finally{cloudLoading=false;render()}}
-getRedirectResult(auth).catch(e=>{console.error(e);cloudStatus('ログイン処理に失敗','warn')});
 onAuthStateChanged(auth,async user=>{cloudUser=user;document.getElementById('loginBtn').style.display=user?'none':'';document.getElementById('logoutBtn').style.display=user?'':'none';if(user)await syncFromCloud(user);else cloudStatus('端末内に保存中')});
 
 const KEY='goalflow_v1_tasks'; // 永久固定
