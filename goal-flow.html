@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f7f8fb">
-<title>Goal Flow v2.7</title>
+<title>Goal Flow v2.8</title>
 <style>
 :root{--bg:#f5f6f8;--card:#fff;--ink:#25282d;--muted:#727780;--line:#e5e7eb;--accent:#52667a;--soft:#eef2f5;--danger:#b94a48;--warn:#b57925;--ok:#47765c;--shadow:0 8px 24px rgba(20,28,38,.07)}
 *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink)}
@@ -98,7 +98,7 @@ header{display:flex;gap:12px;align-items:center;justify-content:space-between;ma
 <div class="toolbar">
  <div class="seg" id="statusSeg"><button data-status="active" class="active">進行中</button><button data-status="done">完了済み</button></div>
  <div class="seg" id="viewSeg"><button data-view="list" class="active">縦一覧</button><button data-view="timeline">横タイムライン</button></div>
- <div class="spacer"></div><input id="searchBox" class="search" placeholder="予定を検索"><button class="smallbtn" onclick="exportData()">バックアップ</button><label class="smallbtn" style="cursor:pointer">復元<input type="file" accept="application/json" onchange="importData(event)" hidden></label>
+ <div class="spacer"></div><input id="searchBox" class="search" placeholder="予定を検索"><button class="smallbtn" onclick="exportData()">バックアップ</button><button class="smallbtn" onclick="recoverLocalData()">端末内から復元</button><label class="smallbtn" style="cursor:pointer">復元<input type="file" accept="application/json" onchange="importData(event)" hidden></label>
 </div>
 <div class="summary"><div class="sum"><b id="s1">0</b><span>進行中</span></div><div class="sum"><b id="s2">0</b><span>7日以内の締切</span></div><div class="sum"><b id="s3">0</b><span>期限超過</span></div></div>
 <div id="content"></div>
@@ -167,13 +167,70 @@ header{display:flex;gap:12px;align-items:center;justify-content:space-between;ma
 </div></div>
 <div class="sheet" id="sheet"></div><div class="toast" id="toast"></div>
 <script>
-const KEY='goalflow_v1_tasks'; let tasks=[]; try{const raw=localStorage.getItem(KEY); tasks=raw?JSON.parse(raw):[]; if(!Array.isArray(tasks)) tasks=[];}catch(e){tasks=[];} let status='active', view='list', editing=null, deleted=null;
+const KEY='goalflow_v1_tasks'; // このキーは今後変更しない
+const SNAP_PREFIX='goalflow_snapshot_';
+function isTaskArray(v){return Array.isArray(v)&&v.every(function(t){return t&&typeof t==='object'&&typeof t.title==='string'})}
+function readArray(key){try{var r=localStorage.getItem(key);if(!r)return null;var v=JSON.parse(r);return isTaskArray(v)?v:null}catch(e){return null}}
+function findLegacyData(){
+ var found=[];
+ for(var i=0;i<localStorage.length;i++){
+   var k=localStorage.key(i);
+   if(!k||k===KEY||k.indexOf(SNAP_PREFIX)===0)continue;
+   var v=readArray(k);
+   if(v&&v.length)found.push({key:k,data:v});
+ }
+ found.sort(function(a,b){return b.data.length-a.data.length});
+ return found;
+}
+let tasks=readArray(KEY)||[];
+if(!tasks.length){
+ var legacy=findLegacyData();
+ if(legacy.length){
+   tasks=legacy[0].data;
+   try{localStorage.setItem(KEY,JSON.stringify(tasks));localStorage.setItem('goalflow_migrated_from',legacy[0].key)}catch(e){}
+ }
+}
+let status='active', view='list', editing=null, deleted=null;
 const jpHolidays=['2026-01-01','2026-01-12','2026-02-11','2026-02-23','2026-03-20','2026-04-29','2026-05-03','2026-05-04','2026-05-05','2026-05-06','2026-07-20','2026-08-11','2026-09-21','2026-09-22','2026-09-23','2026-10-12','2026-11-03','2026-11-23'];
 function today(){let d=new Date(); return fmt(d)} function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')} function parse(s){let [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)} function short(s){let d=parse(s);return (d.getMonth()+1)+'/'+d.getDate()}
 function workdays(from,to,t){let a=parse(from),b=parse(to),sign=a<=b?1:-1,n=0; if(sign<0){[a,b]=[b,a]} let d=new Date(a); while(d<b){d.setDate(d.getDate()+1);let ds=fmt(d),day=d.getDay(); if(!(t.excludeWeekend&&(day===0||day===6)) && !(t.excludeHolidays&&jpHolidays.includes(ds)))n++} return n*sign}
 function nextMilestone(t){let pending=t.milestones.filter(m=>!m.done).sort((a,b)=>a.date.localeCompare(b.date)); if(pending.length)return {...pending[0],final:false}; return {date:t.finalDate,text:'最終ゴール',done:false,final:true}}
 function remaining(t,date){return workdays(today(),date,t)}
-function save(){localStorage.setItem(KEY,JSON.stringify(tasks));render()}
+function makeSnapshot(){
+ try{
+   var current=localStorage.getItem(KEY);
+   if(current){
+     var stamp=new Date().toISOString().replace(/[:.]/g,'-');
+     localStorage.setItem(SNAP_PREFIX+stamp,current);
+     var keys=[];
+     for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf(SNAP_PREFIX)===0)keys.push(k)}
+     keys.sort().reverse();
+     keys.slice(12).forEach(function(k){localStorage.removeItem(k)});
+   }
+ }catch(e){}
+}
+function save(){
+ makeSnapshot();
+ try{localStorage.setItem(KEY,JSON.stringify(tasks))}catch(e){alert('予定を端末に保存できませんでした。ブラウザの保存領域を確認してください。')}
+ render()
+}
+function recoverLocalData(){
+ var candidates=[];
+ var main=readArray(KEY);if(main)candidates.push({key:KEY,data:main,label:'現在の保存データ'});
+ for(var i=0;i<localStorage.length;i++){
+   var k=localStorage.key(i);if(!k||k===KEY)continue;
+   var v=readArray(k);if(v&&v.length)candidates.push({key:k,data:v,label:k.indexOf(SNAP_PREFIX)===0?'自動バックアップ':'旧バージョンのデータ'});
+ }
+ if(!candidates.length){alert('このURLのブラウザ内には復元できるGoal Flowデータが見つかりませんでした。');return}
+ candidates.sort(function(a,b){if(a.key.indexOf(SNAP_PREFIX)===0&&b.key.indexOf(SNAP_PREFIX)===0)return b.key.localeCompare(a.key);return b.data.length-a.data.length});
+ var lines=candidates.slice(0,12).map(function(c,i){return (i+1)+'：'+c.label+'（'+c.data.length+'件）'+(c.key.indexOf(SNAP_PREFIX)===0?' '+c.key.replace(SNAP_PREFIX,'').slice(0,19):'')});
+ var n=prompt('復元するデータの番号を入力してください。\n\n'+lines.join('\n'),'1');
+ if(!n)return;var c=candidates[Number(n)-1];if(!c){alert('番号が正しくありません。');return}
+ if(confirm(c.data.length+'件の予定を復元しますか？\n現在のデータは復元前に自動バックアップします。')){
+   makeSnapshot();tasks=JSON.parse(JSON.stringify(c.data));
+   localStorage.setItem(KEY,JSON.stringify(tasks));render();toast('端末内データを復元しました');
+ }
+}
 function render(){document.querySelectorAll('#statusSeg button').forEach(b=>b.classList.toggle('active',b.dataset.status===status));document.querySelectorAll('#viewSeg button').forEach(b=>b.classList.toggle('active',b.dataset.view===view)); let active=tasks.filter(t=>!t.completed);document.getElementById('s1').textContent=active.length;document.getElementById('s2').textContent=active.filter(t=>{let r=remaining(t,nextMilestone(t).date);return r>=0&&r<=7}).length;document.getElementById('s3').textContent=active.filter(t=>remaining(t,nextMilestone(t).date)<0).length;
  let q=(document.getElementById('searchBox').value||'').trim().toLowerCase(); let arr=tasks.filter(t=>status==='done'?t.completed:!t.completed).filter(t=>!q||(t.title+' '+(t.memo||'')+' '+t.milestones.map(m=>m.text).join(' ')).toLowerCase().includes(q)); arr.sort((a,b)=>status==='done'?(b.completedAt||'').localeCompare(a.completedAt||''):((b.todayFlag?1:0)-(a.todayFlag?1:0)||nextMilestone(a).date.localeCompare(nextMilestone(b).date))); let c=document.getElementById('content'); if(!arr.length){c.innerHTML='<div class="empty"><b>'+(status==='done'?'完了済みはまだありません':'進行中の予定はありません')+'</b>'+(status==='done'?'完了した予定はここに残ります。':'「＋ かんたん登録」から始められます。')+'</div>';return} c.innerHTML=view==='list'?'<div class="list">'+arr.map(cardHTML).join('')+'</div>':timelineHTML(arr)}
 function cardHTML(t){let n=nextMilestone(t),r=remaining(t,n.date),cls=r<0?'red':r<=3?'orange':'green',txt=r<0?'期限超過 '+Math.abs(r)+'日':r===0?'今日':`あと${r}稼働日`; let all=t.milestones.length+1,done=t.milestones.filter(m=>m.done).length+(t.completed?1:0),pct=Math.round(done/all*100);return `<div class="card ${r<0?'overdue':r<=3?'urgent':''}"><div class="cardhead"><button class="todaystar ${t.todayFlag?'on':''}" title="今日やる" onclick="toggleToday('${t.id}')">★</button><div class="grow"><div class="title">${esc(t.title)}</div><div class="meta">開始 ${short(t.startDate)} ・ 最終 ${short(t.finalDate)}${t.excludeWeekend?' ・ 土日除外':''}</div></div><div class="count ${cls}">${t.completed?'✓ 完了':txt}</div><button class="menu" onclick="openMenu(event,'${t.id}')">⋯</button></div>${!t.completed?`<div class="next"><b>次 →</b>${short(n.date)}　${esc(n.text)}</div>`:''}<div class="milestones">${t.milestones.sort((a,b)=>a.date.localeCompare(b.date)).map((m,i)=>`<label class="mile ${m.done?'done':''}"><input type="checkbox" ${m.done?'checked':''} onchange="toggleMile('${t.id}',${i})"><span class="date">${short(m.date)}</span><span class="mtxt">${esc(m.text)}</span><span class="badge">${m.done?'完了':mileCount(t,m.date)}</span></label>`).join('')}<div class="mile ${t.completed?'done':''}"><span style="width:18px;text-align:center">★</span><span class="date">${short(t.finalDate)}</span><span class="mtxt">最終ゴール</span></div></div><div class="progress"><i style="width:${pct}%"></i></div><div class="foot"><span>進捗 ${pct}%</span><span>${t.memo?esc(t.memo):''}</span></div></div>`}
@@ -468,6 +525,7 @@ document.getElementById('selectAllImport').addEventListener('click',function(){d
 document.getElementById('clearAllImport').addEventListener('click',function(){document.querySelectorAll('.impcheck').forEach(function(x){x.checked=false})},false);
 document.getElementById('commitBulkBtn').addEventListener('click',commitBulk,false);
 
+makeSnapshot();
 render();
 
 async function importGoalFlowPdf(file){
