@@ -55,6 +55,7 @@ h1{margin:6px 0;font-size:clamp(30px,7vw,50px);font-weight:1000}
 .assessment{border-color:#e6e0ff}.assessment .go{color:#7866d4}
 .submit{border-color:#dceeff}.submit .go{color:#4f87d8}
 .barcode{border-color:#dff3e7}.barcode .go{color:#49936d}
+.english{border-color:#cfeeea}.english .go{color:#25654c}
 .coming{opacity:.72}
 .badge{
   position:absolute;right:14px;top:14px;background:#f1f3f7;color:#7a7e91;border-radius:999px;
@@ -65,14 +66,14 @@ h1{margin:6px 0;font-size:clamp(30px,7vw,50px);font-weight:1000}
   color:#687086;font-size:13px;line-height:1.65;box-shadow:0 8px 20px rgba(70,72,105,.07)
 }
 @media(min-width:1000px){
-  body{height:100vh;overflow:hidden}
-  .wrap{height:100vh;padding:14px 18px;display:flex;flex-direction:column}
+  body{min-height:100vh;overflow:auto}
+  .wrap{min-height:100vh;padding:14px 18px;display:flex;flex-direction:column}
   .hero{margin:0 0 12px}
   .hero .emoji{font-size:30px;line-height:1}
   h1{margin:2px 0;font-size:32px}
   .hero p{margin:3px 0;font-size:14px;line-height:1.35}
   .privacy{margin-top:4px;padding:5px 11px;font-size:12px}
-  .grid{grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;flex:1;min-height:0}
+  .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;flex:1;min-height:0}
   .card{min-height:0;padding:14px 12px;border-radius:20px}
   .icon{font-size:32px;line-height:1}
   .card h2{margin:7px 0 4px;font-size:17px;line-height:1.3}
@@ -128,6 +129,10 @@ h1{margin:6px 0;font-size:clamp(30px,7vw,50px);font-weight:1000}
 
     <a class="card assessment" href="https://qr-learning-assessment.ht139.chatgpt.site">
       <div><div class="icon">⭐</div><h2>QR学習評価</h2><p>QRや学年・組・出席番号から、提出物・点数・実技などの評価を記録できます。</p></div>
+      <div class="go">開く →</div>
+    </a>
+    <a class="card english" href="./english-word-test.html">
+      <div><div class="icon">📝</div><h2>英語の単語テスト</h2><p>テーマ・単元・問題数を選び、名前欄・点数欄付きのテストと同じ形式の解答を自動作成。</p></div>
       <div class="go">開く →</div>
     </a>
   </main>
