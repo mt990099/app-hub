@@ -126,7 +126,9 @@ async function savePDF(kind){
    const canvas=await window.html2canvas(copy,{scale:2,backgroundColor:'#ffffff',logging:false,scrollX:0,scrollY:0,windowWidth:1200,windowHeight:1400});
    if(page++)pdf.addPage();
    const factor=Math.min(210/canvas.width,297/canvas.height);
-   pdf.addImage(canvas.toDataURL('image/png'),'PNG',(210-canvas.width*factor)/2,0,canvas.width*factor,canvas.height*factor);
+   const opaque=document.createElement('canvas');opaque.width=canvas.width;opaque.height=canvas.height;
+   const opaqueContext=opaque.getContext('2d',{alpha:false});opaqueContext.fillStyle='#ffffff';opaqueContext.fillRect(0,0,opaque.width,opaque.height);opaqueContext.drawImage(canvas,0,0);
+   pdf.addImage(opaque.toDataURL('image/jpeg',0.98),'JPEG',(210-canvas.width*factor)/2,0,canvas.width*factor,canvas.height*factor);
    copy.remove();
   }
   const label='テスト・解答・練習用';
