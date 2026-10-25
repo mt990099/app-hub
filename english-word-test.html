@@ -128,6 +128,8 @@ async function savePDF(kind){
    const factor=Math.min(210/canvas.width,297/canvas.height);
    const opaque=document.createElement('canvas');opaque.width=canvas.width;opaque.height=canvas.height;
    const opaqueContext=opaque.getContext('2d',{alpha:false});opaqueContext.fillStyle='#ffffff';opaqueContext.fillRect(0,0,opaque.width,opaque.height);opaqueContext.drawImage(canvas,0,0);
+   // Keep the outer bottom margin white; some canvas engines leave an edge artifact after SVG rendering.
+   const marginEdge=Math.ceil(20*canvas.width/794);opaqueContext.fillStyle='#ffffff';opaqueContext.fillRect(0,opaque.height-marginEdge,opaque.width,marginEdge);
    pdf.addImage(opaque.toDataURL('image/jpeg',0.98),'JPEG',(210-canvas.width*factor)/2,0,canvas.width*factor,canvas.height*factor);
    copy.remove();
   }
